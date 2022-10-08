@@ -1,0 +1,12 @@
+#include "symtab.h"
+#include "../../xerr/xerr.ih"
+
+#include <algorithm>
+
+#include "../error/error.h"
+#include "../../support/as/as.h"
+#include "../semval/semval.h"
+#include "../functions/functions.h"
+
+using namespace std;
+

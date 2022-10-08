@@ -1,0 +1,13 @@
+void strip_shared()
+{
+#ifdef LIBRARY
+    string libsoshared = "lib" LIBRARY ".so." + g_version;
+
+    chdir(TMP_DIR);
+
+    if (exists(libsoshared))
+        system("strip --strip-unneeded " + libsoshared);
+    else
+        printf("Can't find " TMP_DIR "/" + libsoshared + "\n");
+#endif
+}

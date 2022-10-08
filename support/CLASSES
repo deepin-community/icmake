@@ -1,0 +1,19 @@
+bimheader
+opcodes
+builtinfunctions
+tools
+
+# only .h files:
+# ==============
+# constmember
+# as
+# typedefs
+# exprtype
+# header
+# constants
+
+
+# bimhdr
+# opcode
+# builtindata
+# findidx

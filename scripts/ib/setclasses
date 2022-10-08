@@ -1,0 +1,84 @@
+int readLine()                  // 1: line was read from CLASSES, 
+{                               // 0: no line
+    g_classLine = fgets("CLASSES", g_classLine);
+    return listlen(g_classLine) && g_classLine[2] == "OK";
+}
+
+int empty(list entries)
+{
+    return !entries || entries[0][0] == '#' || strfind(entries[0], "//") == 0;
+}
+
+string  nextClassesEntry()
+{
+    list parts;
+
+    while (readLine())
+    {
+        string line = g_classLine[0];
+        int last = strlen(line) - 1;
+        int bs = line[last] == '\\';
+
+        if (bs)
+            line = resize(line, last);           // remove the backslash
+
+        list entries = strtok(line, " \t");     // entries on the line
+
+        if (empty(entries))     // blank or comment
+        {
+            if (!parts)         // nothing collected yet
+                continue;
+            break;              // or return the 1st element
+        }
+
+        parts += (list)entries[0];
+        if (bs)
+            continue;
+        break;
+    }
+
+    return parts ? parts[0] : "";
+}
+
+void setClasses()
+{
+#ifdef SCANNER_DIR                      // scanner/parser directories must be
+                                        // first, to avoid reordering
+    if (SCANNER_DIR != "")
+        g_classes = (list)SCANNER_DIR;  // add the scanner-dir
+#endif
+
+#ifdef PARSER_DIR
+    if (PARSER_DIR != "")
+        g_classes += (list)PARSER_DIR;
+#endif
+
+    while (1)
+    {
+        string class = nextClassesEntry();
+        if (strlen(class) == 0)
+            break;
+
+//        if (!hasSources(class))
+//            continue;
+    
+        g_classes = listunion(g_classes, class);
+    }            
+        
+    g_nClasses = listlen(g_classes);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,46 @@
+void getCommand(list argv)
+{
+                                // find the option
+    g_option = listfind(g_options, argv[1]);
+
+                                // command is argv[1] unless an option was 
+                                // specified, then it's argv[2] 
+                                // determine the command index:
+    string cmd =    argv[1 + (g_option != _notFound)];
+
+    g_command = listfind(g_commands, cmd);
+
+    if (g_option != _h)
+    {
+        if (g_command == _notFound)
+        {
+            int opt = g_option; // remember the option
+            g_option = _h;      // force -h unless DEFCOM specifies the cmd
+
+            #ifdef DEFCOM
+                if (!cmd)           // cmd is empty: inspect DEFCOM
+                {
+                    g_command = listfind(g_commands, DEFCOM);
+                    if (g_command >= _library)  // correct DEFCOM value
+                        g_option = opt;         // reset the option
+                }
+            #endif
+        }
+        else if (g_command == _install)
+        {
+                                        // e.g., program, shared
+            g_installType = listfind(g_installArgs, 
+                                        argv[2 + (g_option != _notFound)]);
+            if (g_installType == _notFound)
+                g_option = _h;
+            else                        // e.g. /usr/local/bin
+                g_installDest = argv[3 + (g_option != _notFound)];
+        }
+    }
+
+    if (g_option == _h)
+    {
+        exec("icmbuild -h");
+        exit(0);
+    }
+}

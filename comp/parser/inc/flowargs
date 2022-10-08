@@ -1,0 +1,12 @@
+flowArgs:
+    flowArgs ',' expression
+    {
+        $$ = move($1.add($3));
+    }
+|
+    expression
+    {
+        $$ = Args{ $1 };
+    }
+;
+

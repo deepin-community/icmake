@@ -1,0 +1,122 @@
+#!/usr/bin/icmake -t.
+
+#define VERSION     "1.06.01"
+#define YEAR        "1994--2016"
+
+int debug;
+string progname;
+string xdev;
+
+void kill(string s)
+{
+    printf(s, "\n\n");
+    exit(1);
+}
+
+string backslash_wild(string spec)
+{
+    string s;
+    string ret;
+
+    for (int index = 0; s = element(index, spec); index++)
+    {
+        if (s == "*" || s == "?")           // wildcard specifiers ?
+            ret += "\\";                    // protect the wildcard spec.
+        ret += s;
+    }
+    return ret;                           // return the protected string
+}
+
+void preamble(list argv)
+{                                         
+    progname = get_base(element(0, argv));  // determine progname without .bim
+    xdev = "-xdev";                         // no X-device find
+    echo(OFF);                              // no display of the exec-ed cmnd
+}
+
+void option(string arg)
+{
+    string optchar;
+                                            // process all option characters
+    for (int index = 1; optchar = arg[index]; ++index)
+    {
+        if (optchar == "x")                 // X-dev ok ?
+            xdev == "";                     // set appropriate flag
+        else if (optchar == "d")            // debug request
+            debug++;                        // set flag
+        else                                // kill DS if optchar not found
+            kill("Unrecognized option: '-" + optchar);
+    }
+}
+
+list options(int argc, list argv)
+{
+    list new;
+
+    for (int index = 0; index != argc; ++index)  // all cmd line arguments
+    {
+        string arg = element(index, argv);         // get next element
+        if (element(0, arg) == "-")         // found an option ?
+            option(arg);                    // then process it
+        else
+            new += (list)arg;               // else add to the returnlist
+    }
+    return new;                           // return argv-list without options
+}
+
+void usage()
+{
+    printf
+    (
+        "\n"
+        "DS (Disk Search). Version " VERSION "\n"
+        "Copyright (c) GPL " YEAR ". All Rights Reserved\n"
+        "\n"
+        "DS by Frank B. Brokken\n"
+        "\n"
+        "Usage: ", progname, " [options] [dir-spec] file\n"
+        "Where:\n"
+        "   options:\n"
+        "       -d: Display rather than execute the search command\n"
+        "       -x: Allow cross-device searches\n"
+        "   dir-spec:   specification of the directory where the search is to\n"
+        "               be started. By default: / (the root).\n"
+        "   file: name of file to search.\n"
+        "\n"
+        "For the 'file' argument quoted wildcards (e.g., ds '*.local') are ok.\n"
+        "\n"
+    );
+    exit(0);
+}
+
+void process(int argc, list argv)
+{
+    string startdir = argc == 2 ?       // a file given as argument
+                        "/"             // start at the root
+                    :
+                        argv[1];        // otherwise start at specified dir
+
+                                            // protect wildcards in the
+                                            // filespecification with \-char
+    string filespec = backslash_wild(element(argc - 1, argv));
+    
+    string cmd = "find " + startdir + " " + xdev + " -name " + filespec + 
+                                            " 2>/dev/null"; 
+
+    if (!debug)
+        system(P_NOCHECK, cmd);
+    else
+        printf(cmd, "\n");
+}
+
+void main(int argc, list argv)
+{
+    preamble(argv);                         // preamble: determine progname etc.
+    argv = options(argc, argv);             // process options
+    argc = listlen(argv);
+
+    if (argc == 1)                          // no arguments ?
+        usage();                            // give help
+    
+    process(argc, argv);                    // else process arguments
+}

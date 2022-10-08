@@ -1,0 +1,6 @@
+//#define XERR
+#include "functions.ih"
+
+Functions::
+{
+}

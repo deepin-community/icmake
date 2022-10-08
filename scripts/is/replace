@@ -1,0 +1,48 @@
+int replace(string target)
+{
+    while (g_askReplace)
+    {
+        printf("`", target, "' exists.\n"
+               "Replace [?akNqy] ? ");
+        string answer = getch();
+        printf('\n');
+
+        if (answer == "a")
+        {
+            g_replace = 1;
+            g_askReplace = 0;
+            break;
+        }
+
+        if (answer == "k")
+        {
+            g_askReplace = 0;
+            g_modIcmconf = 0;
+            break;
+        }
+
+        if (answer == "y")
+            return 1;
+
+        if (answer == "q")
+            exit(0);
+
+        if (answer == "n" || answer == "\n")
+        {
+            if (target == "icmconf")
+                g_modIcmconf = 0;
+            return 0;
+        }
+
+        // ? or something else requested
+        printf("Press `a' : replace ", target, " and ALL remaining files,\n"
+               "      `k' : KEEP ", target, " and all remaining files\n"
+               "      `n' : (or press Enter) do NOT replace ", target, 
+                                                                " (default)\n"
+               "      `q' : QUIT (do NOT replace ", target, 
+                                                ", and END icmstart NOW)\n"
+               "      'y' : REPLACE ", target, "\n"
+               "      `?' : show this help\n");
+    }
+    return g_replace;
+}

@@ -1,0 +1,115 @@
+Polymorphic semantic types are
+
+    EXPRPTR:    Expr *;
+    SIZE_T:     size_t; 
+    STMNTPTR:   Statement *;
+    STRING:     std::string;
+
+
+UPtrExpr is std::unique_ptr<Expr>
+
+
+The grammar expects >= variable or function definitions (defVarOrFun)
+
+syntaxX rules are all defined in the inc/syntax file. They preset the Error
+message to the next error if it is encountered following successfully parsing
+a rule. E.g., 
+            syntaxExpression:
+            {
+                Error::set(Error::EXPRESSION);
+            }
+
+
+d_lastType holds the last received type specification. 
+
+
+defVarOrFun:    
+
+    either a variable definition (varsDef) or a function definition
+    (functionDef).
+
+    this rule merely defines, and returns nothing
+
+varsDef:
+
+    varType varsDefList ';'
+
+    returns an Expr * (EXPRPTR)
+
+functionDef:
+
+    this rule merely defines, and returns nothing
+
+
+varType:
+
+    assigns d_lastType.
+
+    returns the corresponding INT, STRINGTYPE or LIST token.
+
+varsDefList:
+
+    initializes an Args object with the number and if provided intialization
+    values of a list of variables. If an initialization (var = expr) was
+    provided for a global variable then the initialization is stored in the
+    Symtab's global intialization vector s_initialization.
+
+functionDef:
+    
+functionDef:
+
+    fdHead_  openCurly  statements  closeCurly
+    {
+        completeFunction($3);
+    }
+
+    defines a function. 
+        * the symbol table starts the next level of var. defs.
+        * comma separated 'type params' are stored
+        * the function is defined by Function::functionHead
+        * all statements (including local var. defs.) are collected
+        * the function is completed by adding the statements' code.
+            (completeFunction: Function.complete(), Symtab resets to only
+             global variables)
+
+statements:
+
+statements:
+    statements  statement
+    {
+        $$ = pushStatement($1, $2);
+    }
+|
+    {
+        $$ = new CompoundStatement{};
+    }
+;
+
+    statements are statement sequences embedded in a compound statement 
+
+    CompoundStatement:
+        a compound statement contains a vector of statements, and a bool
+        d_aceept which is set to false once a statement is a
+        return/break/continue, whereafter additional stmnts are no longer
+        added to the compound stmnt
+
+    The CompundStatement is derived from Statement, and is not the same as the
+    syntax rule 'statementCompound'
+
+returnStatement:
+    
+    retLeave_  syntaxExpression  retExpr_
+    {
+        $$ = semicolAfter(new ReturnStatement{ $1, $3 });
+    }
+
+    retLeave_ returns an expression or a NullExpr for e_void: a plain
+    return; returns e_void, other expressions return the type of the
+    expression (int, string, list)
+
+    'semicolAfter' returns the statement received as argument and sets Error
+    to SEMICOL: a ; must follow next.
+
+
+
+

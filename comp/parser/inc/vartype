@@ -1,0 +1,20 @@
+varType_:
+    INT
+    {
+        d_type = e_int;
+    }
+|
+    STRINGTYPE
+    {
+        d_type = e_str;
+    }
+|
+    LIST
+    {
+        d_type = e_list;
+    }
+;
+
+varType:
+    varType_ syntaxIdentifier
+;

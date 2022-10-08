@@ -1,0 +1,29 @@
+#include "handler.h"
+#include "../../xerr/xerr.ih"
+
+#include <iostream>
+#include <filesystem>
+
+#include <bobcat/stat>
+#include <bobcat/exception>
+#include <bobcat/tempstream>
+
+#include "../../tmp/INSTALL.im"
+
+#include "../splitter/splitter.h"
+
+using namespace std;
+using namespace FBB;
+using namespace filesystem;
+
+inline void Handler::setPreOptions()
+{
+    d_preOptions = range(d_splitter.preProcess(), d_splitter.execute());
+}
+
+inline void Handler::setExecOptions()
+{
+    d_execOptions = range(d_splitter.execute(), d_splitter.preProcess());
+}
+
+

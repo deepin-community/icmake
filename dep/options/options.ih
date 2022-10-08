@@ -1,0 +1,15 @@
+#include "options.h"
+
+#include <algorithm>
+
+#include <bobcat/exception>
+#include <bobcat/pattern>
+
+#include "../../xerr/xerr.ih"
+#include "../../support/as/as.h"
+#include "../../support/tools/tools.h"
+
+#include "../log/log.h"
+
+using namespace std;
+using namespace FBB;

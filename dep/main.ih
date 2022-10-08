@@ -1,0 +1,20 @@
+#include <iostream>
+#include <string>
+#include <exception>
+
+#include <bobcat/arg> 
+#include <bobcat/log>
+
+#include "../support/tools/tools.h"
+
+#include "action/action.h"
+#include "options/options.h"
+#include "dependencies/dependencies.h"
+#include "../xerr/xerr.ih"
+
+using namespace std;
+using namespace FBB;
+
+void copyright(string const &progname);
+void usage(string const &progname);
+

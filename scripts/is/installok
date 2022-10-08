@@ -1,0 +1,4 @@
+int installOK(string dest, string target)
+{
+    return !exists(target) || replace(dest);
+}

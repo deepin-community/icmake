@@ -1,0 +1,79 @@
+%filenames scanner
+
+//%debug
+
+%x string comment directive
+
+ident   [[:alpha:]_][[:alnum:]_]*   
+s       [ \t]
+S       [^ \t\n]
+n       {s}*("//".*)?\n
+                                   // blanks, maybe ending in EOLN comment,
+                                   // plus a newline
+
+
+%%
+
+^{s}*"#!".*         // ignore #! specs at line begin
+
+                    // comment, starting on a line is ignored
+^{s}*"/*"           begin(StartCondition_::comment);
+
+
+{s}*"/*"            {   // in-text comment becomes 1 space char
+                        insert(' ');
+                        begin(StartCondition_::comment);
+                    }
+
+<comment>{                          // ignore comment content
+    "*/"{s}*        begin(StartCondition_::INITIAL);
+    .       
+    \n              
+}
+
+\"                  startString();
+
+{ident}             ident();    // in text: replace #defined idents' meanings
+
+<string>{
+    \"              endString();
+
+    \\.     |
+    .               activeInsert(); // append all chars to strings
+
+    \\\n    |                       // no line continuations or \n in strings
+    \n              invalidString();
+}
+
+^{s}*#define{s}+{ident}{s}*     defineDirective();
+^{s}*#else                      elseDirective();
+^{s}*#endif                     endifDirective(); 
+^{s}*#ifdef{s}+{ident}{s}*      ifdefDirective(); 
+^{s}*#ifndef{s}+{ident}{s}*     ifndefDirective();
+^{s}*#include{s}+["<]           includeDirective();
+^{s}*#undef{s}+{ident}{s}*      undefDirective(); 
+ 
+^{s}*#{S}*                      noDirective(); 
+
+<directive>{
+    .               addBuffer(matched()[0]);        // store the char
+
+    \\\n            addBuffer(' ');                 // store ' ' at line 
+                                                    // continuation
+    {n}             endDirective();
+}
+
+
+^{s}+                               // ignore initial blanks on lines
+
+{s}+                |                       // embedded blanks -> one space
+.                   insert(matched()[0]);   // process single characters
+
+{n}                 insert('\n');
+
+<<EOF>>             atEOF();
+
+
+
+
+

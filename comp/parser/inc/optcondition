@@ -1,0 +1,7 @@
+optCondition:
+    condition
+|
+    {
+        $$ = SemVal{ e_int | e_const, 1 };
+    }
+;

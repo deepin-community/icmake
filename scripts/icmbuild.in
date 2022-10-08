@@ -1,0 +1,100 @@
+#include "icmconf"
+
+#ifndef USE_ECHO
+#define USE_ECHO ON
+#endif
+
+#ifdef USE_VERSION
+#include "VERSION"
+#else
+#define VERSION "0.01.00"
+#endif
+
+#ifndef ICM_DEP
+#define ICM_DEP     "-V go"
+#endif
+
+list    g_classes;      // all class-directories
+
+int     g_nClasses;     // number of class-directories
+list    g_classLines;   // list of all lines in CLASSES
+list    g_classLine;    // line of the CLASSES file
+
+string  g_mainBase;     // basename of MAIN if a program is built. 
+                        // this becomes the name of the .gch file in the
+                        // base directory. It is not used with library
+                        // constructions.
+
+#define _c          0   // option values
+#define _s          1
+#define _h          2
+list    g_options = ["-c", "-s", "-h"];
+int     g_option;       // specified option
+
+#define _notFound   -1
+    // command to execute see also function getCommand below.
+#define _clean      0
+#define _cleanTmp   1
+#define _cleanGch   2
+#define _install    3
+#define _library    4
+#define _program    5
+list    g_commands = ["clean", "cleantmp", "cleangch", "install", 
+                      "library", "program"];
+int     g_command;      // specified command   
+
+#define _iProgram   0
+#define _iStatic    1
+#define _iShared    2
+list g_installArgs = ["program", "static", "shared" ];
+int  g_installType;  
+string  g_installDest;  // path to install compiled products in
+
+int     g_compiled;     // set to 1 if at least one source was compiled
+                        // (used by REFRESH to relink the program)
+
+string  g_version = VERSION;
+string  g_compiler;
+string  g_cwd = chdir("");              // initial working directory
+string  g_gchDir = TMP_DIR + "/gch";    // storage of .gch files
+
+#include "ib/md"
+#include "ib/showcd"
+#include "ib/setopt"
+#include "ib/setgcompiler"
+#ifdef PARSER_DIR
+#include "ib/checkgrammar"
+#endif
+#ifdef SCANNER_DIR
+#include "ib/checklexer"
+#endif
+#include "ib/setclasses"
+#ifdef USE_ALL
+#include "ib/cleanuseall"
+#endif
+#include "ib/cleanprecomp"
+#include "ib/cleantmp"
+#include "ib/clean"    
+// #include "ib/stripshared"
+#include "ib/install"
+#include "ib/inspect"
+#include "ib/compileall"
+#ifdef LIBRARY
+#include "ib/staticlibrary"
+#ifdef SHARED
+#include "ib/sharedlibrary"
+#endif
+#endif
+#ifdef PRECOMP
+#include "ib/loadprecompile"
+#include "ib/precompileheaders"
+#endif
+#include "ib/librarypreamble"
+#include "ib/buildlibraries"
+#include "ib/link"
+#include "ib/program"
+#include "ib/getcommand"
+#ifdef PRECOMP
+#include "ib/storegch"
+#endif
+#include "ib/main"

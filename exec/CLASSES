@@ -1,0 +1,9 @@
+cpu
+builtin
+stack
+global
+variable
+int
+string
+list
+varbase

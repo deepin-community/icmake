@@ -1,0 +1,25 @@
+void usage()
+{
+    printf("Usage: ", g_program, " [Options] dir [program|library]\n"
+        "Where:\n"
+        "   Options:\n"
+        "     -b: basic: the files usage.cc and version.cc are not "
+                                                                "installed\n"
+        "     -c confpath: Use the configuration files (icmstart.rc, "
+                                                                "AUTHOR,\n"
+        "                  VERSION, YEARS found in `confpath' rather than\n"
+        "                  if found in $HOME/.icmake or @CONFDIR@\n"
+        "     -d: debug: do not execute any commands, but show commands\n"
+        "         that would have been executed\n"
+        "     -I: do NOT install any files.\n"
+        "     -r: replace existing files/directories\n"
+        "     -s skelPath: Read the skeleton information from the directory\n"
+        "                  `skelPath' rather than /usr/share/icmake\n"
+        "   dir: the directory to install the files into\n"
+        "   program, library: command passed by default to the icmbuild "
+                                                                    "script\n"
+        "\n");
+
+    exit(0);
+}
+

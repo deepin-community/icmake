@@ -1,0 +1,20 @@
+_voidtype:
+    VOID
+    {
+        d_type = e_void;
+    }
+;
+
+
+_definition:
+    varType globalVars ';'
+|
+    varType functionDef
+|
+    _voidtype functionDef
+;
+
+
+defVarOrFun:
+    _definition syntaxTypename
+;

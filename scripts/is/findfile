@@ -1,0 +1,18 @@
+string findFile(string file)                // find a file in -c, HOME or
+{                                           // CONFDIR
+    string ret;
+
+    if (g_confPath != "")                   // locate file in -c path
+        ret = findIn(g_confPath, file);
+
+    if (!ret)                               // not found, locate in $HOME
+        ret = findIn(g_home, file);
+
+    if (!ret)                               // not found, locate in CONFDIR
+        ret = findIn("/etc/icmake", file);
+
+    if (!isFile(ret))
+        quit("Can't find configuration file `" + file + "'");
+    
+    return ret;
+}

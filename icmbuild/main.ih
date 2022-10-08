@@ -1,0 +1,14 @@
+#include <iostream>
+#include <string>
+#include <algorithm>
+
+#include <bobcat/process>
+
+#include "../support/tools/tools.h"
+#include "../xerr/xerr.ih"
+
+using namespace std;
+using namespace FBB;
+
+void usage(string argv0);
+

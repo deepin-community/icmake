@@ -1,0 +1,18 @@
+void install_version()
+{
+    if (!g_version)                 // with -b: don't install VERSION
+        return;
+
+    string str = g_destPath + "VERSION";
+
+    if (installOK("VERSION", str))  // install new VERSION or replace old
+    {
+        system(P_NOCHECK, "rm -f " + str);
+        version_field("AUTHOR",  "");
+        version_field("VERSION", "0.00.00");
+
+        str = "date '+%Y'";
+        str = `str`[0];
+        version_field("YEARS", resize(str, strlen(str) - 1));
+    }
+}

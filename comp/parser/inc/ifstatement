@@ -1,0 +1,51 @@
+if_:
+    IF
+    {
+        push();
+    }
+;
+
+ifElse_:
+    ELSE
+    {
+        semValPopPush();
+    }
+;
+
+ifStatementElse_:
+    ifElse_ statement
+    {
+        $$ = move($2);
+    }
+|
+    {
+        $$ = SemVal{};
+    }
+;
+
+ifCond_:
+    condition
+    {
+        $$ = Args{ $1 };
+    }
+|
+    ';' condition
+    {
+        $$ = Args{ $2 };
+    }
+|
+    flowInit ';' condition
+    {
+        $$ = move($1.add($3));  // $$ contains "if ('init'; cond)" 
+                                // initialization list + the condition as
+                                // final Args element.
+    }
+;
+
+ifStatement:      //  condition: $4, statement: $8, ifStatementElse: $9
+    if_ '(' syntaxExpression ifCond_ syntaxCloseParen ')' syntaxExpression
+        statement ifStatementElse_
+    {
+        $$ = ifStmnt($4, $8, $9);       // also does d_dymtab.pop()
+    }
+;

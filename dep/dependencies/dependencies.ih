@@ -1,0 +1,23 @@
+#include "dependencies.h"
+
+#include <fstream>
+#include <sstream>
+#include <algorithm>
+#include <iomanip>
+//#include <filesystem>
+
+#include <bobcat/pattern>
+#include <bobcat/stat>
+#include <bobcat/exception>
+
+#include "../../xerr/xerr.ih"
+#include "../../support/tools/tools.h"
+
+#include "../findidx/findidx.h"
+#include "../options/options.h"
+#include "../log/log.h"
+
+using namespace std;
+using namespace FBB;
+
+

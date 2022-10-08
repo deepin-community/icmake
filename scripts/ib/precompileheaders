@@ -1,0 +1,54 @@
+void precompile(string class)
+{
+    string classIH = class + IH;
+
+    if (!exists(classIH))
+    {
+        printf << "[Warning] directory " << class << " has no `" <<
+                  classIH << "' file: maybe remove `" << class << 
+                  "' from CLASSES?\n";
+        return;
+    }
+
+    string classGch = classIH + ".gch";
+
+        // if a directory listed in CLASSES has no sources,
+        // then it doesn't need a .gch file: to satisfy icm-dep
+        // a fake .gch file is created
+    if (listlen(makelist(SOURCES)) == 0)
+    {
+        #ifndef NO_PRECOMP_WARNING
+            if (classGch older classIH)
+                printf << "[Warning] no sources in " << class <<
+                          ": header not precompiled\n";
+        #endif
+        echo(0);
+        system("touch " + classGch);
+        echo(USE_ECHO);
+        return;
+    }
+
+        // if the current gch file is older than the IH file then renew
+        // the gch file
+    if (classGch older classIH)
+        system(g_compiler + " " PRECOMP " " + classIH);
+}
+
+void precompileHeaders(list classes)
+{
+    for (int idx = listlen(g_classes); idx--; )
+    {
+        string class = g_classes[idx];
+
+        chdir(class);
+        precompile(class);        
+        chdir(g_cwd);
+    }
+    
+    #ifdef MAIN                     // if a main source file exists
+        precompile(g_mainBase);     // then precompile main.ih
+    #endif
+}
+
+
+

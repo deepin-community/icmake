@@ -1,0 +1,8 @@
+                                // return the absolute canonicalized path,
+string absPath(string arg)      // either as-is or wrt the original CWD
+{                               // it ends in a slash
+    if (arg[0] != "/")
+        arg = g_cwd + arg;
+
+    return readlink(arg) + "/";
+}

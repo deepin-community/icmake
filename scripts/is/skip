@@ -1,0 +1,19 @@
+        // ignore 'P' for library construction, 
+        // ignore 'L' for program construction
+        // do not ignore the 'D' specificied entries
+int skip(string flags)
+{
+    return
+        (int)
+        (                                       // returns 1 (true) if:
+            g_basic && strchr(flags, "b") != -1   // basic requested, but
+            ||                                      // no basic flag 
+            strchr(flags, "D") == -1          // not a default entry
+            &&                                  // and also
+            (                                   // library, but a P-entry
+                g_defaultCommandArg == "library" && strchr(flags, "P") != -1
+                ||                              // of program and a L-entry
+                g_defaultCommandArg == "program" && strchr(flags, "L") != -1
+            )
+        );
+}

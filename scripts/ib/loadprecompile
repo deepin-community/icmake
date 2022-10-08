@@ -1,0 +1,31 @@
+void loadClass(string class)
+{
+    string classIH = class + IH;
+    string classGch = classIH + ".gch";
+    string storedGch = g_cwd + g_gchDir + '/' + classGch;
+
+        // if the gch file doesn't exist but the gch file in gchDir does
+        // then mv the gchDir file to the current directory
+    if (!exists(classGch) && exists(storedGch))
+    {
+        echo(OFF);
+        system("mv " + storedGch + " .");
+        echo(USE_ECHO);
+    }
+}
+
+void loadPrecompile(list classes)
+{
+    for (int idx = listlen(g_classes); idx--; )
+    {
+        string class = g_classes[idx];
+
+        chdir(class);
+        loadClass(class);        
+        chdir(g_cwd);
+    }
+
+    #ifdef MAIN
+        loadClass(g_mainBase);          // load the main.ih.gch file
+    #endif
+}

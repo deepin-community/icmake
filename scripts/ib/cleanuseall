@@ -1,0 +1,7 @@
+void cleanUseAll()
+{
+    chdir(g_cwd);
+    echo(OFF);
+    exec("find ./ -name " + USE_ALL + " -exec rm '{}' \\;");
+    echo(USE_ECHO);
+}

@@ -1,0 +1,53 @@
+syntaxCloseParen:
+    {
+        Error::set(Error::CLOSEPAREN);
+    }
+;
+
+syntaxCommaOrSemicol:
+    {
+        Error::set(Error::COMMA_OR_SEMICOL);
+    }
+;
+
+syntaxCommaOrCloseparen:
+    {
+        Error::set(Error::COMMA_OR_CLOSEPAREN);
+    }
+;
+
+syntaxExpression:
+    {
+        Error::set(Error::EXPRESSION);
+    }
+;
+
+syntaxIdentifier:
+    {
+        Error::set(Error::IDENTIFIER);
+    }
+;
+
+syntaxInit:
+    {
+        Error::set(Error::INIT);
+    }
+;
+
+syntaxOpenCurly:
+    {
+        Error::set(Error::OPENCURLY);
+    }
+;
+
+syntaxSemicol:
+    {
+        Error::set(Error::SEMICOL);
+    }
+;
+
+syntaxTypename:
+    {
+        Error::set(Error::TYPENAME);
+    }
+;

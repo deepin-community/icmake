@@ -1,0 +1,17 @@
+#include "scanner.h"
+
+#include <bobcat/string>
+#include <bobcat/mstream>
+
+#include "../../xerr/xerr.ih"
+
+#include "../tokens/tokens.h"
+#include "../opcode/opcode.h"
+
+using namespace std;
+using namespace FBB;
+
+// end of scanner.ih
+
+
+

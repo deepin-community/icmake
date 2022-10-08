@@ -1,0 +1,34 @@
+changelog       overview of changes at new releases    
+
+INSTALL         description of the installation process    
+INSTALL.im      definitions of pathnames used by icmake
+QUICKINSTALL    short description of required steps to install icmake
+VERSION         latest icmake version and year
+
+build           build-script that can be used once icmake has been installed
+icm_bootstrap   bootstrap script to prepare icmake installation
+icm_gitlab      internal use only
+icm_install     installation script     
+icm_prepare     script installing path-definitions: also called by 
+                icm_bootstrap
+
+doc/            documentation and man-pages (including Yodl manpage sources)
+comp/           sources of the icm-comp icmake compiler    
+dep/            sources of the icm-dep dependency inspecting program
+exec/           sources of the icm-exec interpreter
+pp/             sources of the icm-pp preprocessor
+icmake/         sources of the icmake shell program
+un/             sources of the icmun unassembler
+support/        sources of functions shared by the icmake programs
+
+scripts/        scripts used to build icmake, source texts of icm* scripts
+legacy/         legacy files
+examples/       various examples of icmake scripts
+
+usr/            default skeletons in share/icmake
+etc/            icmake/ contains default icmstart.rc, VERSION, AUTHOR, YEARS
+
+iuo/            internal use only: files used by my when working towards the
+                next release 
+
+where-is-what   this file

@@ -1,0 +1,9 @@
+list shift(list lst)        // return a list without lst's first element
+{                           // (lst should not be empty)
+    list ret;
+
+    for (int idx = 1, end = listlen(lst); idx != end; ++idx)
+        ret += (list)lst[idx];
+
+    return ret;
+}

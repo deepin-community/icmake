@@ -1,0 +1,157 @@
+.TH "icmstart\&.rc" "7" "1992\-2021" "icmake\&.10\&.01\&.01" "icmstart resource file"
+
+.PP 
+.SH "NAME"
+icmstart\&.rc \- The icmstart(1) resource file
+.PP 
+.SH "DESCRIPTION"
+
+.PP 
+The \fBicmstart\&.rc\fP file specifies files that are installed by
+\fBicmstart\fP(1)\&.
+.PP 
+A default \fBicmstart\&.rc\fP is found in \fI/etc/icmake/icmstart\&.rc\fP, but if 
+\fI$HOME/\&.icmake/icmstart\&.rc\fP exists then the latter file is used by
+\fBicmstart\fP(1)\&. \fI$HOME/\&.icmake/icmstart\&.rc\fP in turn is overruled by
+specifying a \fI\-c\fP option when invoking \fBicmstart\fP(1)\&.
+.PP 
+The default resource file contains the following specifications, preparing for
+the construction of a \fBC++\fP program using \fBicmbuild\fP(1):
+.nf 
+
+    CLASSES
+    icmconf
+    P main\&.cc 
+    P main\&.ih 
+    P usage\&.cc
+    P version\&.cc
+    P ? scanner 
+    P ? parser  
+        
+.fi 
+The \fIicmstart\&.rc\fP file may contain:
+.IP o 
+empty lines, which are ignored;
+.IP 
+.IP o 
+lines beginning with a hash\-character (\fI#\fP), also ignored;
+.IP 
+.IP o 
+an optional installation mode followed by a source\-destination
+specification\&. 
+
+.PP 
+.SH "INSTALLATION MODE"
+
+.PP 
+An installation mode consists of a combination of:
+.IP o 
+either a \fIP\fP (don\(cq\&t install with \fIicmstart xxx library\fP) or an
+\fIL\fP (don\(cq\&t install with \fIicmstart xxx program\fP);
+.IP 
+.IP o 
+a \fID\fP, indicating that the source must also be installed by
+default, i\&.e\&., if neither `program\(cq\& or `library\(cq\& was specified as
+second argument;
+.IP 
+.IP o 
+a \fIb\fP, indicating that the file must \fInot\fP be installed if the
+\fI\-b\fP (basic installation) option was specified when calling
+\fIicmstart\fP;
+.IP 
+.IP o 
+Following the optional \fI P, L, D,\fP or \fIb\fP character a space
+delimited optional \fI?\fP may be specified\&. If specified the
+installation of the file or directory must be confirmed by the user\&.
+
+.PP 
+.SH "SOURCE\-DESTINATION SPECIFICATIONS"
+
+.PP 
+The following source\-destination specifications can be used in an
+\fIicmstart\&.rc\fP file (using \fIskeletons\fP below to refer to \fIicmstart\(cq\&s\fP
+skeleton files directory):
+.IP o 
+\fIsource\fP
+.br 
+a file named \fIsource\fP must exist in \fIskeletons\fP\&. It is installed in
+the destination directory \fI`dest\(cq\&\fP that\(cq\&s specified when calling
+\fBicmstart\fP(1)\&. Example: 
+.nf 
+
+    CLASSES     
+        
+.fi 
+\fIskeletons/CLASSES\fP is installed as \fIdest/CLASSES\fP;
+.IP 
+.IP o 
+\fIpathspec\fP
+.br 
+if `pathspec\(cq\& does not begin with a slash it must exist in
+\fIskeletons\fP\&.  It is installed as `pathspec\(cq\& in the destination
+directory specified when calling \fBicmstart\fP(1)\&. Example:
+.nf 
+
+    dir/file
+        
+.fi 
+\fIskeletons/file\fP is installed as \fIdest/dir/file\fP;
+.IP 
+.IP o 
+\fI/pathspec\fP or \fI~/pathspec\fP
+.br 
+the \fI~\fP\-character is expanded to the user\(cq\&s home directory\&. The
+pathspec\(cq\&s final element is installed in the destination directory
+specified when calling \fBicmstart\fP(1)\&. Example:
+.nf 
+
+    ~/\&.icmake/file
+        
+.fi 
+\fI$HOME/\&.icmake/file\fP is installed as \fIdest/file\fP
+
+.PP 
+When the above source specifications are followed by a destination
+specification \fIdestspec\fP (a file or non\-absolute directory specification)
+then the source specification is installed as dest/destspec) below the
+destination directory specified when calling \fBicmstart\fP(1)\&. Examples:
+.nf 
+
+    CLASSES CLASSES             # skeletons/CLASSES is installed as 
+                                #   dest/CLASSES
+    dir/file dir/file           # skeletons/dir/file is installed as
+                                #   dest/dir/file
+    ~/\&.icmake/file \&.icmake/file # $HOME/\&.icmake/file is installed as 
+                                #   dest/\&.icmake/file
+        
+.fi 
+Icmstart converts destination specifications to absolute paths\&. If these
+absolute paths do not begin with \fIdest\(cq\&s\fP absolute path then an error
+message is displayed and \fBicmstart\fP ends\&.
+.PP 
+.SH "FILES"
+The mentioned paths are sugestive only and may be installation dependent:
+.IP o 
+\fB/usr/share/icmake/icmconf\fP:
+example of an \fBicmbuild\fP configuration file;
+.IP o 
+\fB/usr/share/icmake/CLASSES\fP:
+example of an \fBicmbuild\fP \fICLASSES\fP file;
+.IP o 
+\fB/usr/share/icmake/icmstart\&.rc\fP:
+default skeleton resource file\&.
+
+.PP 
+.SH "SEE ALSO"
+\fBicmake\fP(1), \fBicmbuild\fP(1), \fBicmconf\fP(7), \fBicmstart\fP(1)
+.PP 
+.SH "BUGS"
+None reported
+.PP 
+.SH "COPYRIGHT"
+This is free software, distributed under the terms of the 
+GNU General Public License (GPL)\&.
+.PP 
+.SH "AUTHOR"
+Frank B\&. Brokken (\fBf\&.b\&.brokken@rug\&.nl\fP)\&.
+.PP 

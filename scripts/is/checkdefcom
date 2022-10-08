@@ -1,0 +1,23 @@
+void checkDEFCOM()
+{
+    if (g_modIcmconf == 0)              // no icmconf modification requested
+        return;
+                                        // write a default command if
+    if (g_defaultCommand != "")        // if provided as last arg.
+        fprintf(g_icmconf, g_defaultCommand);
+
+                                        // for libraries: uncomment the
+                                        // #define LIBRARY spec, and
+                                        // comment out #define MAIN
+                    // the %% sequences are replaced by // by 'catim'
+    if (strfind(g_defaultCommand, "library") != -1)
+        syscall("sed -i '\n"
+            "s?^%%\\(#define LIBRARY\\)?\\1?\n"
+            "s?^\\(#define MAIN\\)?%%\\1?\n"
+            "' " + g_icmconf);
+
+    if (!g_version)                     // uncomment
+        syscall("sed -i '\n"            // #define USE_VERSION
+                "s?^\\(#define USE_VERSION\\)?%%\\1?\n"
+            "' " + g_icmconf);
+}

@@ -1,0 +1,5 @@
+void md(string dir)
+{
+    if (!exists(dir))
+        system("mkdir -p " + dir);
+}

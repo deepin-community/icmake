@@ -1,0 +1,174 @@
+INSTALLING ICMAKE
+=================
+
+                          Version 10.00.00 (and beyond).
+
+1. Unpack the archive:
+======================
+
+The installation files for Icmake comes as an archive, e.g.,
+"icmake_10.00.00.tar.gz". These archives unpack to several directories and
+files.
+
+The archive unpacks to a directory icmake-10.00.00 below the current
+directory. The version number in this directory may change to newer release
+versions.
+
+So, if you unpack icmake_10.00.00.tar.gz (or later versions) in the directory
+/usr/local/src, a directory /usr/local/src/icmake/icmake-10.00.00 is created, as
+well as other subdirectories below /usr/local/src/icmake/icmake-10.00.00
+
+To unpack the archives, create an appropriate directory (e.g.,
+`/usr/local/src/icmake' E.g,
+
+                         tar xvzf icmake_10.00.00.tar.gz
+
+The extraction of files from the archive should yield a lot of C source files
+in various directories. Icmake's default distribution does not contain
+makefiles for the Unix-utility `make' anymore.
+
+
+2. Compile the programs
+=======================
+
+Change to the directory into which the sources were unpacked. E.g., do
+
+                                cd icmake-10.00.00
+
+This directory should contain this file (i.e., INSTALL). Icmake uses several
+support programs, which do not have to be stored in the PATH
+diretories. Before starting the compilation, make sure their locations are
+in accordance with your local requirements:
+
+    - Inspect (and optionally modify) the path-settings in INSTALL.im.
+In particular check:
+
+    #define BINDIR      "usr/bin"
+    #define SKELDIR     "usr/share/icmake"
+    #define MANDIR      "usr/share/man"
+    #define LIBDIR      "usr/lib/icmake"
+    #define CONFDIR     "etc/icmake"
+    #define DOCDIR      "usr/share/doc/icmake"
+    #define DOCDOCDIR   "usr/share/doc/icmake-doc"
+
+    These locations are all are relative to a specifiable base-directory.
+    Meaning:
+
+        BINDIR      the binary programs and scripts
+        SKELDIR     the icmstart-script skeleton files
+        MANDIR      the base directory of man-pages (under MANDIR/man1 and
+                    MANDIR/man2) 
+        LIBDIR      icmake's support programs
+        CONFDIR     the system-wide configuration files (AUTHOR, VERSION, 
+                    icmstart.rc)
+        DOCDIR      various doc-files (e.g., changelog)
+        DOCDOCDIR   more extensive documentation (icmake.ps, examples)
+
+
+    - Inspect (and optionally modify) the availability of the program
+mentioned in ./def/programs (they should be available on any Unix(like)
+systems). 
+
+
+    - Prepare for the program construction by running the shell-script
+        `icm_prepare' as follows: 
+
+                            ./icm_prepare /
+
+      (this assumes that you want to prepend all base locations mentioned in
+INSTALL.im with /; other base locations are also possible, e.g., 
+        ./icm_prepare /tmp 
+prepares for installation of all files in the specified locations, all below
+/tmp.
+
+    - Next run the shell-script `icm_bootstrap' as follows:
+
+                            ./icm_bootstrap x
+
+This constructs the icmake files under the ./tmp directory, preparing for an
+installation under the directory specified at ./icm_prepare. It puts all
+icmake related files in
+    tmp/$BINDIR, tmp/$SKELDIR, tmp/$MANDIR, tmp/$LIBDIR, tmp/$CONFDIR,
+    tmp/$DOCDIR, tmp/$DOCDOCDIR
+
+NOTE:
+
+There have been reports about failing compilations of the file
+./icm-comp/lexer.c.  This is usually caused by incompatibilities between the
+existing lexer.c file and the lex(1) run-time library. These problems are
+commonly solved after running in the directory ./icm-comp the command
+
+        ./updatescanner
+
+
+3. Install the files
+====================
+
+    You probably must do this as `root':
+
+                            ./icm_install [strip] all
+
+    This installs all files under the root directory (which was initially
+specied when calling icm_bootstrap) When providing the strip arguments
+binaries will be stripped.
+
+    Note that by default unstripped binaries will be installed.
+    
+    Separate parts may be installed as well. E.g.,
+           ./icm_install [strip] progs / -  installs all executables
+           ./icm_install scripts /       -  installs the icmstart/icmbuild
+                                                     scripts 
+           ./icm_install man /           -  installs the man-pages
+           ./icm_install skel /          -  installs the skeletons
+           ./icm_install etc /           -  installs the default icmstart.rc
+                                                     related files
+           ./icm_install doc /           -  installs the docs
+           ./icm_install docdoc /        -  installs the extended docs and
+                                                 examples 
+
+4. Clean up the garbage
+=======================
+
+                        rm -rf tmp
+
+5. Predefined symbols
+=====================
+
+        Icmake does not require special modifications. However, you may wish
+to take a look at the file icm-pp/loadsymbols.c. In this file the function
+'loadSymbols()' of the preprocessor icm-pp is found. The preloaded symbols of
+Icmake are defined in this function. If you plan to use these predefined
+symbols in your Icmake scripts, make sure that the conditional code in the
+file pp/loadsym.c recognizes your platform.
+
+        If you are unsure whether this code recognizes your compiler, build
+Icmake as distributed and try out the sample icmake file examples/defines.im
+(i.e., say: "icmake examples/defines"). If the output of the makefile is
+not satisfatory, modify pp/loadsym.c. E.g., if your MegaC compiler defines the
+symbol MEGA_C, you might want to add the following lines to pp/loadsym.c:
+
+                        #ifdef MEGA_C
+                            preload("MEGA_C", "1");
+                        #else
+                            preload("MEGA_C", "0");
+                        #endif
+
+
+Currently the following symbols are predefined:
+
+        --------------------------------------------------------------
+        symbol          1 when defined on the platform ... otherwise 0
+        --------------------------------------------------------------
+        unix            Unix, usually with GNU's gcc compiler
+        UNIX            same
+        linux           '386 or '486 running Linux (usually with gcc)
+        LINUX           same
+        M_SYSV, M_UNIX  '386 or '486 running SCO/Unix (usually with
+                        Microsoft C)
+        _POSIX_SOURCE   Unix with Posix compliant compiler
+        __hpux          HP-UX, with the native HP compiler
+        --------------------------------------------------------------
+
+If you want to modify something here which hasn't been done before, please
+email me about it, and I'll include it in the standard distribution.
+

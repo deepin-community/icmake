@@ -1,0 +1,16 @@
+#include "bimheader.h"
+
+#include <fstream>
+#include <string>
+#include <filesystem>
+#include <tuple>
+
+#include "../../xerr/xerr.ih"
+
+#include "../tools/tools.h"
+
+using namespace std;
+using namespace FBB;
+
+#include "codeendoffset.f"
+

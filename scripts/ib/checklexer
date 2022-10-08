@@ -1,0 +1,37 @@
+void checkLexer()                               // check updating 'lexer'
+{
+    chdir(SCANNER_DIR);
+
+    #ifdef PARSER_DIR
+        int rerun = PARSER_DIR != "" && 
+                    "../"PARSER_DIR"/"PARSOUT  younger SCANOUT;
+    
+        if (!rerun)
+    {
+        list scanfiles = makelist(PARSSPEC) + makelist(SCANSPEC);
+    #else
+    int rerun = 0;
+    {
+        list scanfiles = makelist(SCANSPEC);
+    #endif
+
+        #ifdef SCANFILES
+            scanfiles += makelist(SCANFILES);
+        #endif
+    
+        for (int idx = listlen(scanfiles); idx--; )
+        {
+            if (scanfiles[idx]  younger SCANOUT)
+            {
+                showCd(SCANNER_DIR);
+                rerun = 1;
+                break;
+            }
+        }
+    }
+
+    if (rerun)
+        system(SCANGEN " " SCANFLAGS " " SCANSPEC);
+
+    chdir("..");
+}

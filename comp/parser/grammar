@@ -1,0 +1,86 @@
+//%default-actions quiet
+
+%filenames parser
+%scanner ../scanner/scanner.h
+
+//%debug
+
+// %print-tokens
+
+%token-path ../tokens/tokens.h
+
+%baseclass-preinclude "preinclude.h"
+
+%include inc/polymorphic
+
+%token BOOL BREAK CONTINUE ELSE EXIT FOR IDENTIFIER IF INT LIST NUMBER RETURN 
+       STRING STRINGTYPE VOID WHILE
+
+%right '=' MATH_IS
+
+%right '?' ':'
+
+%left OR
+
+%left AND
+
+%left '|'
+
+%left '^'
+
+%left '&'
+
+%left EQUALITY
+
+%left ORDER
+
+%left SHIFT
+
+%left '+' '-'
+
+%left MULTIPLY
+
+%right '!' '~' INCDEC
+ 
+%left '['
+ 
+// highest precedence
+ 
+%expect 1
+
+%%
+
+input:
+    input
+    defVarOrFun
+|
+    defVarOrFun
+;
+
+%include inc/syntax             //
+%include inc/opvalue            //
+%include inc/opencurly          //
+%include inc/closecurly         //
+%include inc/closeparenbreakok  
+%include inc/vartype            //
+%include inc/string             //
+%include inc/cast               //    
+%include inc/identifier         //
+%include inc/args               //
+%include inc/definevar          //
+%include inc/globalvars         //
+%include inc/localvars          //
+%include inc/expression         //
+%include inc/condition          //
+%include inc/optcondition       //
+%include inc/returnstatement    //
+%include inc/whilestatement
+%include inc/flowargs           //
+%include inc/flowinit           //
+%include inc/optinit            //
+%include inc/forstatement
+%include inc/ifstatement        //
+%include inc/statement          //
+%include inc/statements         //
+%include inc/functiondef        //
+%include inc/defvarorfun        //

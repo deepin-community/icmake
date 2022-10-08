@@ -1,0 +1,7 @@
+void syscall(string command)        // merely show the command with -d
+{
+    if (g_debug)
+        printf(command, '\n');
+    else
+        system(command);
+}

@@ -1,0 +1,57 @@
+%polymorphic 
+    STRING: std::string;
+    SEMVAL: SemVal;
+    ARGS:   Args;
+    TOKEN: Tokens::Tokens_;
+    OPCODE: Opcode::Byte;
+
+%type <STRING>  
+    identifier
+    string_
+
+%type <SEMVAL>
+    argsExpr
+    condition,
+    conditionVar_
+    defineVar_
+    defineVar
+    exprUnit_
+    exprStart_
+    expression
+    ifStatement
+    ifStatementElse_
+    localVars
+    optCondition
+    retExpr_
+    stAlt_
+    stBreak_
+    stCompound_
+    stContinue_
+    statement
+    statements
+    string
+    whileStatement    
+
+%type <ARGS>
+    argsOpt
+    argsNull
+    args
+    flowArgs        // size >= 1
+    flowInit        // size >= 1
+    flowInitDefs_
+    ifCond_         // last element is the condition
+    optInit
+    forOptInc_
+    
+%type <TOKEN>
+    cast
+    retLeave_
+
+%type <OPCODE>
+    opValue
+
+
+
+
+
+

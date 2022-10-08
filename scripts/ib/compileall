@@ -1,0 +1,53 @@
+
+void c_compile(int prefix, string destDir, string srcDir, list cfiles)
+{
+    showCd(srcDir);
+
+    if (srcDir != "")
+        srcDir += "/";
+
+    string compiler = g_compiler + " -c -o " + destDir + "/" + (string)prefix;
+
+    for (int idx = listlen(cfiles); idx--; )
+    {
+        string file = cfiles[idx];
+        system(compiler + change_ext(file, OBJ_EXT) + " " + srcDir + file);
+        g_compiled = 1;
+    }
+}
+
+void std_cpp(int ignoreMain, string destDir, 
+            int prefix, string srcDir, string library)
+{
+    chdir(g_cwd);
+                                                    // make list of all files
+    md(destDir);
+    chdir(srcDir);
+    list files = makelist(SOURCES);
+
+#ifdef MAIN
+    if (ignoreMain)
+        files -= (list)MAIN;
+#endif
+
+    chdir(g_cwd);
+
+    files = inspect(destDir, prefix, srcDir, files, library);  
+
+    if (listlen(files))
+        c_compile(prefix, destDir, srcDir, files);  // compile files
+}
+
+void compileAll(string libPath)
+{
+    g_compiled = 0;
+                                    // use abs. path so the library can 
+    libPath = g_cwd + TMP_DIR "/" + libPath;    // directly be located
+
+                                            // compile all source files
+    for (int idx = g_nClasses; idx--; )
+        std_cpp(0, TMP_DIR + "/o", idx + 1, g_classes[idx], libPath);
+        
+                                            // compile all files in g_cwd
+    std_cpp(1, TMP_DIR + "/o", 0, ".", libPath);  
+}

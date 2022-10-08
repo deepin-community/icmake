@@ -1,0 +1,19 @@
+#include <iostream>
+#include <string>
+#include <exception>
+
+#include <bobcat/arg> 
+
+#include "../support/tools/tools.h"
+
+#include "parser/parser.h"
+#include "generator/generator.h"
+
+#include "../xerr/xerr.ih"
+#include "../tmp/INSTALL.im"
+
+using namespace std;
+using namespace FBB;
+
+void usage(string const &progname);
+

@@ -1,0 +1,11 @@
+void static_library()
+{
+    chdir(TMP_DIR + "/o");
+
+    if (g_compiled)
+    {
+        system("ar cr ../lib" LIBRARY + ".a *" OBJ_EXT);
+        system("ranlib ../lib" LIBRARY + ".a");
+        system("rm *" OBJ_EXT);
+    }
+}

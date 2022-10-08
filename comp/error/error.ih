@@ -1,0 +1,10 @@
+#include "error.h"
+
+#include <string>
+#include <iostream>
+#include <fstream>
+
+using namespace std;
+
+extern string const &g_where;
+extern size_t const &g_lineNr;

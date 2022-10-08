@@ -1,0 +1,4 @@
+int isFileOrDir(string entry)
+{
+    return g_fileStat = (int)stat(P_NOCHECK, entry)[0] & (S_IFREG | S_IFDIR);
+}

@@ -1,0 +1,21 @@
+cast:
+    INT
+    {
+        $$ = Tokens::INT;
+    }
+|
+    LIST
+    {
+        $$ = Tokens::LIST;
+    }
+|
+    STRINGTYPE
+    {
+        $$ = Tokens::STRINGTYPE;
+    }
+|
+    BOOL
+    {
+        $$ = Tokens::BOOL;
+    }    
+;

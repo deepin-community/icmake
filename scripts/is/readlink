@@ -1,0 +1,5 @@
+                                // return the canonicalized path, 
+string readlink(string name)    // which may not yet exist
+{                                   
+    return eval("readlink -mn " + name)[0]; 
+}

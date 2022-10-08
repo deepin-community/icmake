@@ -1,0 +1,20 @@
+flowInitDefs_:
+    flowInitDefs_ ',' defineVar
+    {
+        $$ = move($1.add($3));
+    }
+|
+    defineVar
+    {
+        $$ = Args{ $1 };
+    }
+;
+
+flowInit:
+    flowArgs
+|
+    varType flowInitDefs_
+    {
+        $$ = move($2);
+    }
+;

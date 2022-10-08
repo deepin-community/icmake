@@ -1,0 +1,23 @@
+void shared_library()
+{
+    string libso = "lib" LIBRARY ".so";
+    string libsoshared = libso + "." + g_version;
+                                    
+    g_compiler += " -fPIC ";        // add the option for a shared lib
+
+    compileAll(libsoshared);
+
+    if (!g_compiled)
+        return;
+
+    string libsomajor  = libso + "." + element(0, strtok(g_version, "."));
+
+    chdir(TMP_DIR);
+    
+    system(g_compiler + " -shared -Wl,--as-needed,-z,defs,-soname," + 
+            libsomajor + " -o " + libsoshared + " o/*.o "
+            SHAREDREQ);
+    
+    system("ln -sf " + libsoshared + " " + libsomajor);
+    system("ln -sf " + libsomajor  + " " + libso);
+}

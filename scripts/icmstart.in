@@ -1,0 +1,80 @@
+string g_confPath;
+string g_home = getenv("HOME")[1] + "/.icmake";
+string g_skelPath = "@SKELDIR@";
+string g_program = "icmstart";
+string g_defaultCommand;
+string g_defaultCommandArg;
+list g_defaultCommands = [ "program", "library" ];
+string g_destPath;
+string g_destSpec;
+string g_cwd = chdir("");
+string g_icmconf;
+
+list g_mkdir;
+//list g_installed;
+                            // possible initial actions on rc-file lines
+list g_actions = ["b", "P", "L", "D", "PD", "Pb", "bP", "DP", "pL", "Lp", 
+                  "LD", "DL"];
+  
+int g_confirmInstall = 0;
+int g_skeletons = 1;
+int g_replace = 0;
+int g_debug = 0;
+int g_askReplace = 1;
+int g_version = 1;
+int g_basic = 0;
+int g_modIcmconf = 1;
+int g_fileStat = 0;     // assigned by isFileOrDir check for S_IFREG / S_IFDIR
+
+#include "is/usage"
+#include "is/quit"
+#include "is/isfileordir"
+#include "is/isfile"
+
+//void ignore(string dest)
+//{
+//    g_installed += (list)(g_destPath + dest);
+//}
+
+#include "is/syscall"
+#include "is/md"
+#include "is/readlink"
+#include "is/abspath"
+#include "is/abssource"
+#include "is/absdest"
+#include "is/arguments"
+#include "is/replace"
+#include "is/installok"
+#include "is/installentry"
+#include "is/findin"
+#include "is/findfile"
+#include "is/versionfield"
+#include "is/installversion"
+#include "is/checkdefcom"
+#include "is/confirminstall"
+#include "is/shift"
+#include "is/skip"
+#include "is/getsourcedest"
+#include "is/installline"
+#include "is/installrc"
+
+void main(int argc, list argv)
+{
+    echo(OFF);
+
+    if (argc == 1)
+        usage();
+
+    arguments(argc, argv);      // determine all options and commands
+                                // (stored in the g_ variables at the top)
+
+    install_rc();               // install .rc file elements
+
+    printf("Done. ");
+    if (g_modIcmconf)
+        printf("Don't forget to inspect the #defines in "
+            "'", g_destSpec, "/icmconf'\n\n");
+    else
+        printf("'", g_destSpec, "/icmconf' not modified\n\n");
+}
+

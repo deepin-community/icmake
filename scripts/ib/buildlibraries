@@ -1,0 +1,24 @@
+void build_libraries()
+{
+    libraryPreamble();
+
+    #ifdef LIBRARY
+        string libName = "lib" LIBRARY ".a";
+    #else
+        string libName = "lib.a";
+    #endif
+
+    compileAll(libName);                // the static or pseudolibrary name
+                                        // (not used at this point)
+
+    #ifdef LIBRARY                      // a library must be built
+        static_library();               // make the library
+
+        #ifdef SHARED
+            chdir(g_cwd);
+            shared_library();           // maybe make the shared lib.
+        #endif
+    #endif
+
+    chdir(g_cwd);
+}

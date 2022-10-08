@@ -1,0 +1,553 @@
+includefile(release.yo)
+
+htmlbodyopt(text)(#27408B)
+htmlbodyopt(bgcolor)(#FFFAF0)
+whenhtml(mailto(Frank B. Brokken: f.b.brokken@rug.nl))
+
+DEFINEMACRO(lsvoption)(3)(\
+    bf(--ARG1)=tt(ARG3) (bf(-ARG2))\
+)
+DEFINEMACRO(lsoption)(2)(\
+    bf(--ARG1) (bf(-ARG2))\
+)
+DEFINEMACRO(lvoption)(2)(\
+    bf(--ARG1)=tt(ARG2)\
+)
+DEFINEMACRO(loption)(1)(\
+    bf(--ARG1)\
+)
+DEFINEMACRO(svoption)(2)(\
+    bf(-ARG1) tt(ARG2)\
+)
+DEFINEMACRO(soption)(1)(\
+    bf(-ARG1)\
+)
+
+DEFINEMACRO(itt)(1)(\
+    it()tt(ARG1)\
+)
+
+DEFINEMACRO(itb)(1)(\
+    it()bf(ARG1)nl()\
+)
+
+DEFINEMACRO(icm)(0)(bf(icmake))
+DEFINEMACRO(Icm)(0)(bf(Icmake))
+
+DELETEMACRO(tt)
+DEFINEMACRO(tt)(1)(em(ARG1))
+
+COMMENT( man-request, section, date, distribution file, general name)
+manpage(icmake)(1)(_CurYrs_)(icmake._CurVers_)
+        (A program maintenance utility)
+
+COMMENT( man-request, larger title )
+manpagename(icmake)(A program maintenance (em(make)) utility using a
+                    bf(C)-like grammar)
+
+COMMENT( all other: add after () )
+manpagesynopsis()
+       icm() option(s) tt([source [dest]]) [args]
+
+manpagedescription()
+
+      Icm()(1) is a generic tool handling program maintenance that can be used
+as an alternative for bf(make)(1). It's a generic tool in that
+tt(icmake)-scripts, written in a language closely resembling the bf(C)
+programming language, can perform tasks that are traditionally the domain of
+scripting languages.
+
+Icm() allows programmers to use a programming language (closely resembling the
+well-known bf(C)-programming language) to define the actions that are required
+for (complex) program maintenance. For this, icm() offers various special
+operators as well as a set of support functions that have shown their
+usefulness in program maintenance.
+
+Although icm() scripts can be written from scratch, often the required
+activities are highly comparable. This observation resulted in the
+construction of two icm() scripts, which are part of the standard
+icm() distribution: bf(icmstart)(1), initializing a directory for program
+development and bf(icmbuild)(1), handling the actual program maintenance. By
+default both scripts are  tailored to initializing and maintaining bf(C++)
+programs (or, after minimal adaptation, bf(C) programs), but can easily be
+adapted to other programming languages. Both bf(icmstart) and bf(icmbuild) can
+be run without explicitly calling icm().
+
+This man-page covers icm() (the program), and its support programs. Refer to
+the bf(icmstart)(1)) man-page for information about how a directory can be
+initialized (created) in which (by default) a bf(C++) or bf(C) program can be
+developed and refer to the bf(icmbuild)(1) man-page for information about how
+bf(icmbuild) can be used to handle program maintenance. Refer to the
+bv(icmscript)(7) man-page for a description of the syntax and facilities
+offered by bf(icmake's) scripting language.
+    
+Icm() does not offer an em(Integrated Development Environment) (IDE). Icm()
+merely performs tasks for which scripts can be written, and only a minimal set
+of pre-defined scripts (bf(icmstart) and bf(icmbuild)) that have shown their
+usefulness when developing and maintaining programs are included in
+bf(icmake's) distribution.
+
+In its standard activation modes, icm() uses the following support programs:
+    itemization(
+    itt(icm-pp)     to pre-process the icmake file 
+    itt(icm-comp)   to byte-code compile the icm()  file(s)
+    it()tt(icm-dep) to handle class-dependencies (see the bf(ICM-DEP)
+        section in this man-page for more information about tt(icm-dep)).
+    it()tt(icm-exec) to execute the byte-code file
+    )
+
+In addition, primarily used for illustration, education, and debugging, the
+program tt(icmun) is available to disassemble compiled icm() byte-code (.bim)
+files (`tt(bim-files)'). bf(Icmun) is not installed in a standard tt(PATH)
+directory but in tt(icmake's) tt(lib) directory, which commonly is
+tt(/usr/lib/icmake) (see also section bf(ICMUN) in this man-page). 
+
+Traditional make-utilities recompile sources once header files are
+modified. When developing bf(C++) programs this is often not required, as
+adding new member functions to classes does not require you to recompile all
+source files of those classes. To handle class dependencies bf(icmbuld)(1) may
+optionally inspect class dependencies, (re)compiling sources of dependent
+classes when necessary. By default, class-dependencies are not interpreted,
+but they are when the tt(PRECOMP) and/or tt(USE_ALL) defines, found in the
+file tt(icmconf) file, are activated. Refer to the bf(icmconf)(7) man-page for
+details.
+
+This manpage describes icm()'s options in the next section, followed by two
+sections covering the support programs
+    itemization(
+    itb(ICM-DEP) - the bf(icm-dep) dependency analyzer;
+    itb(ICMUN) - bf(icmake's) unassembler.
+    )
+
+Refer to the bf(icmscript)(7) man-page for a description of bf(icmake's)
+bf(C)-like scripting language.
+
+manpageoptions()
+
+    Where available, single letter options are listed between parentheses
+beyond their associated long-option variants. Icm() defines em(action) options
+and em(non-action) options. The first action option that is encountered is
+used.
+
+    The following action options write some text to the standard output
+stream, whereafter icm() ends:
+    itemization(
+    it() lsoption(about)(a)nl()
+       Shows some information about icm();
+
+    it() lsoption(help)(h)nl() 
+       Provides usage info, returning 0 to the operating system. Usage
+        information is also provided if icm() is started without providing
+        arguments. In that case 1 is returned to the operating system;
+
+    it() lsoption(version)(v)nl()
+       Displays icm()'s version.
+    )
+
+   The remaining action options require additional options and/or arguments,
+and most of them process icm() source- or bim-files. Several of these action
+options write output files. By default these files are located in the same
+directories as the source files' directories.
+
+    The remaining action options are:
+    itemization(
+    it() lsoption(compile)(c) tt([options] source [bim-file]) nl()
+       The tt(source) file is first pre-processed (by tt(icm-pp)) whereafter
+        the pre-processed file is compiled (by tt(icm-comp)), producing a
+        tt(bim-file).  If the tt(bim-file) name is not specified then
+        tt(source's) base-name, receiving extension tt(.bim), is used.nl()
+       If the bim-file exists and is younger than tt(source) then tt(source)
+        is not compiled.nl()
+       With this option pre-processor symbol-defining options can be used:
+        symbols having values 1 which can be used in tt(source). E.g., when
+        issuing the command
+       verb(
+    icmake -c -d one --define two source dest.bim
+       )
+       then icm() compiles tt(source), defines the pre-processor symbols
+        tt(one) and tt(two) (each having value 1), and produces the bim-file
+        tt(dest.bim). Note that instead of using long options tt(--define)
+        short options tt(-d) can also be used.nl()
+       If tt(source) is a previously pre-processed file then option tt(-P)
+        must be specified to compile it. E.g.,
+       verb(
+    icmake -c -P source dest.bim
+       )
+        
+    it() lsoption(dependencies)(d) tt([options] action)nl()
+       Icm() calls bf(icm-dep) to determine the dependencies among
+        classes. All options and arguments following this option are forwarded
+        to bf(icm-dep). Refer to the bf(ICM-DEP) section of this man-page for
+        information about tt(icm-dep);
+
+    it() lsoption(execute)(e) tt([option] bim-file [arguments])nl() 
+       Executes the bim-file, specified as icm()'s first file argument. Before
+        the tt(bim-file) option tt(--no-version-check) (or the equivalent
+        short option tt(-n)) can be specified to allow mismatches between
+        icm()'s main version and the icm() version that was used to compile
+        the bim-file. See also the description of the tt(--no-version-check)
+        option at the description of the non-action options below.nl()
+       Options and arguments specified beyond the tt(bim-file) are forwarded
+        as arguments to the tt(bim-file's main) function (refer to the
+        bf(icmscript)(7) man-page for details about how to write
+        icm()-scripts);
+
+    it() lsoption(force)(f) tt([options] source [bim-file]) nl()
+       Acts like option tt(--compile), but compilation is always performed,
+        even if the bim-file is up-to-date. As with tt(--compile), if
+        tt(source) is a previously pre-processed file then option tt(-P) must
+        be specified to compile it. E.g.,
+       verb(
+    icmake -f -P source dest.bim
+       )
+
+    it() lsoption(preprocess)(p)  tt([options] source [pim-file]) nl()
+       The file specified as first argument is pre-processed, producing a
+        `tt(.pim)' file. If a second filename argument is provided then that
+        file becomes the tt(.pim) file. If not specified, then
+        the first filename, using the extension tt(.pim), is used. nl()
+       With this option pre-processor symbol-defining options can be used:
+        symbols having values 1 which can be used in tt(source). E.g., when
+        issuing the command
+       verb(
+    icmake -p -d one --define two source dest.pim
+       )
+       then icm() pre-processes tt(source), defines the pre-processor symbols
+        tt(one) and tt(two) (each having value 1), and produces the pim-file
+        tt(dest.pim). Note that instead of using long options tt(--define)
+        short options tt(-d) can also be used;
+
+    it() lsoption(source)(s)  tt([options] source [arguments]) nl()
+       Icm() uses tt(--compile) to compile the icm() source file specified as
+        first argument (constructing the default bim-file if necessary) and
+        then uses tt(--execute) to execute the bim-file, forwarding any
+        subsequent tt(arguments) as-is to the tt(bim-file's main)
+        function.nl()
+       With this option pre-processor options as well as the 
+        tt(--no-version-check) execute option can be used. When using the
+        latter option it must follow the pre-processor options (if specified)
+        and it must be preceded by tt(--execute) (or tt(-e)). E.g., when
+        issuing the command
+       verb(
+    icmake -s -d one -en source 
+       )
+       then icm() first compiles tt(source), defining the pre-processor symbol
+        tt(one), and then executes the bim-file, passing
+        tt(--no-version-check) to tt(icm-exec);
+
+    it() svoption(t)(tmpspec) tt([options] source [arguments]) nl() 
+       This option is intended for icm()-scripts although it can also be used
+        in a command-line icm() call. Its argument tt(tmpspec) is either a
+        single dot (as in tt(-t.)) in which case icm() determines the name of
+        the bim-file in the directory icm() uses for temporary files (see
+        option tt(--tmpdir) below), or it uses tt(tmpspec) as the filename to
+        write the bim-file to (which file is also removed once the script's
+        execution ends).nl()
+       At the tt(options) pre-processor options as well as the 
+        tt(--no-version-check) execute option can be specified. When using the
+        latter option it must follow the pre-processor options (if specified)
+        and it must be preceded by tt(--execute) (or tt(-e)).nl()
+       The argument tt(source) is the name of the icm() script to process, and
+        tt(source) may optionally be followed by tt(arguments). Those
+        arguments are forwarded as-is to the script's tt(main) function, where
+        they appear as elements of its tt(list argv) parameter.
+
+       Rather than using the explicit command-line call tt(icmake -t. ...) the
+        tt(-t) option is normally used in the first line of an (executable) (so
+        usually tt(chmod +x source) has been specified before calling the
+        script), where its pre-processor and execute options can also be
+        specified. For example after writing the executable script tt(hello):
+       verb(
+    #!/usr/bin/icmake -t.
+    
+    int main(int argc, list argv)
+    {
+        printf << "hello: " << argv << '\n';
+    }
+       )
+       it can be called as tt(hello one -two --three), producing output like:
+       verb(
+    hello: /tmp/10434.bim.MKqvAb one -two --three
+       )
+       (the name following tt(hello:) will be different, as it is the name of
+        the compiled temporary bim-file). If icm() pre-process and/or execute
+        options are required they can be specified in the first line,
+        following the tt(-t) option. E.g.,
+       verb(
+    #!/usr/bin/icmake -t. -d one --define two
+       )
+
+    it() lsoption(unassemble)(u)nl()
+       The file specified as first argument is an icm() bim-file, which is
+        unassembled. Refer to the bf(icmun) section further down this man-page
+        for more information about tt(icmun);
+
+        The program tt(icmun) unassembles bim-files. This program also
+        supports the tt(--no-version-check) (tt(-n)) option.
+    )
+
+Finally, there are some (non-action) options that can be specified before
+specifying action options:
+
+    itemization(
+    it() lsoption(no-process)(N)nl()
+       Implies option tt(--verbose). This option may precede options tt(-d,
+        -e, -s) and tt(-t) (either as two separate options or by `gluing' both
+        options together, like tt(-Ne)). When specified, the actions are not
+        activated, but the command(s) that would have been used are shown to
+        the standard output;
+
+    it()  lsoption(no-version-check)(n)nl()
+       This option is available with the action options tt(--execute,
+        --source, --unassemble), and tt(-t). When specified the main versions
+        of icm-bim files and icm() itself may differ. This option should
+        normally not be used, and was added for development purposes only;
+
+    it() lsvoption(tmpdir)(T)(directory)nl() 
+       The specified directory is used for storing temporary files. E.g., when
+        compiling an icm() script, the output of icm()'s preprocessor is
+        written to a temporary file which is removed when icm() ends. By
+        default tt(/tmp) is used, unless tt(/tmp) is not a writable directory,
+        in which case the current user's tt($HOME) directory is used;
+
+    it() lsoption(verbose)(V)nl()
+       The child processes and their arguments are written to the standard
+        output stream before they are called. This option may precede options
+        tt(-d, -e, -s) and tt(-t) (either as two separate options or by
+        `gluing' both options together, like tt(-Ve)).
+    )
+
+manpagesection(ICM-DEP) 
+
+bf(Icm-dep) is a support program called by icm() to determine source- and
+precompiled-header file dependencies. bf(Icm-dep) can be used for software
+projects that are developed as described in the url(C++
+Annotations)(https://fbb-git.gitlab.io/cppannotations/), section tt(Header
+file organization) in chapter tt(Classes). For those projects classes are
+developed in their own directories, which are direct sub-directory of
+the project's main program directory. Their class interfaces are provided
+in class-header files bearing the names of the class-directories, and all
+headers that are required by the class's sources are declared in a separate
+em(internal header) filed, commonly having extensions tt(.ih).
+
+Icm() automatically calls bf(icm-dep)d when tt(USE_ALL) or tt(PRECOMP) is
+specified in tt(icmconf) files.  By default it is called with arguments
+tt(-V go). The tt(#define ICM_DEP) define-specification in the tt(icmconf)
+file can be used to specify a different set of options.
+
+When bf(icm-dep) is activated (i.e., its argument tt(go) is specified) then
+bf(icm-dep) determines directory dependencies, touching all files in
+directories that depend on directories containing modified files, and/or
+removing precompiled headers if they include headers from other directories
+that were modified. By providing another argument than tt(go) bf(icm-dep)
+performs a `dry run': it analyzes dependencies, but it won't remove or touch
+files.
+
+Options of bf(icm-dep) may be specified immediately following icm()'s
+tt(--dependencies) option. bf(Icm-dep) supports the following options:
+    itemization(
+    it() lsvoption(classes)(c)(filename)nl()
+       By default, bf(icm-dep) inspects dependencies of the directories
+        mentioned in the file tt(CLASSES). Furthermore, if the bf(icmconf)(7)
+        file specifies tt(PARSER_DIR) and tt(SCANNER_DIR) then those
+        directories are also considered.  Use this option to specify the file
+        containing the names of directories to be inspected by bf(icm-dep).
+
+    it() lsoption(help)(h)nl()
+       bf(Icm-dep) writes a summary of its usage to the standard output and
+        terminates, returning 0 to the operating system;
+
+    it() lsvoption(icmconf)(i)(filename)nl() 
+       By default bf(icm-dep) inspects the content of tt(icmconf) files, This
+        option is used if instead of tt(icmconf) another file should be
+        inspected;
+
+    it() lsvoption(mainih)(m)(mainheader)nl()
+       In the tt(icmconf) file the tt(#define IH) parameter is used to specify
+        the suffix of class header files that should be precompiled, assuming
+        that their filenames are equal to the names of the directories which
+        are listed in the tt(CLASSES) file. But tt(CLASSES) does not specify
+        the name of the program's top-level directory. This option is used to
+        specify the name of the top-level header file to precompile. By
+        default tt(main.ih) is used;
+
+    it() loption(gch)nl() 
+       If tt(icmconf) files contain tt(#define PRECOMP) specifications then
+        bf(icm-dep) checks whether precompiled headers must be refreshed.  If
+        an tt(icmconf) file does not contain a tt(#define PRECOMP)
+        specifications, but precompiled headers should nonetheless be
+        inspected, then option tt(--gch) can be specified;
+
+    it() loption(no-gch)nl() 
+       If tt(icmconf) files contain tt(#define PRECOMP) specifications but 
+        bf(icm-dep) should not check whether precompiled headers must be
+        refreshed then option tt(--no-gch) should be specified;
+
+    it() loption(no-use-all)nl()
+       If tt(icmconf) files contain tt(#define USE_ALL "filename")
+        specifications then all source files in directories containing files
+        named tt(filename) are recompiled. When specifying this option
+        inspections of tt(`USE_ALL') specifications is suppressed;
+
+    it() lvoption(use-all)(filename)nl()
+       If tt(icmconf) files contain tt(#define USE_ALL "filename")
+        specifications then all source files in directories containing files
+        named tt(filename) are recompiled. Specify this option to inspect the
+        presence of tt(filename) files if tt(icmconf) does not contain a
+        tt(`USE_ALL') specification;
+
+    it() lsoption(verbose)(V)nl() 
+       This option can be specified multiple times. The number of times it is
+        specified determines bf(icm-dep's) verbosity. If not used then
+        bf(icm-dep) silently performs its duties. If specified once, then
+        bf(icm-dep) reports to the standard output what actions it performs;
+        if specified twice it also reports non-default options and
+        automatically included directories; if specified three times it also
+        reports class dependencies; if specified more often it reports what
+        files it encountered and what decision it would make when tt(go) would
+        be specified;
+
+    it() lsoption(version)(v)nl() 
+       bf(Icm-dep) reports its version number to the standard output and
+        terminates, returning 0 to the operating system.
+    )
+
+As an example, for icm() itself the class dependencies, obtained using the
+option tt(-VVV) are shown as:
+    verb(
+    Direct class dependencies:
+    --------------------------
+                  uses:
+                  ------------
+        class:     1  2  3  4 
+    --------------------------
+             .  1  x  x  x  x 
+       options  2     x     x 
+       handler  3     x  x    
+    argoptions  4           x 
+    --------------------------
+                   1  2  3  4 
+    --------------------------
+    
+    Implied class dependencies:
+    --------------------------
+                  uses:
+                  ------------
+        class:     1  2  3  4 
+    --------------------------
+             .  1  -  x  x  x 
+       handler  2     -  x  x 
+       options  3        -  x 
+    argoptions  4           - 
+    --------------------------
+                   1  2  3  4 
+    --------------------------
+    )
+    The second table immediately shows that there are no circular
+dependencies: its lower triangle remains empty. 
+
+manpagesection(icmun)
+
+    The bf(icmun) support program expects one argument, a bim-file. It
+disassembles the binary file an shows the assembler instructions and the
+structure of the bim-file. Note that in standard installations bf(icmun) is
+not located in one of the directories of the tt(PATH) environment variable,
+but it is available in the tt(/usr/lib/icmake) directory, and the command
+tt(icmake -u bim-file) is normally used to unassemble the bim-file.
+
+As an illustration, assume the following script is compiled by icm() (e.g., by
+calling tt(icmake -c demo.im)):
+        verb(
+    void main()
+    {
+        printf("hello world");
+    }
+        )
+    the resulting tt(demo.bim) file can be processed by bf(icmun) (e.g.,
+calling tt(/usr/lib/icmake/icmun demo.bim). bf(Icmun) then writes the
+following to the standard output fle:
+
+        verb(
+    icmun by Frank B. Brokken (f.b.brokken@rug.nl)
+    icmun V10.00.00
+    Copyright (c) GPL 1992-2021. NO WARRANTY.
+    
+    Binary file statistics:
+            strings      at offset  0x0025
+            variables    at offset  0x0032
+            filename     at offset  0x0032
+            code         at offset  0x0014
+            first opcode at offset  0x0021
+    
+    String constants dump:
+            [0025 (0000)] ""
+            [0026 (0001)] "hello world"
+    
+    Disassembled code:
+            [0014] 06 01 00   push string "hello world"
+            [0017] 05 01 00   push int 0001
+            [001a] 1b 1d      callrss 1d (printf)
+            [001c] 1c 02      add sp, 02
+            [001e] 04         push int 0
+            [001f] 24         pop reg
+            [0020] 23         ret
+            [0021] 21 14 00   call [0014]
+            [0024] 1d         exit
+        )
+
+Offsets are shown using the hexadecimal number system and are absolute byte
+offsets in the bim-file. The string constants dump also shows, between
+parentheses, the offsets of the individual strings relative to the beginning
+of the strings section. The disassembled code shows the opcodes of the
+instructions of the compiled icmake source files. If opcodes use arguments
+then these argument values are shown following their opcodes. Each opcode line
+ends by showing the opcode's mnemonic plus (if applicable) the nature of its
+argument.
+
+manpagefiles()
+
+    The mentioned paths are the ones that are used in the source distribution
+and are used by the Debian Linux distribution. However, they are sugestive
+only and may have been configured differently:
+
+    itemization(
+    it() bf(/usr/bin/icmake): the main icm() program;
+    it() bf(/usr/bin/icmbuild): the wrapper program around the tt(icmbuild)
+        script handling standard program maintenance;
+    it() bf(/usr/bin/icmstart): an icm()-script that is can be used to create
+        the startup-files of new projects;
+    it() bf(/usr/lib/icmake/icm-comp): the compiler called by icm();
+    it() bf(/usr/lib/icmake/icm-exec): the byte-code interpreter called by
+            icm(); 
+    it() bf(/usr/lib/icmake/icm-dep): the support program handling class- and
+            precompiled header dependencies;
+    it() bf(/usr/lib/icmake/icm-pp): the preprocessor called by icm();
+    it() bf(/usr/lib/icmake/icmun): the icm() unassembler.
+    )
+
+manpagesection(EXAMPLES)
+    
+    The distribution (usually in tt(/usr/share/doc/icmake)) contains a
+directory tt(examples) containing additional examples of icm() script. The
+tt(icmstart) script is an icm() script as is tt(/usr/lib/icmake/icmbuild),
+which is called by the tt(/usr/bin/icmbuild) program. See also the bf(EXAMPLE)
+section in the bf(icmscript)(7) man-page.
+
+manpageseealso()
+    bf(chmod)(1),
+    bf(icmbuild)(1), bf(icmconf)(7), bf(icmscript)(7),
+    bf(icmstart)(1), bf(icmstart.rc)(7), bf(make)(1)
+
+manpagebugs()
+
+    Be advised that starting icm() version 10.00.00 
+    itemization(
+    it() the tt(--summary) (tt(-F)) option has been discontinued;
+    it() the tt(--source) short option tt(-i) has been replaced by tt(-s);
+    it() long option tt(--icm-dep) has been replaced by tt(--dependencies);
+    )
+
+includefile(trailer.inc)
+
+
+

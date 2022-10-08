@@ -1,0 +1,154 @@
+exprUnit_:
+    string                              // semval is a string
+|
+    NUMBER                              // value in d_scanner.expr()
+    {
+        $$ = SemVal{ e_int | e_const, d_scanner.expr() };
+    }
+|
+    identifier
+    {
+        $$ = variable($1);
+    }
+;
+ 
+exprStart_:
+    exprUnit_
+    syntaxExpression
+;
+
+expression:
+    exprStart_
+|  
+    '[' argsOpt ']'                     // list constant
+    {
+        $$ = $2.callBuiltin(Builtin::LISTCONST);
+    }
+|  
+    expression '[' expression ']'
+    {
+        $$ = index($1, $3);             // index calls pushPrint($3)
+    }
+|
+    identifier '(' argsOpt ')'          // all function calls
+    {
+        $$ = function($1, move($3));    // function calls pushPrint for
+                                        // $3's elements
+    }                   
+|
+    '`' expression '`'
+    {
+        $$ = function("`", Args{ $2 }); 
+    }
+|
+    '(' expression ')'                  // was: open/closeParen
+    {
+        $$ = pushPrint($2);
+    }
+|  
+    '+' expression          %prec '!'
+    {
+        $$ = $2;
+    }
+|
+    '-' expression          %prec '!'
+    {
+        $$ = $2.negate();
+    }
+|
+    '~'
+    expression          %prec '!'
+    {
+        $$ = $2.bitNot();
+    }
+|
+    '!' expression
+    {
+        $$ = $2.boolNot();
+    }
+|
+    INCDEC opValue expression
+    {
+        $$ = $3.incDec($2, e_prefix);
+    }
+|
+    expression INCDEC opValue
+    {
+        $$ = $1.incDec($3, e_postfix);
+    }
+|
+    '(' cast ')' expression         %prec '!'
+    {
+        $$ = $4.cast($2);
+    }
+|                               
+    expression '+' expression   // operators with higher prioritoes: 
+    {                           // no pushPrint
+        $$ = $1.binary(Opcode::add, move($3));
+    }
+|
+    expression '-' expression
+    {
+        $$ = $1.binary(Opcode::sub, move($3));
+    }
+|
+    expression MULTIPLY opValue expression
+    {
+        $$ = $1.binary($3, move($4));
+    }
+|
+    expression SHIFT opValue expression
+    {
+        $$ = shiftOrPrint($1, $3, $4);   // e_(f)printf is set by variable()
+    }
+|
+    expression ORDER opValue expression
+    {
+        $$ = binary($1, $3, $4);
+    }
+|
+    expression EQUALITY opValue expression
+    {
+        $$ = binary($1, $3, $4);    // Parser::binary handles print insertions
+    }
+|
+    expression '&' expression
+    {
+        $$ = binary($1, Opcode::band, $3);
+    }
+|
+    expression '^' expression
+    {
+        $$ = binary($1, Opcode::bxor, $3);
+    }
+|
+    expression '|' expression
+    {
+        $$ = binary($1, Opcode::bor, $3);
+    }
+|
+    expression AND expression
+    {
+        $$ = pushPrint($1).logicAnd(pushPrint($3));
+    }
+|
+    expression OR expression
+    {
+        $$ = pushPrint($1).logicOr(pushPrint($3)); 
+    }
+|
+    expression '?' expression ':' expression
+    {
+        $$ = pushPrint($1).ternary(pushPrint($3), pushPrint($5));
+    }
+|
+    expression '=' expression   // operators with lower prioritoes than '<<'
+    {                           // use pushPrint to handle print insertions
+        $$ = $1.assign(pushPrint($3), Opcode::copy_var);
+    }
+|
+    expression MATH_IS opValue expression
+    {
+        $$ = $1.compound($3, pushPrint($4));
+    }
+;

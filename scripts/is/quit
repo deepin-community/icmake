@@ -1,0 +1,5 @@
+void quit(string str)
+{
+    printf(g_program, ": ", str, '\n');
+    exit(1);
+}

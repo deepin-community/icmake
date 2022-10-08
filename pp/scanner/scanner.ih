@@ -1,0 +1,24 @@
+#include "scanner.h"
+
+#include "../../xerr/xerr.ih"
+
+#include "unistd.h"
+
+#include <cstdlib>
+
+#include <filesystem>
+
+#include <bobcat/arg>
+#include <bobcat/string>
+#include <bobcat/exception>
+
+#include "../../support/tools/tools.h"
+
+using namespace std;
+using namespace FBB;
+
+#include "addbuffer.f"
+#include "precode.f"
+#include "postcode.f"
+
+

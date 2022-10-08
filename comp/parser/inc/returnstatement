@@ -1,0 +1,26 @@
+retExpr_:
+    expression
+|
+    {
+        $$ = SemVal{ e_void };
+    }
+;
+
+retLeave_:
+    RETURN
+    {
+        $$ = Tokens::RETURN;
+    }
+|
+    EXIT
+    {
+        $$ = Tokens::EXIT;
+    }
+;
+
+returnStatement:
+    retLeave_  syntaxExpression  retExpr_
+    {
+        $$ = returnStmnt($1, $3);   // also handles exit()
+    }
+;

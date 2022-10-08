@@ -1,0 +1,17 @@
+#!/bin/bash
+
+# echo converting $1 to $2
+
+. scripts/conversions
+
+mkdir -p `dirname $2`
+
+sed '
+s,@BINDIR@,'${BINDIR}',g
+s,@SKELDIR@,'${SKELDIR}',g
+s,@MANDIR@,'${MANDIR}',g
+s,@LIBDIR@,'${LIBDIR}',g
+s,@CONFDIR@,'${CONFDIR}',g
+s,@DOCDIR@,'${DOCDIR}',g
+s,@DOCDOCDIR@,'${DOCDOCDIR}',g
+' $1 > $2 

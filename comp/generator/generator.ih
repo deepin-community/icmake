@@ -1,0 +1,24 @@
+#include "generator.h"
+#include "../../xerr/xerr.ih"
+
+#include <string>
+#include <filesystem>
+
+#include <bobcat/exception>
+
+#include "../../tmp/INSTALL.im"
+
+#include "../opcode/opcode.h"
+#include "../stringstore/stringstore.h"
+#include "../parser/parser.h"
+#include "../scanner/scanner.h"
+#include "../functions/functions.h"
+#include "../symtab/symtab.h"
+
+using namespace std;
+using namespace FBB;
+
+namespace Icmake
+{
+    extern char version[];
+};

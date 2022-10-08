@@ -1,0 +1,24 @@
+int ivar1;
+int ivar2;
+string gstr = "hello";
+list lvar;
+
+void fun(string arg)
+{
+    string a, b;
+
+    b = a;
+    a = gstr;
+    a = arg;
+    a = b;
+}
+
+void main(int argc, list argv)
+{
+    string inner = "world";
+    printf(argv, '\n');
+
+}
+
+
+

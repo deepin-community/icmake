@@ -1,0 +1,59 @@
+    // flag must start with a blank (" -l", " -L")
+string addLibs(string spec, string flag)
+{
+    string ret;
+    list cut = strtok(spec, " ");        // cut up the specification
+    for (int idx = 0, end = listlen(cut); idx != end; ++idx)
+        ret += flag + cut[idx];
+
+    return ret;
+}
+
+#ifdef ADD_LIBRARIES
+string useLibs()
+{
+    return addLibs(ADD_LIBRARIES, " -l") + addLibs(ADD_LIBRARY_PATHS, " -L");
+}
+#endif
+
+            // the binary is installed under TMP_DIR
+void link(string maino)
+{
+    chdir(TMP_DIR);
+
+    string compiler = g_compiler + " -o bin/binary " + maino;
+
+    #ifdef LIBRARY
+        compiler += " -l" LIBRARY " -L.";
+    #else
+        if (listlen(makelist("o/*" OBJ_EXT)))
+            compiler += " o/*" OBJ_EXT;
+    #endif
+
+    #ifdef ADD_LIBRARIES
+        compiler += useLibs();         // use extra libraries (if specified)
+    #endif
+
+    #ifdef LDFLAGS
+        compiler += " " + setOpt(LDFLAGS, "LDFLAGS");
+    #else
+        #ifdef LINKER_OPTIONS
+            compiler += " " + LINKER_OPTIONS;
+        #endif
+    #endif
+
+    #ifndef REFRESH             // then check for the need to refresh
+        if (g_compiled || maino younger "../bin/binary" 
+        #ifdef LIBRARY
+            || 
+            "lib" LIBRARY ".a" younger "../bin/binary"
+        #endif
+        )
+    #endif
+    {
+        showCd(TMP_DIR);
+        system(compiler);
+    }
+
+    chdir("");
+}

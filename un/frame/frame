@@ -1,0 +1,6 @@
+//#define XERR
+#include "frame.ih"
+
+Frame::
+{
+}

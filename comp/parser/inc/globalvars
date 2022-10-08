@@ -1,0 +1,11 @@
+globalVars:
+    globalVars ',' defineVar syntaxCommaOrSemicol
+    {
+        d_initCode << $3;
+    }
+|
+    defineVar syntaxCommaOrSemicol
+    {
+        d_initCode << $1;
+    }
+;

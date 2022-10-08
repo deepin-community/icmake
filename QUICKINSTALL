@@ -1,0 +1,53 @@
+0. After unpacking the icmake_XX.YY.ZZ.tar.gz icmake archive, make your
+   current working directory equal to the directory in which you found this
+   file. 
+
+1. Inspect and modify if necessary the current locations in INSTALL.im.
+
+2. If you want the compiler to insert debugging code in the icmake programs
+   then define a CXXFLAGS environment variable. E.g., 
+
+                CXXFLAGS="--std=c++2a -Wall -O2 -g"
+
+3. To prepare for the compilations of the programs, run 
+
+                ./icm_prepare /
+
+3. Compile the various programs (x is a dummy argument required by
+   ./icm_bootstrap to run):
+
+                ./icm_bootstrap x
+
+4. As root: install the programs and documentation:
+
+                ./icm_install strip all
+
+   (the elements of the installation are under tmp/etc and tmp/usr)
+
+    For debian, the following install commands are issued, installing under 
+    debian/icmake and debian/icmake-doc
+
+        ./icm_install strip progs debian/icmake
+        ./icm_install scripts debian/icmake
+        ./icm_install skel debian/icmake
+        ./icm_install man debian/icmake
+        ./icm_install doc debian/icmake
+        ./icm_install etc debian/icmake
+        ./icm_install docdoc debian/icmake-doc
+
+                    
+5. Remove intermediate construction area:
+                rm -rf tmp
+
+
+Following these commands (referring to the #defines in INSTALL.im):
+    
+    icmake is in /BINDIR
+    skeleton files, installed by icmstart, are in /SKELDIR
+    manual pages are in /MANDIR/man{1,7}
+    icmake support programs are in /LIBDIR
+    confguration files, specifying which skeleton commands to install, are in
+        /CONFDIR
+    icmake documentation is installed in /DOCDIR and /DOCDOCDIR
+
+

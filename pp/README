@@ -1,0 +1,5 @@
+The scanner reads the input files. See scanner/lexer for details.
+
+The #if(n)def directives may change the scanner's d_active value from true to
+false (and vv). It is used by Out to decide whether or not to insert
+information into the out-file.

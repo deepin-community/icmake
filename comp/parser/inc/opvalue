@@ -1,0 +1,6 @@
+opValue:
+    {
+        $$ = as<Opcode::Byte>(d_scanner.expr());
+    }
+;
+

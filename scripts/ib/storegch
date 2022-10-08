@@ -1,0 +1,24 @@
+void moveGch(string from, string gchBase)
+{
+    from += '/' + gchBase + IH + ".gch";
+
+    if (exists(from))
+        exec("mv " + from + ' ' + g_gchDir + '/');
+}
+
+void storeGch()
+{
+    // printf("STOREGCH\n");
+    echo(OFF);
+
+    chdir(g_cwd);
+
+    for (int idx = listlen(g_classes); idx--; )
+    {
+        string class = g_classes[idx];
+        moveGch(class, class);
+    }
+
+    if (g_mainBase != "")
+        moveGch(".", g_mainBase);
+}

@@ -1,0 +1,17 @@
+The class Dependencies is the workhorse class.
+
+Its constructor determines the parser- and scanner-dirs from the icmconf file,
+Next it adds all directory names from CLASSES to the d_directory string
+vector, so that each directory name is stored only once. 
+
+Once all directories have been determined there are size = d_directory.size()
+directory names.
+
+The matrix d_dependency is a bool-matrix of dimension size x size. If
+element[r][c] is true then class [c] depends on (= includes) class[r]. The
+the function 'dependsOn' determines these dependencies.
+
+
+
+
+

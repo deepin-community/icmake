@@ -1,0 +1,6 @@
+closeCurly:
+    '}'
+    {
+        d_symtab.pop();
+    }
+;

@@ -1,0 +1,10 @@
+#include "list.h"
+
+#include <algorithm>
+#include <iterator>
+#include <ostream>
+#include <sstream>
+
+#include "../../xerr/xerr.ih"
+using namespace std;
+

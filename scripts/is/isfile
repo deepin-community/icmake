@@ -1,0 +1,4 @@
+int isFile(string s)
+{
+    return (int)stat(P_NOCHECK, s)[0] & S_IFREG;
+}

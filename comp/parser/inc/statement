@@ -1,0 +1,66 @@
+stBreak_:
+    BREAK
+    {
+        $$ = move(breakStmnt());
+    }
+;
+
+stContinue_:
+    CONTINUE
+    {
+        $$ = move(continueStmnt());
+    }
+;
+
+
+stCompound_:
+    openCurly
+    statements
+    closeCurly
+    {
+        $$ = move($2);
+    }
+;
+
+stAlt_:
+    stBreak_ ';'
+|
+    stContinue_ ';'
+|
+    stCompound_
+|
+    ';' 
+    {
+        $$ = SemVal{};
+    }
+|
+    expression ';'
+    {
+        $$ = exprStmnt($1);
+    }
+|
+    returnStatement ';'
+|
+    whileStatement
+|
+    ifStatement
+|
+    forStatement
+|
+    error ';'
+    {
+        $$ = SemVal{};
+    }
+;
+
+statement:
+    stAlt_
+|
+    varType localVars  ';'
+    {
+        $$ = move($2);
+    }
+;
+
+
+

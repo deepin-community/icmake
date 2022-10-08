@@ -1,0 +1,100 @@
+%filenames scanner
+
+//%debug
+
+%x string comment define
+
+ident   [[:alpha:]_][[:alnum:]_]*   
+s       [ \t]
+S       [^ \t\n]
+
+%%
+
+^{s}*"#!".*         // ignore #! specs at the beginning of lines
+
+{s}+                return SPACE;
+
+{s}*"//".*          // ignore eoln comment
+
+\n                  return NL;
+
+"/*"                begin(StartCondition_::comment);
+
+<comment>{              // ignore comment
+    "*/"{s}*        return endComment();    // returns SPACE
+
+    .               // ignored
+
+    \n              return NL;
+}
+
+
+\"                  startString();          // all string chars are returned
+                                            // as WORD tokens
+<string>{
+    \"              return endString(); // returns TEXT
+
+    \\.     |
+    .               more();             // append all chars to strings
+
+    \\\n    |                           // line continuations or \n: invalid
+    \n              invalidString();
+}
+
+
+{ident}             {                           // replaces #defined idents
+                        if (ident() == TEXT)    // by their definitions
+                            return TEXT;
+                    }
+
+    // determine the identifier, handle it, and continue beyond the identifier
+    // at START
+^{s}*#ifdef{s}+{ident}{s}*      ifdefDirective(); 
+^{s}*#ifndef{s}+{ident}{s}*     ifndefDirective();
+^{s}*#undef{s}+{ident}{s}*      undefDirective(); 
+
+    // continue beyond at START
+^{s}*#else                      elseDirective();
+^{s}*#endif                     endifDirective(); 
+
+    // noDirective while active results in a fatal error.
+^{s}*#{S}*                      noDirective();  // not active, and skipped
+
+    // switch to a local or IM file, state: START. At EOF continue beyond this
+    // point, again at START
+^{s}*#include{s}+\"[^\n]+\"     {
+                                    if (includeLocal())
+                                        return NEXT;
+                                }
+
+^{s}*#include{s}+\<[^\n]+\>     {
+                                    if (includeIM())
+                                        return NEXT;
+                                }
+ 
+    // determine the identifier, and continue with <define> to read the
+    // identifier's definition
+^{s}*#define{s}+{ident}{s}*     defineDirective();
+
+    // pick up all the characters following the #define's identifier.
+    // Handle the definition once the \n is read, and continue at state START 
+<define>{
+    \\\n            // continue at a final backslash
+
+    \\.             |
+    .               addBuffer();                // store (escaped) char(s)
+
+    {s}*"//".*      // ignore eoln comment
+
+    \n              return storeIdentValue();   // continues at state START
+}
+
+
+.                   return TEXT;                // process single characters
+                                                // (not blanks: handled above)
+<<EOF>>             return atEOF();
+
+
+
+
+

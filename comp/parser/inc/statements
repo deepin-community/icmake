@@ -1,0 +1,10 @@
+statements:
+    statements  statement
+    {
+        $$ = catStatements($1, $2);
+    }
+|
+    {
+        $$ = SemVal{};
+    }
+;

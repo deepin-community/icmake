@@ -1,0 +1,22 @@
+void program()
+{
+    #ifdef MAIN
+        string maino = change_ext(MAIN, OBJ_EXT);
+    
+        md(TMP_DIR "/bin");
+    
+        int compileMain = 0;
+        #ifdef USE_ALL
+            compileMain = exists(USE_ALL);
+        #endif
+    
+        if (compileMain || MAIN younger TMP_DIR + "/" + maino)
+        {
+            printf("\n"
+                    "RECOMPILE: " MAIN "\n");
+            system(g_compiler + " -c -o " + TMP_DIR + "/" + maino + " " MAIN);
+        }
+
+        link(maino);
+    #endif
+}

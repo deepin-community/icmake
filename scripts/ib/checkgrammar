@@ -1,0 +1,23 @@
+void checkGrammar()                         // check updating 'grammar'
+{
+    chdir(PARSER_DIR);
+
+    list gramfiles = makelist(PARSSPEC);
+
+    #ifdef PARSFILES
+        gramfiles += makelist(PARSFILES);
+    #endif
+    
+    for (int idx = listlen(gramfiles); idx--; )
+    {
+        if (gramfiles[idx] younger PARSOUT)    // need new parser
+        {
+            showCd(PARSER_DIR);
+            if (USE_ECHO)
+                printf("New parser: `", gramfiles[idx], "' changed\n");
+            system(PARSGEN " " PARSFLAGS " " PARSSPEC);
+            break;
+        }
+    }
+    chdir("..");
+}

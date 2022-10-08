@@ -1,0 +1,8 @@
+openCurly:
+    '{'
+    {
+        Error::set(Error::STATEMENT);
+        d_symtab.push();
+    }
+;
+        

@@ -1,0 +1,23 @@
+#include "../../xerr/xerr.ih"
+
+#include "semval.h"
+
+#include <algorithm>
+#include <iomanip>
+
+#include "../error/error.h"
+
+#include "swaptruefalse.f"
+#include "stacktype.f"
+
+#include "patchtrue.f"
+#include "patchbreak.f"
+#include "patchcontinue.f"
+
+#include "addpatchtrue1.f"
+#include "addpatchtrue2.f"
+
+#include "addpatchfalse.f"
+
+using namespace std;
+

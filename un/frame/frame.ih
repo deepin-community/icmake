@@ -1,0 +1,7 @@
+#include "frame.h"
+
+#include "../../support/bimheader/bimheader.h"
+#include "../../xerr/xerr.ih"
+
+using namespace std;
+

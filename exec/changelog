@@ -1,0 +1,12 @@
+icm-exec version 10.00.00
+
+  * C++ version of icm-exec
+
+  * As with flexc++ canonical paths are not used anymore. Instead
+    absolute paths are used (builtin/chdir.cc)
+
+  * Added option -n: drops the requirement that icm-exec and the bim file to
+    unassemble must have identical main version numbers.
+
+ -- Frank B. Brokken <f.b.brokken@rug.nl>  Wed, 05 May 2021 11:09:34 +0200
+

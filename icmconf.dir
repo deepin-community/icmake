@@ -1,0 +1,2 @@
+#define LIBRARY           "obj"
+#include "../../icmconf.lib"

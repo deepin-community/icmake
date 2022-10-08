@@ -1,0 +1,2 @@
+inline void Parser::print()         
+{}

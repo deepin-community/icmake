@@ -1,0 +1,4 @@
+#!/bin/bash
+
+strip tmp/bin/binary
+cp tmp/bin/binary /usr/lib/icmake/bin/icm-pp.wip

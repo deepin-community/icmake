@@ -1,0 +1,6 @@
+//#define XERR
+#include "cpu.ih"
+
+void CPU::
+{
+}

@@ -1,0 +1,24 @@
+
+void compile(string src)
+{                           
+    exec("g++ -c " + src);      // compile 'src'
+}
+
+void inspect(string src)
+{                               // get the obj-file's name:
+                                // only compile if necessary
+    if (src younger change_ext(src, ".o"))
+        compile(src);
+}
+
+int main()
+{                               // find all .cc source files
+    list sources = makelist("*.cc");
+
+    for (                       // visit all source files
+        int idx = 0, end = listlen(sources); 
+            idx != end;
+                ++idx
+    )
+        inspect(sources[idx]);  // compile if needed
+}

@@ -1,0 +1,18 @@
+#include "stack.h"
+
+#include <filesystem>
+
+#include <bobcat/exception>
+#include "bobcat/arg"
+
+#include "../../xerr/xerr.ih"
+#include "../../support/as/as.h"
+
+#include "../variable/variable.h"
+#include "../int/int.h"
+#include "../list/list.h"
+
+extern char **environ;
+
+using namespace std;
+using namespace FBB;

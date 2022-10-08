@@ -1,0 +1,25 @@
+#!/bin/bash
+
+IFS="
+"
+
+echo "//    This file does not contain additional comment.
+//    Comment is provided in the distribution files under ./scripts
+"
+
+while read -r line ; do
+    echo "$line" | grep '^#include "'$1'/' > /dev/null  # find the #includes
+    if [ $? -ne 0 ] ; then                              # no include
+        echo "$line"
+    else                                                # found #include
+        line=`echo "$line" | sed 's|#include "'$1'/\([a-z]\+\).*|\1|'`
+        cat $1/$line
+    fi
+done | sed ' 
+    s|\s*//[^"].*||
+    s|\s*//\s*$||' | grep -v '^$' | sed 's|%%|//|g' 
+
+# remove spaces followed by // until the end of the line
+
+#   remove end of line comment, remove empty lines, but keep
+#   string constants (may not contain \" escape characters)

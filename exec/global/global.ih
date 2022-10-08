@@ -1,0 +1,16 @@
+#include "global.h"
+
+#include <bobcat/exception>
+
+#include "../../xerr/xerr.ih"
+
+
+#include "../../support/exprtype/exprtype.h"
+#include "../../support/bimheader/bimheader.h"
+
+#include "../int/int.h"
+#include "../string/string.h"
+#include "../list/list.h"
+
+using namespace std;
+using namespace FBB;

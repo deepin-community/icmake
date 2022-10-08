@@ -1,0 +1,156 @@
+%filenames scanner
+%input-interface        "input.hdr"
+%input-implementation   "input.src"
+
+//%print-tokens
+//%debug
+
+%x str
+
+%%
+
+<str>{
+    \"                  return cleanString();
+
+    .                   |
+    \\.                 more();
+}   
+
+[ \t]                   
+\n                      setWhere();
+
+^#[0-9]+\n              setLineNr();
+
+^#\>.*                  pushFile();
+
+^#$                     popFile();
+
+\'.'                    |       // character constants
+'\\[0-7]{3}'            |
+'\\x[[:xdigit:]]{2}'    |
+'\\.'                   return cleanString();
+
+
+[1-9][0-9]*             return token(Tokens::NUMBER, stoul(matched()));
+
+
+0[0-7]*                 return token(Tokens::NUMBER, stoul(matched(), 0, 8));
+
+0x[[:xdigit:]]+         {
+                            return token(Tokens::NUMBER, 
+                                         stoul(&matched()[2], 0, 16));
+                        }
+
+\"                      {
+                            more();
+                            begin(StartCondition_::str);
+                        }
+
+break                   return Tokens::BREAK;
+
+continue                return Tokens::CONTINUE;
+
+else                    return Tokens::ELSE;
+
+exit                    return Tokens::EXIT;
+
+for                     return Tokens::FOR;
+
+if                      return Tokens::IF;
+
+return                  return Tokens::RETURN;
+
+while                   return Tokens::WHILE;
+
+void                    return token(Tokens::VOID,       e_void);
+
+int                     return token(Tokens::INT,        e_int);
+
+list                    return token(Tokens::LIST,       e_list);
+
+string                  return token(Tokens::STRINGTYPE, e_str);
+
+bool                    return token (Tokens::BOOL,      e_bool);
+
+"||"                    return Tokens::OR;
+
+"&&"                    return Tokens::AND;
+
+                        // plain '=' is returned as matched().front()
+
+"/="                    return token(Tokens::MATH_IS,   Opcode::div);
+                                                        
+"-="                    return token(Tokens::MATH_IS,   Opcode::sub);
+                                                        
+"*="                    return token(Tokens::MATH_IS,   Opcode::mul);
+                                                        
+"%="                    return token(Tokens::MATH_IS,   Opcode::mod);
+                                                        
+"+="                    return token(Tokens::MATH_IS,   Opcode::add);
+                                                        
+"&="                    return token(Tokens::MATH_IS,   Opcode::band);
+                                                        
+"|="                    return token(Tokens::MATH_IS,   Opcode::bor);
+                                                        
+"^="                    return token(Tokens::MATH_IS,   Opcode::bxor);
+                                                        
+"<<="                   return token(Tokens::MATH_IS,   Opcode::shl);
+
+">>="                   return token(Tokens::MATH_IS,   Opcode::shr);
+
+"++"                    return token(Tokens::INCDEC,    Opcode::inc);
+
+"--"                    return token(Tokens::INCDEC,    Opcode::dec);
+
+"=="                    return token(Tokens::EQUALITY,  Opcode::eq);
+
+"!="                    return token(Tokens::EQUALITY,  Opcode::neq);
+
+"<"                     return token(Tokens::ORDER,     Opcode::sm);
+
+"<="                    return token(Tokens::ORDER,     Opcode::smeq);
+
+">"                     return token(Tokens::ORDER,     Opcode::gr);
+
+">="                    return token(Tokens::ORDER,     Opcode::greq);
+
+older                   return token(Tokens::ORDER,     Opcode::older);
+
+newer   |
+younger                 return token(Tokens::ORDER,     Opcode::younger);
+
+">>"                    return token(Tokens::SHIFT,     Opcode::shr);
+
+"<<"                    return token(Tokens::SHIFT,     Opcode::shl);
+
+"*"                     return token(Tokens::MULTIPLY,  Opcode::mul);
+
+"/"                     return token(Tokens::MULTIPLY,  Opcode::div);
+
+"%"                     return token(Tokens::MULTIPLY,  Opcode::mod);
+
+OFF         |
+P_CHECK                 return token(Tokens::NUMBER, 0);
+
+S_IFDIR     |
+O_FILE      |
+ON                      return token(Tokens::NUMBER, 1);
+
+S_IFCHR     |
+P_NOCHECK   |
+O_DIR                   return token(Tokens::NUMBER, 2);
+
+S_IFREG     |
+O_SUBDIR                return token(Tokens::NUMBER, 4);
+
+S_IREAD     |
+O_ALL                   return token(Tokens::NUMBER, 8);
+
+S_IWRITE                return token(Tokens::NUMBER, 16);
+
+S_IEXEC                 return token(Tokens::NUMBER, 32);
+
+[_A-Za-z][A-Za-z0-9_]*  return Tokens::IDENTIFIER;
+
+
+.                       return matched().front();

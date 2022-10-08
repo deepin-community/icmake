@@ -1,0 +1,6 @@
+//#define XERR
+#include "scanner.ih"
+
+Scanner::
+{
+}

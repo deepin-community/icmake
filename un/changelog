@@ -1,0 +1,8 @@
+icmun version 10.00.00
+
+  * C++ version of icmun
+
+  * Added option -n: drops the requirement that icmun and the bim file to
+    unassemble must have identical main version numbers.
+
+ -- Frank B. Brokken <f.b.brokken@rug.nl>  Mon, 03 May 2021 16:16:46 +0200

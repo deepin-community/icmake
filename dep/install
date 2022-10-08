@@ -1,0 +1,3 @@
+#!/bin/bash
+
+cp tmp/bin/binary /usr/lib/icmake/bin/icm-dep.wip

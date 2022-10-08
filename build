@@ -1,0 +1,50 @@
+#!/bin/bash
+
+    # action is clean, distclean or a base directory (e.g., /)
+action=$1
+
+if [ "$action" == "distclean" ] ; then
+    echo rm -rf tmp
+    rm -rf tmp
+    action=clean
+fi
+
+        # distclean falls through into 'clean' to remove the subdir's 
+        # tmp dirs
+
+if [ "$action" == "clean" ] ; then
+    for dir in support comp exec pp dep un icmake icmbuild
+    do
+        cd $dir
+    echo -n "cd $dir; "
+        icmbuild clean
+        cd ..
+    done
+    exit 0
+fi
+
+if [ ! -e tmp/INSTALL.im ] ; then
+
+    if [ "$action" == "" ] ; then
+        echo "
+First run ./icm_prepare, specifying a base directory for icmake (e.g. /), 
+or restart $0, and specify a base directory as its first 
+command-line argument, e.g., '$0 /'
+"
+        exit 1;
+    fi
+
+    ./icm_prepare $action
+fi
+
+for dir in support comp exec pp dep un icmake icmbuild
+do
+    cd $dir
+    echo $dir
+    icmbuild || exit 1
+    cd ..
+done
+
+
+
+

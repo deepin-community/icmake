@@ -1,0 +1,14 @@
+while_:
+    WHILE
+    {
+        push();
+    }
+;
+
+whileStatement:   //     condition: $4   statement: $7
+    while_ '(' syntaxExpression condition syntaxCloseParen closeParenBreakOK
+        statement 
+    {
+        $$ = forStmnt(Args{}, $4, Args{}, $7);        
+    }
+;

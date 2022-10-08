@@ -1,0 +1,22 @@
+void setGcompiler()
+{
+    // try a C++ compiler; if not found: try a C compiler; if not found
+    // try COMPILER. 
+    // Same for matching options.
+
+#ifdef CXX
+    g_compiler = setOpt(CXX, "CXX") + " " + setOpt(CXXFLAGS, "CXXFLAGS");
+#else
+    #ifdef CC
+        g_compiler = setOpt(CC, "CC") + " " + setOpt(CFLAGS, "CFLAGS");
+    #else
+        #ifdef COMPILER
+
+            #ifdef COMPILER_OPTIONS
+                g_compiler = COMPILER + " " + COMPILER_OPTIONS;
+            #endif
+
+        #endif // COMPILER
+    #endif // CC
+#endif // CXX
+}

@@ -1,0 +1,12 @@
+conditionVar_:
+    varType defineVar
+    {
+        $$ = move($2);
+    }
+;
+
+condition:
+    expression
+|
+    conditionVar_
+;

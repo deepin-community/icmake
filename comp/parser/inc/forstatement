@@ -1,0 +1,26 @@
+for_:
+    FOR
+    {
+        push();
+    }
+;
+
+forOptInc_:
+    flowArgs
+|
+    argsNull
+;
+
+forStatement:   // $4: init, $8: cond, $12: inc, $15: stmnt
+                // init: Args, cond: SemVal, inc: Args, 
+                // statement: SemVal
+    for_ '(' syntaxInit
+            optInit  syntaxSemicol   ';' syntaxExpression       //  4 . . .
+            optCondition syntaxSemicol   ';' syntaxExpression   //  8 . . .
+            forOptInc_   syntaxCloseParen closeParenBreakOK     // 12 . .
+    statement                                                   // 15
+    {
+        $$ = forStmnt(move($4), $8, move($12), $15);    // also: pops
+    }
+;
+

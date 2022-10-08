@@ -1,0 +1,9 @@
+#include "int.h"
+
+#include <ostream>
+#include <string>
+
+#include "../../xerr/xerr.ih"
+
+using namespace std;
+

@@ -1,0 +1,6 @@
+string findIn(string path, string entry)    // find any filesystem entry
+{
+    string ret = path + "/" + entry;
+
+    return exists(ret) ? ret : "";
+}

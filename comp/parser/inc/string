@@ -1,0 +1,19 @@
+string_:
+    string_ STRING
+    {      
+        $$ = $1 + d_scanner.matched();                                 
+    }
+|
+    STRING
+    {
+        $$ = d_scanner.matched();
+    }
+;
+
+string:
+    string_
+    {                               // store the string, return its SemVal
+        $$ = SemVal{ e_str | e_const, 
+                     as<int>(StringStore::instance().offset($1)) };
+    }
+;

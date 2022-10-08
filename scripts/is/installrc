@@ -1,0 +1,16 @@
+void install_rc()
+{
+                                    // retrieve the config file. Exit if
+                                    // 'icmstart.rc' can't be found  in 
+                                    // -c's path, in $HOME or in /etc/icmake
+    string conffile = findFile("icmstart.rc");  
+
+                                    // process the lines of the conf file
+    while (list line = fgets(conffile, line))
+        install_line(line[0]);
+
+    install_version();              // install VERSION if needed
+    checkDEFCOM();                  // unless specified: add DEFCOM
+}
+
+

@@ -1,0 +1,43 @@
+fdName_:
+    identifier
+    {
+        d_symtab.defineFunction(d_type, $1);
+    }
+;
+
+fdParamName_:
+    identifier
+    {
+        d_symtab.defineVar(d_type, $1);
+    }
+;
+    
+fdParam_:
+    varType fdParamName_ syntaxCommaOrCloseparen
+;
+
+fdParams_:
+    fdParams_ ',' syntaxTypename fdParam_
+|
+    fdParam_
+;
+
+fdOptParams_:
+    fdParams_
+|
+    // empty
+;
+
+fdHead_:
+    fdName_ '('  fdOptParams_  ')' syntaxOpenCurly
+    {
+        functionHead();
+    }
+;
+    
+functionDef:
+    fdHead_  openCurly  statements  closeCurly
+    {
+        functionDefined($3);
+    }
+;

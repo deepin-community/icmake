@@ -1,0 +1,9 @@
+#include "varbase.h"
+
+#include <string>
+#include <bobcat/exception>
+
+#include "../../xerr/xerr.ih"
+
+using namespace std;
+using namespace FBB;

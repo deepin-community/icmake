@@ -1,0 +1,85 @@
+=:  stay in the current state
+-:  no action at all (= nop)
+
+        START,              CONTENT,            WS,
+
+SPACE,  -                   ->WS                -
+        initial blanks      prepare for         multiple spaces
+        are ignored         writing 1           become 1 space
+                            space
+
+TEXT,   ->CONTENT           =                   ->CONTENT
+        write TEXT          write TEXT          write a space
+                                                and write TEXT
+            
+NL,     ->NL0               ->NL1               ->NL1
+        initial newlines    prepare for         ignore the
+        are ignored, but    ending this         trailing
+        will be #<nr>       line, maybe         blanks
+        marks at text       using #<nr>
+
+NEXT,   =                   err:                ->START
+        #>filename\n        cannot happen       \n#>filename\n
+        remain in the       as file switching   there is content
+        START state         occurs at BOL       so the line is
+                                                terminated before
+                                                writing the 
+                                                filename
+        
+AT_EOF, =                   ->START             ->START             
+        at the top line:    write \n#\n         write \n#\n         
+        merely write        and continue with   and continue with   
+        #\n to indicate     the former file     the former file     
+        a return to a
+        previous file
+
+
+
+NL0:    initial line(s) seen at the top of a file
+NL1:    1 \n seen in the CONTENT (or WS) state: just an EOLN
+NLn:    > 1 \n seen in the CONTENT (or WS) state: may need #<nr>
+
+        NL0,                NL1,                NLn,
+
+SPACE,  -                   -                   -               
+        space chars at      ignore spaces       ignore spaces   
+        the top line        at the begin        at the begin    
+        are ignored         of lines            of lines
+
+TEXT,   ->CONTENT           ->CONTENT           ->CONTENT
+        \n#<nr>\n           write \n and        write \n#<nr>\n
+        write TEXT          TEXT                and TEXT
+                
+NL,     -                   ->NLn               -
+        
+NEXT,   ->START             ->START             ->START         
+        #>filename\n        \n#>filename\n      \n#>filename\n        
+        ignore the          end the line        end the multiple    
+        initial line(s)     and continue with   lines and continue   
+        and continue        the next file       with the next file
+        with the next file                      
+        
+AT_EOF, ->START             ->START             ->START         
+        write #\n           write \n#\n         write \n#\n     
+        and continue        and continue        and continue    
+        with the former     with the former     with the former 
+        file                file                file            
+        
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

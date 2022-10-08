@@ -1,0 +1,13 @@
+void cleanTmp()
+{
+    printf("removing files in TMP_DIR except gch\n");
+    echo(OFF);
+
+    chdir(TMP_DIR);
+    list tmp = makelist(O_ALL, "*") - ["gch"];
+
+    for(int idx = 0, end = listlen(tmp); idx != end; ++idx)
+        system("rm -r " + tmp[idx]);
+
+    exit(0);
+}

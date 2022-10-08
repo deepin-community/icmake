@@ -1,0 +1,66 @@
+icm_comp itself has no run-time options (--help and --version end icm_comp)
+
+Pre-options:
+    --verbose (-V)
+    --no-process (-N)
+
+Action options:
+
+    --about (-a)
+            forward: done
+
+    --help (-h)
+            forward: done
+
+    --version (-v)
+            these options end icmake after showing their info
+
+    --compile (-c) [icm_pp options] im-file [bim-file]
+            (option location of options beyond --compile not critical)
+
+            forward all from the first non-option
+
+    --dependencies (-d) ...
+            (all options following -d are forwarded to icm-dep)
+
+            forward all following -d
+
+    --execute (-e) [icm_exe options] bim-file [bim's main argv options/args]
+            (option location of options beyond --execute is critical)
+
+            forward all from the first non-option
+
+    --force (-f)   - as with --compile
+
+    --preprocess (-p) [icm_pp options] im-file [pim-file]
+            (option location of options beyond --preprocess not critical)
+
+            forward all 
+
+    --source (-s)   [--preprocess (-p) preprocess options]
+                    [--execute (-e) icm_exec options] 
+                    im-file 
+                    [bim's main argv options/args]
+            (option locations are critical, but -p and -e options may be
+            swapped)
+
+            forward all from the first non-option
+
+    -t<value> [-p preprocess options] [-e icm-exec options] 
+            option locations are critical. -- is only required if -p and/or -e
+            are specified.
+
+            forward all from the 1st non-option
+
+    --unassemble -u
+            
+            forward ALL
+
+With -s and -t: if pre-processor follow -s/-t then -p may be omitted.
+
+
+
+
+
+
+

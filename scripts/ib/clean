@@ -1,0 +1,10 @@
+void clean()
+{
+    #ifdef USE_ALL
+        cleanUseAll();
+    #endif
+
+    system("rm -rf " TMP_DIR);
+
+    cleanPrecomp("");                   // exits
+}

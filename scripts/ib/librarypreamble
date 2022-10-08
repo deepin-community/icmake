@@ -1,0 +1,44 @@
+void checkVersion()
+{
+    string version = "version" + get_dext(SOURCES);
+
+    if (exists(version) &&
+        (
+            "VERSION" younger version || "YEARS" younger version || 
+            "AUTHOR" younger version
+        )
+    )
+    {
+        echo(OFF);
+        system("touch " + version);
+        echo(USE_ECHO);
+    }
+}
+
+void libraryPreamble()
+{
+    #ifdef PARSER_DIR
+        if (PARSER_DIR != "")
+            checkGrammar();
+    #endif
+    
+    #ifdef SCANNER_DIR
+        if (SCANNER_DIR != "")
+            checkLexer();
+    #endif
+
+    #ifdef PRECOMP
+        list classes = makelist(O_SUBDIR, "*");
+        loadPrecompile(classes);
+    #endif
+
+    if (strlen(ICM_DEP))                // inspect gch and a files 
+        system("icmake -d " ICM_DEP);
+
+    #ifdef PRECOMP
+        precompileHeaders(classes);     // store .gch in class dirs
+    #endif
+
+    checkVersion();                     // VERSION younger version.cc ?
+}
+

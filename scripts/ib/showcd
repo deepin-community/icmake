@@ -1,0 +1,6 @@
+void showCd(string dir)
+{
+    if (USE_ECHO)    
+        printf("\n"
+                "chdir ", dir, "\n");
+}

@@ -1,0 +1,3495 @@
+[grammar (info)] Line 87: 
+Production Rules:
+   (precedences (shown between parentheses) were set by %prec;
+    are equal to the precedence of the rules' 1st terminal tokens;
+    or (if not shown) are equal to the default (max) precedence)
+1: input ->  input defVarOrFun
+2: input ->  defVarOrFun
+3: syntaxCloseParen ->  <empty>
+4: syntaxCommaOrSemicol ->  <empty>
+5: syntaxCommaOrCloseparen ->  <empty>
+6: syntaxExpression ->  <empty>
+7: syntaxIdentifier ->  <empty>
+8: syntaxInit ->  <empty>
+9: syntaxOpenCurly ->  <empty>
+10: syntaxSemicol ->  <empty>
+11: syntaxTypename ->  <empty>
+12: opValue ->  <empty>
+13: openCurly ('{') ->  '{'
+14: closeCurly ('}') ->  '}'
+15: closeParenBreakOK (')') ->  ')'
+16: varType_ (INT) ->  INT
+17: varType_ (STRINGTYPE) ->  STRINGTYPE
+18: varType_ (LIST) ->  LIST
+19: varType ->  varType_ syntaxIdentifier
+20: string_ (STRING) ->  string_ STRING
+21: string_ (STRING) ->  STRING
+22: string ->  string_
+23: cast (INT) ->  INT
+24: cast (LIST) ->  LIST
+25: cast (STRINGTYPE) ->  STRINGTYPE
+26: cast (BOOL) ->  BOOL
+27: identifier (IDENTIFIER) ->  IDENTIFIER
+28: argsExpr ->  expression
+29: argsExpr (ORDER) ->  ORDER opValue
+30: args (',') ->  args ',' argsExpr
+31: args ->  argsExpr
+32: argsNull ->  <empty>
+33: argsOpt ->  args
+34: argsOpt ->  argsNull
+35: defineVar_ ->  identifier
+36: defineVar ->  defineVar_
+37: defineVar ('=') ->  defineVar_ '=' syntaxExpression expression
+38: globalVars (',') ->  globalVars ',' defineVar syntaxCommaOrSemicol
+39: globalVars ->  defineVar syntaxCommaOrSemicol
+40: localVars (',') ->  localVars ',' defineVar syntaxCommaOrSemicol
+41: localVars ->  defineVar syntaxCommaOrSemicol
+42: exprUnit_ ->  string
+43: exprUnit_ (NUMBER) ->  NUMBER
+44: exprUnit_ ->  identifier
+45: exprStart_ ->  exprUnit_ syntaxExpression
+46: expression ->  exprStart_
+47: expression ('[') ->  '[' argsOpt ']'
+48: expression ('[') ->  expression '[' expression ']'
+49: expression ('(') ->  identifier '(' argsOpt ')'
+50: expression ('`') ->  '`' expression '`'
+51: expression ('(') ->  '(' expression ')'
+52: expression ('!') ->  '+' expression
+53: expression ('!') ->  '-' expression
+54: expression ('!') ->  '~' expression
+55: expression ('!') ->  '!' expression
+56: expression (INCDEC) ->  INCDEC opValue expression
+57: expression (INCDEC) ->  expression INCDEC opValue
+58: expression ('!') ->  '(' cast ')' expression
+59: expression ('+') ->  expression '+' expression
+60: expression ('-') ->  expression '-' expression
+61: expression (MULTIPLY) ->  expression MULTIPLY opValue expression
+62: expression (SHIFT) ->  expression SHIFT opValue expression
+63: expression (ORDER) ->  expression ORDER opValue expression
+64: expression (EQUALITY) ->  expression EQUALITY opValue expression
+65: expression ('&') ->  expression '&' expression
+66: expression ('^') ->  expression '^' expression
+67: expression ('|') ->  expression '|' expression
+68: expression (AND) ->  expression AND expression
+69: expression (OR) ->  expression OR expression
+70: expression ('?') ->  expression '?' expression ':' expression
+71: expression ('=') ->  expression '=' expression
+72: expression (MATH_IS) ->  expression MATH_IS opValue expression
+73: conditionVar_ ->  varType defineVar
+74: condition ->  expression
+75: condition ->  conditionVar_
+76: optCondition ->  condition
+77: optCondition ->  <empty>
+78: retExpr_ ->  expression
+79: retExpr_ ->  <empty>
+80: retLeave_ (RETURN) ->  RETURN
+81: retLeave_ (EXIT) ->  EXIT
+82: returnStatement ->  retLeave_ syntaxExpression retExpr_
+83: while_ (WHILE) ->  WHILE
+84: whileStatement ('(') ->  while_ '(' syntaxExpression condition syntaxCloseParen closeParenBreakOK statement
+85: flowArgs (',') ->  flowArgs ',' expression
+86: flowArgs ->  expression
+87: flowInitDefs_ (',') ->  flowInitDefs_ ',' defineVar
+88: flowInitDefs_ ->  defineVar
+89: flowInit ->  flowArgs
+90: flowInit ->  varType flowInitDefs_
+91: optInit ->  flowInit
+92: optInit ->  argsNull
+93: for_ (FOR) ->  FOR
+94: forOptInc_ ->  flowArgs
+95: forOptInc_ ->  argsNull
+96: forStatement ('(') ->  for_ '(' syntaxInit optInit syntaxSemicol ';' syntaxExpression optCondition syntaxSemicol ';' syntaxExpression forOptInc_ syntaxCloseParen closeParenBreakOK statement
+97: if_ (IF) ->  IF
+98: ifElse_ (ELSE) ->  ELSE
+99: ifStatementElse_ ->  ifElse_ statement
+100: ifStatementElse_ ->  <empty>
+101: ifCond_ ->  condition
+102: ifCond_ (';') ->  ';' condition
+103: ifCond_ (';') ->  flowInit ';' condition
+104: ifStatement ('(') ->  if_ '(' syntaxExpression ifCond_ syntaxCloseParen ')' syntaxExpression statement ifStatementElse_
+105: stBreak_ (BREAK) ->  BREAK
+106: stContinue_ (CONTINUE) ->  CONTINUE
+107: stCompound_ ->  openCurly statements closeCurly
+108: stAlt_ (';') ->  stBreak_ ';'
+109: stAlt_ (';') ->  stContinue_ ';'
+110: stAlt_ ->  stCompound_
+111: stAlt_ (';') ->  ';'
+112: stAlt_ (';') ->  expression ';'
+113: stAlt_ (';') ->  returnStatement ';'
+114: stAlt_ ->  whileStatement
+115: stAlt_ ->  ifStatement
+116: stAlt_ ->  forStatement
+117: stAlt_ (errTok_) ->  errTok_ ';'
+118: statement ->  stAlt_
+119: statement (';') ->  varType localVars ';'
+120: statements ->  statements statement
+121: statements ->  <empty>
+122: fdName_ ->  identifier
+123: fdParamName_ ->  identifier
+124: fdParam_ ->  varType fdParamName_ syntaxCommaOrCloseparen
+125: fdParams_ (',') ->  fdParams_ ',' syntaxTypename fdParam_
+126: fdParams_ ->  fdParam_
+127: fdOptParams_ ->  fdParams_
+128: fdOptParams_ ->  <empty>
+129: fdHead_ ('(') ->  fdName_ '(' fdOptParams_ ')' syntaxOpenCurly
+130: functionDef ->  fdHead_ openCurly statements closeCurly
+131: _voidtype (VOID) ->  VOID
+132: _definition (';') ->  varType globalVars ';'
+133: _definition ->  varType functionDef
+134: _definition ->  _voidtype functionDef
+135: defVarOrFun ->  _definition syntaxTypename
+136: input_$ ->  input
+
+
+Symbolic Terminal tokens:
+       error
+       EOF
+   292: BOOL
+   293: BREAK
+   294: CONTINUE
+   295: ELSE
+   296: EXIT
+   297: FOR
+   298: IDENTIFIER
+   299: IF
+   300: INT
+   301: LIST
+   302: NUMBER
+   303: RETURN
+   304: STRING
+   305: STRINGTYPE
+   306: VOID
+   307: WHILE
+    61: '='
+   308: MATH_IS
+    63: '?'
+    58: ':'
+   309: OR
+   310: AND
+   124: '|'
+    94: '^'
+    38: '&'
+   311: EQUALITY
+   312: ORDER
+   313: SHIFT
+    43: '+'
+    45: '-'
+   314: MULTIPLY
+    33: '!'
+   126: '~'
+   315: INCDEC
+    91: '['
+   123: '{'
+   125: '}'
+    41: ')'
+    44: ','
+    93: ']'
+    40: '('
+    96: '`'
+    59: ';'
+
+
+Grammar States: 
+
+State 0:
+136: input_$ ->  . input 
+  0:   On input to state 1
+  1:   On defVarOrFun to state 2
+  2:   On _definition to state 3
+  3:   On varType to state 4
+  4:   On _voidtype to state 5
+  5:   On varType_ to state 6
+  6:   On VOID to state 7
+  7:   On INT to state 8
+  8:   On STRINGTYPE to state 9
+  9:   On LIST to state 10
+
+
+State 1:
+136: input_$ -> input  . 
+1: input -> input  . defVarOrFun 
+  0:   On defVarOrFun to state 11
+  1:   On _definition to state 3
+  2:   On varType to state 4
+  3:   On _voidtype to state 5
+  4:   On varType_ to state 6
+  5:   On VOID to state 7
+  6:   On INT to state 8
+  7:   On STRINGTYPE to state 9
+  8:   On LIST to state 10
+
+
+State 2:
+2: input -> defVarOrFun  . 
+  Reduce by 2: input -> defVarOrFun  . 
+
+
+State 3:
+135: defVarOrFun -> _definition  . syntaxTypename 
+  0:   On syntaxTypename to state 12
+  Reduce by 11: syntaxTypename ->  . 
+
+
+State 4:
+132: _definition -> varType  . globalVars ';' 
+133: _definition -> varType  . functionDef 
+  0:   On globalVars to state 13
+  1:   On functionDef to state 14
+  2:   On defineVar to state 15
+  3:   On fdHead_ to state 16
+  4:   On defineVar_ to state 17
+  5:   On fdName_ to state 18
+  6:   On identifier to state 19
+  7:   On IDENTIFIER to state 20
+
+
+State 5:
+134: _definition -> _voidtype  . functionDef 
+  0:   On functionDef to state 21
+  1:   On fdHead_ to state 16
+  2:   On fdName_ to state 18
+  3:   On identifier to state 22
+  4:   On IDENTIFIER to state 20
+
+
+State 6:
+19: varType -> varType_  . syntaxIdentifier 
+  0:   On syntaxIdentifier to state 23
+  Reduce by 7: syntaxIdentifier ->  . 
+
+
+State 7:
+131: _voidtype -> VOID  . 
+  Reduce by 131: _voidtype -> VOID  . 
+
+
+State 8:
+16: varType_ -> INT  . 
+  Reduce by 16: varType_ -> INT  . 
+
+
+State 9:
+17: varType_ -> STRINGTYPE  . 
+  Reduce by 17: varType_ -> STRINGTYPE  . 
+
+
+State 10:
+18: varType_ -> LIST  . 
+  Reduce by 18: varType_ -> LIST  . 
+
+
+State 11:
+1: input -> input defVarOrFun  . 
+  Reduce by 1: input -> input defVarOrFun  . 
+
+
+State 12:
+135: defVarOrFun -> _definition syntaxTypename  . 
+  Reduce by 135: defVarOrFun -> _definition syntaxTypename  . 
+
+
+State 13:
+132: _definition -> varType globalVars  . ';' 
+38: globalVars -> globalVars  . ',' defineVar syntaxCommaOrSemicol 
+  0:   On ';' to state 24
+  1:   On ',' to state 25
+
+
+State 14:
+133: _definition -> varType functionDef  . 
+  Reduce by 133: _definition -> varType functionDef  . 
+
+
+State 15:
+39: globalVars -> defineVar  . syntaxCommaOrSemicol 
+  0:   On syntaxCommaOrSemicol to state 26
+  Reduce by 4: syntaxCommaOrSemicol ->  . 
+
+
+State 16:
+130: functionDef -> fdHead_  . openCurly statements closeCurly 
+  0:   On openCurly to state 27
+  1:   On '{' to state 28
+
+
+State 17:
+36: defineVar -> defineVar_  . 
+37: defineVar -> defineVar_  . '=' syntaxExpression expression 
+  0:   On '=' to state 29
+  Reduce by 36: defineVar -> defineVar_  . 
+
+
+State 18:
+129: fdHead_ -> fdName_  . '(' fdOptParams_ ')' syntaxOpenCurly 
+  0:   On '(' to state 30
+
+
+State 19:
+35: defineVar_ -> identifier  . 
+122: fdName_ -> identifier  . 
+  Reduce by 35: defineVar_ -> identifier  . 
+  Reduce by 122: fdName_ -> identifier  . 
+
+
+State 20:
+27: identifier -> IDENTIFIER  . 
+  Reduce by 27: identifier -> IDENTIFIER  . 
+
+
+State 21:
+134: _definition -> _voidtype functionDef  . 
+  Reduce by 134: _definition -> _voidtype functionDef  . 
+
+
+State 22:
+122: fdName_ -> identifier  . 
+  Reduce by 122: fdName_ -> identifier  . 
+
+
+State 23:
+19: varType -> varType_ syntaxIdentifier  . 
+  Reduce by 19: varType -> varType_ syntaxIdentifier  . 
+
+
+State 24:
+132: _definition -> varType globalVars ';'  . 
+  Reduce by 132: _definition -> varType globalVars ';'  . 
+
+
+State 25:
+38: globalVars -> globalVars ','  . defineVar syntaxCommaOrSemicol 
+  0:   On defineVar to state 31
+  1:   On defineVar_ to state 17
+  2:   On identifier to state 32
+  3:   On IDENTIFIER to state 20
+
+
+State 26:
+39: globalVars -> defineVar syntaxCommaOrSemicol  . 
+  Reduce by 39: globalVars -> defineVar syntaxCommaOrSemicol  . 
+
+
+State 27:
+130: functionDef -> fdHead_ openCurly  . statements closeCurly 
+  0:   On statements to state 33
+  Reduce by 121: statements ->  . 
+
+
+State 28:
+13: openCurly -> '{'  . 
+  Reduce by 13: openCurly -> '{'  . 
+
+
+State 29:
+37: defineVar -> defineVar_ '='  . syntaxExpression expression 
+  0:   On syntaxExpression to state 34
+  Reduce by 6: syntaxExpression ->  . 
+
+
+State 30:
+129: fdHead_ -> fdName_ '('  . fdOptParams_ ')' syntaxOpenCurly 
+  0:   On fdOptParams_ to state 35
+  1:   On fdParams_ to state 36
+  2:   On fdParam_ to state 37
+  3:   On varType to state 38
+  4:   On varType_ to state 6
+  5:   On INT to state 8
+  6:   On STRINGTYPE to state 9
+  7:   On LIST to state 10
+  Reduce by 128: fdOptParams_ ->  . 
+
+
+State 31:
+38: globalVars -> globalVars ',' defineVar  . syntaxCommaOrSemicol 
+  0:   On syntaxCommaOrSemicol to state 39
+  Reduce by 4: syntaxCommaOrSemicol ->  . 
+
+
+State 32:
+35: defineVar_ -> identifier  . 
+  Reduce by 35: defineVar_ -> identifier  . 
+
+
+State 33:
+130: functionDef -> fdHead_ openCurly statements  . closeCurly 
+120: statements -> statements  . statement 
+  0:   On closeCurly to state 40
+  1:   On statement to state 41
+  2:   On '}' to state 42
+  3:   On stAlt_ to state 43
+  4:   On varType to state 44
+  5:   On stBreak_ to state 45
+  6:   On stContinue_ to state 46
+  7:   On stCompound_ to state 47
+  8:   On ';' to state 48
+  9:   On expression to state 49
+  10:   On returnStatement to state 50
+  11:   On whileStatement to state 51
+  12:   On ifStatement to state 52
+  13:   On forStatement to state 53
+  14:   On errTok_ to state 54
+  15:   On varType_ to state 6
+  16:   On BREAK to state 55
+  17:   On CONTINUE to state 56
+  18:   On openCurly to state 57
+  19:   On exprStart_ to state 58
+  20:   On '[' to state 59
+  21:   On identifier to state 60
+  22:   On '`' to state 61
+  23:   On '(' to state 62
+  24:   On '+' to state 63
+  25:   On '-' to state 64
+  26:   On '~' to state 65
+  27:   On '!' to state 66
+  28:   On INCDEC to state 67
+  29:   On retLeave_ to state 68
+  30:   On while_ to state 69
+  31:   On if_ to state 70
+  32:   On for_ to state 71
+  33:   On INT to state 8
+  34:   On STRINGTYPE to state 9
+  35:   On LIST to state 10
+  36:   On '{' to state 28
+  37:   On exprUnit_ to state 72
+  38:   On IDENTIFIER to state 20
+  39:   On RETURN to state 73
+  40:   On EXIT to state 74
+  41:   On WHILE to state 75
+  42:   On IF to state 76
+  43:   On FOR to state 77
+  44:   On string to state 78
+  45:   On NUMBER to state 79
+  46:   On string_ to state 80
+  47:   On STRING to state 81
+
+
+State 34:
+37: defineVar -> defineVar_ '=' syntaxExpression  . expression 
+  0:   On expression to state 82
+  1:   On exprStart_ to state 58
+  2:   On '[' to state 59
+  3:   On identifier to state 60
+  4:   On '`' to state 61
+  5:   On '(' to state 62
+  6:   On '+' to state 63
+  7:   On '-' to state 64
+  8:   On '~' to state 65
+  9:   On '!' to state 66
+  10:   On INCDEC to state 67
+  11:   On exprUnit_ to state 72
+  12:   On IDENTIFIER to state 20
+  13:   On string to state 78
+  14:   On NUMBER to state 79
+  15:   On string_ to state 80
+  16:   On STRING to state 81
+
+
+State 35:
+129: fdHead_ -> fdName_ '(' fdOptParams_  . ')' syntaxOpenCurly 
+  0:   On ')' to state 83
+
+
+State 36:
+127: fdOptParams_ -> fdParams_  . 
+125: fdParams_ -> fdParams_  . ',' syntaxTypename fdParam_ 
+  0:   On ',' to state 84
+  Reduce by 127: fdOptParams_ -> fdParams_  . 
+
+
+State 37:
+126: fdParams_ -> fdParam_  . 
+  Reduce by 126: fdParams_ -> fdParam_  . 
+
+
+State 38:
+124: fdParam_ -> varType  . fdParamName_ syntaxCommaOrCloseparen 
+  0:   On fdParamName_ to state 85
+  1:   On identifier to state 86
+  2:   On IDENTIFIER to state 20
+
+
+State 39:
+38: globalVars -> globalVars ',' defineVar syntaxCommaOrSemicol  . 
+  Reduce by 38: globalVars -> globalVars ',' defineVar syntaxCommaOrSemicol  . 
+
+
+State 40:
+130: functionDef -> fdHead_ openCurly statements closeCurly  . 
+  Reduce by 130: functionDef -> fdHead_ openCurly statements closeCurly  . 
+
+
+State 41:
+120: statements -> statements statement  . 
+  Reduce by 120: statements -> statements statement  . 
+
+
+State 42:
+14: closeCurly -> '}'  . 
+  Reduce by 14: closeCurly -> '}'  . 
+
+
+State 43:
+118: statement -> stAlt_  . 
+  Reduce by 118: statement -> stAlt_  . 
+
+
+State 44:
+119: statement -> varType  . localVars ';' 
+  0:   On localVars to state 87
+  1:   On defineVar to state 88
+  2:   On defineVar_ to state 17
+  3:   On identifier to state 32
+  4:   On IDENTIFIER to state 20
+
+
+State 45:
+108: stAlt_ -> stBreak_  . ';' 
+  0:   On ';' to state 89
+
+
+State 46:
+109: stAlt_ -> stContinue_  . ';' 
+  0:   On ';' to state 90
+
+
+State 47:
+110: stAlt_ -> stCompound_  . 
+  Reduce by 110: stAlt_ -> stCompound_  . 
+
+
+State 48:
+111: stAlt_ -> ';'  . 
+  Reduce by 111: stAlt_ -> ';'  . 
+
+
+State 49:
+112: stAlt_ -> expression  . ';' 
+48: expression -> expression  . '[' expression ']' 
+57: expression -> expression  . INCDEC opValue 
+59: expression -> expression  . '+' expression 
+60: expression -> expression  . '-' expression 
+61: expression -> expression  . MULTIPLY opValue expression 
+62: expression -> expression  . SHIFT opValue expression 
+63: expression -> expression  . ORDER opValue expression 
+64: expression -> expression  . EQUALITY opValue expression 
+65: expression -> expression  . '&' expression 
+66: expression -> expression  . '^' expression 
+67: expression -> expression  . '|' expression 
+68: expression -> expression  . AND expression 
+69: expression -> expression  . OR expression 
+70: expression -> expression  . '?' expression ':' expression 
+71: expression -> expression  . '=' expression 
+72: expression -> expression  . MATH_IS opValue expression 
+  0:   On ';' to state 91
+  1:   On '[' to state 92
+  2:   On INCDEC to state 93
+  3:   On '+' to state 94
+  4:   On '-' to state 95
+  5:   On MULTIPLY to state 96
+  6:   On SHIFT to state 97
+  7:   On ORDER to state 98
+  8:   On EQUALITY to state 99
+  9:   On '&' to state 100
+  10:   On '^' to state 101
+  11:   On '|' to state 102
+  12:   On AND to state 103
+  13:   On OR to state 104
+  14:   On '?' to state 105
+  15:   On '=' to state 106
+  16:   On MATH_IS to state 107
+
+
+State 50:
+113: stAlt_ -> returnStatement  . ';' 
+  0:   On ';' to state 108
+
+
+State 51:
+114: stAlt_ -> whileStatement  . 
+  Reduce by 114: stAlt_ -> whileStatement  . 
+
+
+State 52:
+115: stAlt_ -> ifStatement  . 
+  Reduce by 115: stAlt_ -> ifStatement  . 
+
+
+State 53:
+116: stAlt_ -> forStatement  . 
+  Reduce by 116: stAlt_ -> forStatement  . 
+
+
+State 54:
+117: stAlt_ -> errTok_  . ';' 
+  0:   On ';' to state 109
+
+
+State 55:
+105: stBreak_ -> BREAK  . 
+  Reduce by 105: stBreak_ -> BREAK  . 
+
+
+State 56:
+106: stContinue_ -> CONTINUE  . 
+  Reduce by 106: stContinue_ -> CONTINUE  . 
+
+
+State 57:
+107: stCompound_ -> openCurly  . statements closeCurly 
+  0:   On statements to state 110
+  Reduce by 121: statements ->  . 
+
+
+State 58:
+46: expression -> exprStart_  . 
+  Reduce by 46: expression -> exprStart_  . 
+
+
+State 59:
+47: expression -> '['  . argsOpt ']' 
+  0:   On argsOpt to state 111
+  1:   On args to state 112
+  2:   On argsNull to state 113
+  3:   On argsExpr to state 114
+  4:   On expression to state 115
+  5:   On ORDER to state 116
+  6:   On exprStart_ to state 58
+  7:   On '[' to state 59
+  8:   On identifier to state 60
+  9:   On '`' to state 61
+  10:   On '(' to state 62
+  11:   On '+' to state 63
+  12:   On '-' to state 64
+  13:   On '~' to state 65
+  14:   On '!' to state 66
+  15:   On INCDEC to state 67
+  16:   On exprUnit_ to state 72
+  17:   On IDENTIFIER to state 20
+  18:   On string to state 78
+  19:   On NUMBER to state 79
+  20:   On string_ to state 80
+  21:   On STRING to state 81
+  Reduce by 32: argsNull ->  . 
+
+
+State 60:
+49: expression -> identifier  . '(' argsOpt ')' 
+44: exprUnit_ -> identifier  . 
+  0:   On '(' to state 117
+  Reduce by 44: exprUnit_ -> identifier  . 
+
+
+State 61:
+50: expression -> '`'  . expression '`' 
+  0:   On expression to state 118
+  1:   On exprStart_ to state 58
+  2:   On '[' to state 59
+  3:   On identifier to state 60
+  4:   On '`' to state 61
+  5:   On '(' to state 62
+  6:   On '+' to state 63
+  7:   On '-' to state 64
+  8:   On '~' to state 65
+  9:   On '!' to state 66
+  10:   On INCDEC to state 67
+  11:   On exprUnit_ to state 72
+  12:   On IDENTIFIER to state 20
+  13:   On string to state 78
+  14:   On NUMBER to state 79
+  15:   On string_ to state 80
+  16:   On STRING to state 81
+
+
+State 62:
+51: expression -> '('  . expression ')' 
+58: expression -> '('  . cast ')' expression 
+  0:   On expression to state 119
+  1:   On cast to state 120
+  2:   On exprStart_ to state 58
+  3:   On '[' to state 59
+  4:   On identifier to state 60
+  5:   On '`' to state 61
+  6:   On '(' to state 62
+  7:   On '+' to state 63
+  8:   On '-' to state 64
+  9:   On '~' to state 65
+  10:   On '!' to state 66
+  11:   On INCDEC to state 67
+  12:   On INT to state 121
+  13:   On LIST to state 122
+  14:   On STRINGTYPE to state 123
+  15:   On BOOL to state 124
+  16:   On exprUnit_ to state 72
+  17:   On IDENTIFIER to state 20
+  18:   On string to state 78
+  19:   On NUMBER to state 79
+  20:   On string_ to state 80
+  21:   On STRING to state 81
+
+
+State 63:
+52: expression -> '+'  . expression 
+  0:   On expression to state 125
+  1:   On exprStart_ to state 58
+  2:   On '[' to state 59
+  3:   On identifier to state 60
+  4:   On '`' to state 61
+  5:   On '(' to state 62
+  6:   On '+' to state 63
+  7:   On '-' to state 64
+  8:   On '~' to state 65
+  9:   On '!' to state 66
+  10:   On INCDEC to state 67
+  11:   On exprUnit_ to state 72
+  12:   On IDENTIFIER to state 20
+  13:   On string to state 78
+  14:   On NUMBER to state 79
+  15:   On string_ to state 80
+  16:   On STRING to state 81
+
+
+State 64:
+53: expression -> '-'  . expression 
+  0:   On expression to state 126
+  1:   On exprStart_ to state 58
+  2:   On '[' to state 59
+  3:   On identifier to state 60
+  4:   On '`' to state 61
+  5:   On '(' to state 62
+  6:   On '+' to state 63
+  7:   On '-' to state 64
+  8:   On '~' to state 65
+  9:   On '!' to state 66
+  10:   On INCDEC to state 67
+  11:   On exprUnit_ to state 72
+  12:   On IDENTIFIER to state 20
+  13:   On string to state 78
+  14:   On NUMBER to state 79
+  15:   On string_ to state 80
+  16:   On STRING to state 81
+
+
+State 65:
+54: expression -> '~'  . expression 
+  0:   On expression to state 127
+  1:   On exprStart_ to state 58
+  2:   On '[' to state 59
+  3:   On identifier to state 60
+  4:   On '`' to state 61
+  5:   On '(' to state 62
+  6:   On '+' to state 63
+  7:   On '-' to state 64
+  8:   On '~' to state 65
+  9:   On '!' to state 66
+  10:   On INCDEC to state 67
+  11:   On exprUnit_ to state 72
+  12:   On IDENTIFIER to state 20
+  13:   On string to state 78
+  14:   On NUMBER to state 79
+  15:   On string_ to state 80
+  16:   On STRING to state 81
+
+
+State 66:
+55: expression -> '!'  . expression 
+  0:   On expression to state 128
+  1:   On exprStart_ to state 58
+  2:   On '[' to state 59
+  3:   On identifier to state 60
+  4:   On '`' to state 61
+  5:   On '(' to state 62
+  6:   On '+' to state 63
+  7:   On '-' to state 64
+  8:   On '~' to state 65
+  9:   On '!' to state 66
+  10:   On INCDEC to state 67
+  11:   On exprUnit_ to state 72
+  12:   On IDENTIFIER to state 20
+  13:   On string to state 78
+  14:   On NUMBER to state 79
+  15:   On string_ to state 80
+  16:   On STRING to state 81
+
+
+State 67:
+56: expression -> INCDEC  . opValue expression 
+  0:   On opValue to state 129
+  Reduce by 12: opValue ->  . 
+
+
+State 68:
+82: returnStatement -> retLeave_  . syntaxExpression retExpr_ 
+  0:   On syntaxExpression to state 130
+  Reduce by 6: syntaxExpression ->  . 
+
+
+State 69:
+84: whileStatement -> while_  . '(' syntaxExpression condition syntaxCloseParen closeParenBreakOK statement 
+  0:   On '(' to state 131
+
+
+State 70:
+104: ifStatement -> if_  . '(' syntaxExpression ifCond_ syntaxCloseParen ')' syntaxExpression statement ifStatementElse_ 
+  0:   On '(' to state 132
+
+
+State 71:
+96: forStatement -> for_  . '(' syntaxInit optInit syntaxSemicol ';' syntaxExpression optCondition syntaxSemicol ';' syntaxExpression forOptInc_ syntaxCloseParen closeParenBreakOK statement 
+  0:   On '(' to state 133
+
+
+State 72:
+45: exprStart_ -> exprUnit_  . syntaxExpression 
+  0:   On syntaxExpression to state 134
+  Reduce by 6: syntaxExpression ->  . 
+
+
+State 73:
+80: retLeave_ -> RETURN  . 
+  Reduce by 80: retLeave_ -> RETURN  . 
+
+
+State 74:
+81: retLeave_ -> EXIT  . 
+  Reduce by 81: retLeave_ -> EXIT  . 
+
+
+State 75:
+83: while_ -> WHILE  . 
+  Reduce by 83: while_ -> WHILE  . 
+
+
+State 76:
+97: if_ -> IF  . 
+  Reduce by 97: if_ -> IF  . 
+
+
+State 77:
+93: for_ -> FOR  . 
+  Reduce by 93: for_ -> FOR  . 
+
+
+State 78:
+42: exprUnit_ -> string  . 
+  Reduce by 42: exprUnit_ -> string  . 
+
+
+State 79:
+43: exprUnit_ -> NUMBER  . 
+  Reduce by 43: exprUnit_ -> NUMBER  . 
+
+
+State 80:
+22: string -> string_  . 
+20: string_ -> string_  . STRING 
+  0:   On STRING to state 135
+  Reduce by 22: string -> string_  . 
+
+
+State 81:
+21: string_ -> STRING  . 
+  Reduce by 21: string_ -> STRING  . 
+
+
+State 82:
+37: defineVar -> defineVar_ '=' syntaxExpression expression  . 
+48: expression -> expression  . '[' expression ']' 
+57: expression -> expression  . INCDEC opValue 
+59: expression -> expression  . '+' expression 
+60: expression -> expression  . '-' expression 
+61: expression -> expression  . MULTIPLY opValue expression 
+62: expression -> expression  . SHIFT opValue expression 
+63: expression -> expression  . ORDER opValue expression 
+64: expression -> expression  . EQUALITY opValue expression 
+65: expression -> expression  . '&' expression 
+66: expression -> expression  . '^' expression 
+67: expression -> expression  . '|' expression 
+68: expression -> expression  . AND expression 
+69: expression -> expression  . OR expression 
+70: expression -> expression  . '?' expression ':' expression 
+71: expression -> expression  . '=' expression 
+72: expression -> expression  . MATH_IS opValue expression 
+  0:   On '[' to state 92
+  1:   On INCDEC to state 93
+  2:   On '+' to state 94
+  3:   On '-' to state 95
+  4:   On MULTIPLY to state 96
+  5:   On SHIFT to state 97
+  6:   On ORDER to state 98
+  7:   On EQUALITY to state 99
+  8:   On '&' to state 100
+  9:   On '^' to state 101
+  10:   On '|' to state 102
+  11:   On AND to state 103
+  12:   On OR to state 104
+  13:   On '?' to state 105
+  14:   On '=' to state 106
+  15:   On MATH_IS to state 107
+  Reduce by 37: defineVar -> defineVar_ '=' syntaxExpression expression  . 
+
+
+State 83:
+129: fdHead_ -> fdName_ '(' fdOptParams_ ')'  . syntaxOpenCurly 
+  0:   On syntaxOpenCurly to state 136
+  Reduce by 9: syntaxOpenCurly ->  . 
+
+
+State 84:
+125: fdParams_ -> fdParams_ ','  . syntaxTypename fdParam_ 
+  0:   On syntaxTypename to state 137
+  Reduce by 11: syntaxTypename ->  . 
+
+
+State 85:
+124: fdParam_ -> varType fdParamName_  . syntaxCommaOrCloseparen 
+  0:   On syntaxCommaOrCloseparen to state 138
+  Reduce by 5: syntaxCommaOrCloseparen ->  . 
+
+
+State 86:
+123: fdParamName_ -> identifier  . 
+  Reduce by 123: fdParamName_ -> identifier  . 
+
+
+State 87:
+119: statement -> varType localVars  . ';' 
+40: localVars -> localVars  . ',' defineVar syntaxCommaOrSemicol 
+  0:   On ';' to state 139
+  1:   On ',' to state 140
+
+
+State 88:
+41: localVars -> defineVar  . syntaxCommaOrSemicol 
+  0:   On syntaxCommaOrSemicol to state 141
+  Reduce by 4: syntaxCommaOrSemicol ->  . 
+
+
+State 89:
+108: stAlt_ -> stBreak_ ';'  . 
+  Reduce by 108: stAlt_ -> stBreak_ ';'  . 
+
+
+State 90:
+109: stAlt_ -> stContinue_ ';'  . 
+  Reduce by 109: stAlt_ -> stContinue_ ';'  . 
+
+
+State 91:
+112: stAlt_ -> expression ';'  . 
+  Reduce by 112: stAlt_ -> expression ';'  . 
+
+
+State 92:
+48: expression -> expression '['  . expression ']' 
+  0:   On expression to state 142
+  1:   On exprStart_ to state 58
+  2:   On '[' to state 59
+  3:   On identifier to state 60
+  4:   On '`' to state 61
+  5:   On '(' to state 62
+  6:   On '+' to state 63
+  7:   On '-' to state 64
+  8:   On '~' to state 65
+  9:   On '!' to state 66
+  10:   On INCDEC to state 67
+  11:   On exprUnit_ to state 72
+  12:   On IDENTIFIER to state 20
+  13:   On string to state 78
+  14:   On NUMBER to state 79
+  15:   On string_ to state 80
+  16:   On STRING to state 81
+
+
+State 93:
+57: expression -> expression INCDEC  . opValue 
+  0:   On opValue to state 143
+  Reduce by 12: opValue ->  . 
+
+
+State 94:
+59: expression -> expression '+'  . expression 
+  0:   On expression to state 144
+  1:   On exprStart_ to state 58
+  2:   On '[' to state 59
+  3:   On identifier to state 60
+  4:   On '`' to state 61
+  5:   On '(' to state 62
+  6:   On '+' to state 63
+  7:   On '-' to state 64
+  8:   On '~' to state 65
+  9:   On '!' to state 66
+  10:   On INCDEC to state 67
+  11:   On exprUnit_ to state 72
+  12:   On IDENTIFIER to state 20
+  13:   On string to state 78
+  14:   On NUMBER to state 79
+  15:   On string_ to state 80
+  16:   On STRING to state 81
+
+
+State 95:
+60: expression -> expression '-'  . expression 
+  0:   On expression to state 145
+  1:   On exprStart_ to state 58
+  2:   On '[' to state 59
+  3:   On identifier to state 60
+  4:   On '`' to state 61
+  5:   On '(' to state 62
+  6:   On '+' to state 63
+  7:   On '-' to state 64
+  8:   On '~' to state 65
+  9:   On '!' to state 66
+  10:   On INCDEC to state 67
+  11:   On exprUnit_ to state 72
+  12:   On IDENTIFIER to state 20
+  13:   On string to state 78
+  14:   On NUMBER to state 79
+  15:   On string_ to state 80
+  16:   On STRING to state 81
+
+
+State 96:
+61: expression -> expression MULTIPLY  . opValue expression 
+  0:   On opValue to state 146
+  Reduce by 12: opValue ->  . 
+
+
+State 97:
+62: expression -> expression SHIFT  . opValue expression 
+  0:   On opValue to state 147
+  Reduce by 12: opValue ->  . 
+
+
+State 98:
+63: expression -> expression ORDER  . opValue expression 
+  0:   On opValue to state 148
+  Reduce by 12: opValue ->  . 
+
+
+State 99:
+64: expression -> expression EQUALITY  . opValue expression 
+  0:   On opValue to state 149
+  Reduce by 12: opValue ->  . 
+
+
+State 100:
+65: expression -> expression '&'  . expression 
+  0:   On expression to state 150
+  1:   On exprStart_ to state 58
+  2:   On '[' to state 59
+  3:   On identifier to state 60
+  4:   On '`' to state 61
+  5:   On '(' to state 62
+  6:   On '+' to state 63
+  7:   On '-' to state 64
+  8:   On '~' to state 65
+  9:   On '!' to state 66
+  10:   On INCDEC to state 67
+  11:   On exprUnit_ to state 72
+  12:   On IDENTIFIER to state 20
+  13:   On string to state 78
+  14:   On NUMBER to state 79
+  15:   On string_ to state 80
+  16:   On STRING to state 81
+
+
+State 101:
+66: expression -> expression '^'  . expression 
+  0:   On expression to state 151
+  1:   On exprStart_ to state 58
+  2:   On '[' to state 59
+  3:   On identifier to state 60
+  4:   On '`' to state 61
+  5:   On '(' to state 62
+  6:   On '+' to state 63
+  7:   On '-' to state 64
+  8:   On '~' to state 65
+  9:   On '!' to state 66
+  10:   On INCDEC to state 67
+  11:   On exprUnit_ to state 72
+  12:   On IDENTIFIER to state 20
+  13:   On string to state 78
+  14:   On NUMBER to state 79
+  15:   On string_ to state 80
+  16:   On STRING to state 81
+
+
+State 102:
+67: expression -> expression '|'  . expression 
+  0:   On expression to state 152
+  1:   On exprStart_ to state 58
+  2:   On '[' to state 59
+  3:   On identifier to state 60
+  4:   On '`' to state 61
+  5:   On '(' to state 62
+  6:   On '+' to state 63
+  7:   On '-' to state 64
+  8:   On '~' to state 65
+  9:   On '!' to state 66
+  10:   On INCDEC to state 67
+  11:   On exprUnit_ to state 72
+  12:   On IDENTIFIER to state 20
+  13:   On string to state 78
+  14:   On NUMBER to state 79
+  15:   On string_ to state 80
+  16:   On STRING to state 81
+
+
+State 103:
+68: expression -> expression AND  . expression 
+  0:   On expression to state 153
+  1:   On exprStart_ to state 58
+  2:   On '[' to state 59
+  3:   On identifier to state 60
+  4:   On '`' to state 61
+  5:   On '(' to state 62
+  6:   On '+' to state 63
+  7:   On '-' to state 64
+  8:   On '~' to state 65
+  9:   On '!' to state 66
+  10:   On INCDEC to state 67
+  11:   On exprUnit_ to state 72
+  12:   On IDENTIFIER to state 20
+  13:   On string to state 78
+  14:   On NUMBER to state 79
+  15:   On string_ to state 80
+  16:   On STRING to state 81
+
+
+State 104:
+69: expression -> expression OR  . expression 
+  0:   On expression to state 154
+  1:   On exprStart_ to state 58
+  2:   On '[' to state 59
+  3:   On identifier to state 60
+  4:   On '`' to state 61
+  5:   On '(' to state 62
+  6:   On '+' to state 63
+  7:   On '-' to state 64
+  8:   On '~' to state 65
+  9:   On '!' to state 66
+  10:   On INCDEC to state 67
+  11:   On exprUnit_ to state 72
+  12:   On IDENTIFIER to state 20
+  13:   On string to state 78
+  14:   On NUMBER to state 79
+  15:   On string_ to state 80
+  16:   On STRING to state 81
+
+
+State 105:
+70: expression -> expression '?'  . expression ':' expression 
+  0:   On expression to state 155
+  1:   On exprStart_ to state 58
+  2:   On '[' to state 59
+  3:   On identifier to state 60
+  4:   On '`' to state 61
+  5:   On '(' to state 62
+  6:   On '+' to state 63
+  7:   On '-' to state 64
+  8:   On '~' to state 65
+  9:   On '!' to state 66
+  10:   On INCDEC to state 67
+  11:   On exprUnit_ to state 72
+  12:   On IDENTIFIER to state 20
+  13:   On string to state 78
+  14:   On NUMBER to state 79
+  15:   On string_ to state 80
+  16:   On STRING to state 81
+
+
+State 106:
+71: expression -> expression '='  . expression 
+  0:   On expression to state 156
+  1:   On exprStart_ to state 58
+  2:   On '[' to state 59
+  3:   On identifier to state 60
+  4:   On '`' to state 61
+  5:   On '(' to state 62
+  6:   On '+' to state 63
+  7:   On '-' to state 64
+  8:   On '~' to state 65
+  9:   On '!' to state 66
+  10:   On INCDEC to state 67
+  11:   On exprUnit_ to state 72
+  12:   On IDENTIFIER to state 20
+  13:   On string to state 78
+  14:   On NUMBER to state 79
+  15:   On string_ to state 80
+  16:   On STRING to state 81
+
+
+State 107:
+72: expression -> expression MATH_IS  . opValue expression 
+  0:   On opValue to state 157
+  Reduce by 12: opValue ->  . 
+
+
+State 108:
+113: stAlt_ -> returnStatement ';'  . 
+  Reduce by 113: stAlt_ -> returnStatement ';'  . 
+
+
+State 109:
+117: stAlt_ -> errTok_ ';'  . 
+  Reduce by 117: stAlt_ -> errTok_ ';'  . 
+
+
+State 110:
+107: stCompound_ -> openCurly statements  . closeCurly 
+120: statements -> statements  . statement 
+  0:   On closeCurly to state 158
+  1:   On statement to state 41
+  2:   On '}' to state 42
+  3:   On stAlt_ to state 43
+  4:   On varType to state 44
+  5:   On stBreak_ to state 45
+  6:   On stContinue_ to state 46
+  7:   On stCompound_ to state 47
+  8:   On ';' to state 48
+  9:   On expression to state 49
+  10:   On returnStatement to state 50
+  11:   On whileStatement to state 51
+  12:   On ifStatement to state 52
+  13:   On forStatement to state 53
+  14:   On errTok_ to state 54
+  15:   On varType_ to state 6
+  16:   On BREAK to state 55
+  17:   On CONTINUE to state 56
+  18:   On openCurly to state 57
+  19:   On exprStart_ to state 58
+  20:   On '[' to state 59
+  21:   On identifier to state 60
+  22:   On '`' to state 61
+  23:   On '(' to state 62
+  24:   On '+' to state 63
+  25:   On '-' to state 64
+  26:   On '~' to state 65
+  27:   On '!' to state 66
+  28:   On INCDEC to state 67
+  29:   On retLeave_ to state 68
+  30:   On while_ to state 69
+  31:   On if_ to state 70
+  32:   On for_ to state 71
+  33:   On INT to state 8
+  34:   On STRINGTYPE to state 9
+  35:   On LIST to state 10
+  36:   On '{' to state 28
+  37:   On exprUnit_ to state 72
+  38:   On IDENTIFIER to state 20
+  39:   On RETURN to state 73
+  40:   On EXIT to state 74
+  41:   On WHILE to state 75
+  42:   On IF to state 76
+  43:   On FOR to state 77
+  44:   On string to state 78
+  45:   On NUMBER to state 79
+  46:   On string_ to state 80
+  47:   On STRING to state 81
+
+
+State 111:
+47: expression -> '[' argsOpt  . ']' 
+  0:   On ']' to state 159
+
+
+State 112:
+33: argsOpt -> args  . 
+30: args -> args  . ',' argsExpr 
+  0:   On ',' to state 160
+  Reduce by 33: argsOpt -> args  . 
+
+
+State 113:
+34: argsOpt -> argsNull  . 
+  Reduce by 34: argsOpt -> argsNull  . 
+
+
+State 114:
+31: args -> argsExpr  . 
+  Reduce by 31: args -> argsExpr  . 
+
+
+State 115:
+28: argsExpr -> expression  . 
+48: expression -> expression  . '[' expression ']' 
+57: expression -> expression  . INCDEC opValue 
+59: expression -> expression  . '+' expression 
+60: expression -> expression  . '-' expression 
+61: expression -> expression  . MULTIPLY opValue expression 
+62: expression -> expression  . SHIFT opValue expression 
+63: expression -> expression  . ORDER opValue expression 
+64: expression -> expression  . EQUALITY opValue expression 
+65: expression -> expression  . '&' expression 
+66: expression -> expression  . '^' expression 
+67: expression -> expression  . '|' expression 
+68: expression -> expression  . AND expression 
+69: expression -> expression  . OR expression 
+70: expression -> expression  . '?' expression ':' expression 
+71: expression -> expression  . '=' expression 
+72: expression -> expression  . MATH_IS opValue expression 
+  0:   On '[' to state 92
+  1:   On INCDEC to state 93
+  2:   On '+' to state 94
+  3:   On '-' to state 95
+  4:   On MULTIPLY to state 96
+  5:   On SHIFT to state 97
+  6:   On ORDER to state 98
+  7:   On EQUALITY to state 99
+  8:   On '&' to state 100
+  9:   On '^' to state 101
+  10:   On '|' to state 102
+  11:   On AND to state 103
+  12:   On OR to state 104
+  13:   On '?' to state 105
+  14:   On '=' to state 106
+  15:   On MATH_IS to state 107
+  Reduce by 28: argsExpr -> expression  . 
+
+
+State 116:
+29: argsExpr -> ORDER  . opValue 
+  0:   On opValue to state 161
+  Reduce by 12: opValue ->  . 
+
+
+State 117:
+49: expression -> identifier '('  . argsOpt ')' 
+  0:   On argsOpt to state 162
+  1:   On args to state 112
+  2:   On argsNull to state 113
+  3:   On argsExpr to state 114
+  4:   On expression to state 115
+  5:   On ORDER to state 116
+  6:   On exprStart_ to state 58
+  7:   On '[' to state 59
+  8:   On identifier to state 60
+  9:   On '`' to state 61
+  10:   On '(' to state 62
+  11:   On '+' to state 63
+  12:   On '-' to state 64
+  13:   On '~' to state 65
+  14:   On '!' to state 66
+  15:   On INCDEC to state 67
+  16:   On exprUnit_ to state 72
+  17:   On IDENTIFIER to state 20
+  18:   On string to state 78
+  19:   On NUMBER to state 79
+  20:   On string_ to state 80
+  21:   On STRING to state 81
+  Reduce by 32: argsNull ->  . 
+
+
+State 118:
+50: expression -> '`' expression  . '`' 
+48: expression -> expression  . '[' expression ']' 
+57: expression -> expression  . INCDEC opValue 
+59: expression -> expression  . '+' expression 
+60: expression -> expression  . '-' expression 
+61: expression -> expression  . MULTIPLY opValue expression 
+62: expression -> expression  . SHIFT opValue expression 
+63: expression -> expression  . ORDER opValue expression 
+64: expression -> expression  . EQUALITY opValue expression 
+65: expression -> expression  . '&' expression 
+66: expression -> expression  . '^' expression 
+67: expression -> expression  . '|' expression 
+68: expression -> expression  . AND expression 
+69: expression -> expression  . OR expression 
+70: expression -> expression  . '?' expression ':' expression 
+71: expression -> expression  . '=' expression 
+72: expression -> expression  . MATH_IS opValue expression 
+  0:   On '`' to state 163
+  1:   On '[' to state 92
+  2:   On INCDEC to state 93
+  3:   On '+' to state 94
+  4:   On '-' to state 95
+  5:   On MULTIPLY to state 96
+  6:   On SHIFT to state 97
+  7:   On ORDER to state 98
+  8:   On EQUALITY to state 99
+  9:   On '&' to state 100
+  10:   On '^' to state 101
+  11:   On '|' to state 102
+  12:   On AND to state 103
+  13:   On OR to state 104
+  14:   On '?' to state 105
+  15:   On '=' to state 106
+  16:   On MATH_IS to state 107
+
+
+State 119:
+51: expression -> '(' expression  . ')' 
+48: expression -> expression  . '[' expression ']' 
+57: expression -> expression  . INCDEC opValue 
+59: expression -> expression  . '+' expression 
+60: expression -> expression  . '-' expression 
+61: expression -> expression  . MULTIPLY opValue expression 
+62: expression -> expression  . SHIFT opValue expression 
+63: expression -> expression  . ORDER opValue expression 
+64: expression -> expression  . EQUALITY opValue expression 
+65: expression -> expression  . '&' expression 
+66: expression -> expression  . '^' expression 
+67: expression -> expression  . '|' expression 
+68: expression -> expression  . AND expression 
+69: expression -> expression  . OR expression 
+70: expression -> expression  . '?' expression ':' expression 
+71: expression -> expression  . '=' expression 
+72: expression -> expression  . MATH_IS opValue expression 
+  0:   On ')' to state 164
+  1:   On '[' to state 92
+  2:   On INCDEC to state 93
+  3:   On '+' to state 94
+  4:   On '-' to state 95
+  5:   On MULTIPLY to state 96
+  6:   On SHIFT to state 97
+  7:   On ORDER to state 98
+  8:   On EQUALITY to state 99
+  9:   On '&' to state 100
+  10:   On '^' to state 101
+  11:   On '|' to state 102
+  12:   On AND to state 103
+  13:   On OR to state 104
+  14:   On '?' to state 105
+  15:   On '=' to state 106
+  16:   On MATH_IS to state 107
+
+
+State 120:
+58: expression -> '(' cast  . ')' expression 
+  0:   On ')' to state 165
+
+
+State 121:
+23: cast -> INT  . 
+  Reduce by 23: cast -> INT  . 
+
+
+State 122:
+24: cast -> LIST  . 
+  Reduce by 24: cast -> LIST  . 
+
+
+State 123:
+25: cast -> STRINGTYPE  . 
+  Reduce by 25: cast -> STRINGTYPE  . 
+
+
+State 124:
+26: cast -> BOOL  . 
+  Reduce by 26: cast -> BOOL  . 
+
+
+State 125:
+52: expression -> '+' expression  . 
+48: expression -> expression  . '[' expression ']' 
+57: expression -> expression  . INCDEC opValue 
+59: expression -> expression  . '+' expression 
+60: expression -> expression  . '-' expression 
+61: expression -> expression  . MULTIPLY opValue expression 
+62: expression -> expression  . SHIFT opValue expression 
+63: expression -> expression  . ORDER opValue expression 
+64: expression -> expression  . EQUALITY opValue expression 
+65: expression -> expression  . '&' expression 
+66: expression -> expression  . '^' expression 
+67: expression -> expression  . '|' expression 
+68: expression -> expression  . AND expression 
+69: expression -> expression  . OR expression 
+70: expression -> expression  . '?' expression ':' expression 
+71: expression -> expression  . '=' expression 
+72: expression -> expression  . MATH_IS opValue expression 
+  0:   On '[' to state 92
+  1:   On INCDEC to state 93
+  2 (removed by precedence):   On '+' to state 94
+  3 (removed by precedence):   On '-' to state 95
+  4 (removed by precedence):   On MULTIPLY to state 96
+  5 (removed by precedence):   On SHIFT to state 97
+  6 (removed by precedence):   On ORDER to state 98
+  7 (removed by precedence):   On EQUALITY to state 99
+  8 (removed by precedence):   On '&' to state 100
+  9 (removed by precedence):   On '^' to state 101
+  10 (removed by precedence):   On '|' to state 102
+  11 (removed by precedence):   On AND to state 103
+  12 (removed by precedence):   On OR to state 104
+  13 (removed by precedence):   On '?' to state 105
+  14 (removed by precedence):   On '=' to state 106
+  15 (removed by precedence):   On MATH_IS to state 107
+  Reduce by 52: expression -> '+' expression  . 
+
+
+State 126:
+53: expression -> '-' expression  . 
+48: expression -> expression  . '[' expression ']' 
+57: expression -> expression  . INCDEC opValue 
+59: expression -> expression  . '+' expression 
+60: expression -> expression  . '-' expression 
+61: expression -> expression  . MULTIPLY opValue expression 
+62: expression -> expression  . SHIFT opValue expression 
+63: expression -> expression  . ORDER opValue expression 
+64: expression -> expression  . EQUALITY opValue expression 
+65: expression -> expression  . '&' expression 
+66: expression -> expression  . '^' expression 
+67: expression -> expression  . '|' expression 
+68: expression -> expression  . AND expression 
+69: expression -> expression  . OR expression 
+70: expression -> expression  . '?' expression ':' expression 
+71: expression -> expression  . '=' expression 
+72: expression -> expression  . MATH_IS opValue expression 
+  0:   On '[' to state 92
+  1:   On INCDEC to state 93
+  2 (removed by precedence):   On '+' to state 94
+  3 (removed by precedence):   On '-' to state 95
+  4 (removed by precedence):   On MULTIPLY to state 96
+  5 (removed by precedence):   On SHIFT to state 97
+  6 (removed by precedence):   On ORDER to state 98
+  7 (removed by precedence):   On EQUALITY to state 99
+  8 (removed by precedence):   On '&' to state 100
+  9 (removed by precedence):   On '^' to state 101
+  10 (removed by precedence):   On '|' to state 102
+  11 (removed by precedence):   On AND to state 103
+  12 (removed by precedence):   On OR to state 104
+  13 (removed by precedence):   On '?' to state 105
+  14 (removed by precedence):   On '=' to state 106
+  15 (removed by precedence):   On MATH_IS to state 107
+  Reduce by 53: expression -> '-' expression  . 
+
+
+State 127:
+54: expression -> '~' expression  . 
+48: expression -> expression  . '[' expression ']' 
+57: expression -> expression  . INCDEC opValue 
+59: expression -> expression  . '+' expression 
+60: expression -> expression  . '-' expression 
+61: expression -> expression  . MULTIPLY opValue expression 
+62: expression -> expression  . SHIFT opValue expression 
+63: expression -> expression  . ORDER opValue expression 
+64: expression -> expression  . EQUALITY opValue expression 
+65: expression -> expression  . '&' expression 
+66: expression -> expression  . '^' expression 
+67: expression -> expression  . '|' expression 
+68: expression -> expression  . AND expression 
+69: expression -> expression  . OR expression 
+70: expression -> expression  . '?' expression ':' expression 
+71: expression -> expression  . '=' expression 
+72: expression -> expression  . MATH_IS opValue expression 
+  0:   On '[' to state 92
+  1:   On INCDEC to state 93
+  2 (removed by precedence):   On '+' to state 94
+  3 (removed by precedence):   On '-' to state 95
+  4 (removed by precedence):   On MULTIPLY to state 96
+  5 (removed by precedence):   On SHIFT to state 97
+  6 (removed by precedence):   On ORDER to state 98
+  7 (removed by precedence):   On EQUALITY to state 99
+  8 (removed by precedence):   On '&' to state 100
+  9 (removed by precedence):   On '^' to state 101
+  10 (removed by precedence):   On '|' to state 102
+  11 (removed by precedence):   On AND to state 103
+  12 (removed by precedence):   On OR to state 104
+  13 (removed by precedence):   On '?' to state 105
+  14 (removed by precedence):   On '=' to state 106
+  15 (removed by precedence):   On MATH_IS to state 107
+  Reduce by 54: expression -> '~' expression  . 
+
+
+State 128:
+55: expression -> '!' expression  . 
+48: expression -> expression  . '[' expression ']' 
+57: expression -> expression  . INCDEC opValue 
+59: expression -> expression  . '+' expression 
+60: expression -> expression  . '-' expression 
+61: expression -> expression  . MULTIPLY opValue expression 
+62: expression -> expression  . SHIFT opValue expression 
+63: expression -> expression  . ORDER opValue expression 
+64: expression -> expression  . EQUALITY opValue expression 
+65: expression -> expression  . '&' expression 
+66: expression -> expression  . '^' expression 
+67: expression -> expression  . '|' expression 
+68: expression -> expression  . AND expression 
+69: expression -> expression  . OR expression 
+70: expression -> expression  . '?' expression ':' expression 
+71: expression -> expression  . '=' expression 
+72: expression -> expression  . MATH_IS opValue expression 
+  0:   On '[' to state 92
+  1:   On INCDEC to state 93
+  2 (removed by precedence):   On '+' to state 94
+  3 (removed by precedence):   On '-' to state 95
+  4 (removed by precedence):   On MULTIPLY to state 96
+  5 (removed by precedence):   On SHIFT to state 97
+  6 (removed by precedence):   On ORDER to state 98
+  7 (removed by precedence):   On EQUALITY to state 99
+  8 (removed by precedence):   On '&' to state 100
+  9 (removed by precedence):   On '^' to state 101
+  10 (removed by precedence):   On '|' to state 102
+  11 (removed by precedence):   On AND to state 103
+  12 (removed by precedence):   On OR to state 104
+  13 (removed by precedence):   On '?' to state 105
+  14 (removed by precedence):   On '=' to state 106
+  15 (removed by precedence):   On MATH_IS to state 107
+  Reduce by 55: expression -> '!' expression  . 
+
+
+State 129:
+56: expression -> INCDEC opValue  . expression 
+  0:   On expression to state 166
+  1:   On exprStart_ to state 58
+  2:   On '[' to state 59
+  3:   On identifier to state 60
+  4:   On '`' to state 61
+  5:   On '(' to state 62
+  6:   On '+' to state 63
+  7:   On '-' to state 64
+  8:   On '~' to state 65
+  9:   On '!' to state 66
+  10:   On INCDEC to state 67
+  11:   On exprUnit_ to state 72
+  12:   On IDENTIFIER to state 20
+  13:   On string to state 78
+  14:   On NUMBER to state 79
+  15:   On string_ to state 80
+  16:   On STRING to state 81
+
+
+State 130:
+82: returnStatement -> retLeave_ syntaxExpression  . retExpr_ 
+  0:   On retExpr_ to state 167
+  1:   On expression to state 168
+  2:   On exprStart_ to state 58
+  3:   On '[' to state 59
+  4:   On identifier to state 60
+  5:   On '`' to state 61
+  6:   On '(' to state 62
+  7:   On '+' to state 63
+  8:   On '-' to state 64
+  9:   On '~' to state 65
+  10:   On '!' to state 66
+  11:   On INCDEC to state 67
+  12:   On exprUnit_ to state 72
+  13:   On IDENTIFIER to state 20
+  14:   On string to state 78
+  15:   On NUMBER to state 79
+  16:   On string_ to state 80
+  17:   On STRING to state 81
+  Reduce by 79: retExpr_ ->  . 
+
+
+State 131:
+84: whileStatement -> while_ '('  . syntaxExpression condition syntaxCloseParen closeParenBreakOK statement 
+  0:   On syntaxExpression to state 169
+  Reduce by 6: syntaxExpression ->  . 
+
+
+State 132:
+104: ifStatement -> if_ '('  . syntaxExpression ifCond_ syntaxCloseParen ')' syntaxExpression statement ifStatementElse_ 
+  0:   On syntaxExpression to state 170
+  Reduce by 6: syntaxExpression ->  . 
+
+
+State 133:
+96: forStatement -> for_ '('  . syntaxInit optInit syntaxSemicol ';' syntaxExpression optCondition syntaxSemicol ';' syntaxExpression forOptInc_ syntaxCloseParen closeParenBreakOK statement 
+  0:   On syntaxInit to state 171
+  Reduce by 8: syntaxInit ->  . 
+
+
+State 134:
+45: exprStart_ -> exprUnit_ syntaxExpression  . 
+  Reduce by 45: exprStart_ -> exprUnit_ syntaxExpression  . 
+
+
+State 135:
+20: string_ -> string_ STRING  . 
+  Reduce by 20: string_ -> string_ STRING  . 
+
+
+State 136:
+129: fdHead_ -> fdName_ '(' fdOptParams_ ')' syntaxOpenCurly  . 
+  Reduce by 129: fdHead_ -> fdName_ '(' fdOptParams_ ')' syntaxOpenCurly  . 
+
+
+State 137:
+125: fdParams_ -> fdParams_ ',' syntaxTypename  . fdParam_ 
+  0:   On fdParam_ to state 172
+  1:   On varType to state 38
+  2:   On varType_ to state 6
+  3:   On INT to state 8
+  4:   On STRINGTYPE to state 9
+  5:   On LIST to state 10
+
+
+State 138:
+124: fdParam_ -> varType fdParamName_ syntaxCommaOrCloseparen  . 
+  Reduce by 124: fdParam_ -> varType fdParamName_ syntaxCommaOrCloseparen  . 
+
+
+State 139:
+119: statement -> varType localVars ';'  . 
+  Reduce by 119: statement -> varType localVars ';'  . 
+
+
+State 140:
+40: localVars -> localVars ','  . defineVar syntaxCommaOrSemicol 
+  0:   On defineVar to state 173
+  1:   On defineVar_ to state 17
+  2:   On identifier to state 32
+  3:   On IDENTIFIER to state 20
+
+
+State 141:
+41: localVars -> defineVar syntaxCommaOrSemicol  . 
+  Reduce by 41: localVars -> defineVar syntaxCommaOrSemicol  . 
+
+
+State 142:
+48: expression -> expression '[' expression  . ']' 
+48: expression -> expression  . '[' expression ']' 
+57: expression -> expression  . INCDEC opValue 
+59: expression -> expression  . '+' expression 
+60: expression -> expression  . '-' expression 
+61: expression -> expression  . MULTIPLY opValue expression 
+62: expression -> expression  . SHIFT opValue expression 
+63: expression -> expression  . ORDER opValue expression 
+64: expression -> expression  . EQUALITY opValue expression 
+65: expression -> expression  . '&' expression 
+66: expression -> expression  . '^' expression 
+67: expression -> expression  . '|' expression 
+68: expression -> expression  . AND expression 
+69: expression -> expression  . OR expression 
+70: expression -> expression  . '?' expression ':' expression 
+71: expression -> expression  . '=' expression 
+72: expression -> expression  . MATH_IS opValue expression 
+  0:   On ']' to state 174
+  1:   On '[' to state 92
+  2:   On INCDEC to state 93
+  3:   On '+' to state 94
+  4:   On '-' to state 95
+  5:   On MULTIPLY to state 96
+  6:   On SHIFT to state 97
+  7:   On ORDER to state 98
+  8:   On EQUALITY to state 99
+  9:   On '&' to state 100
+  10:   On '^' to state 101
+  11:   On '|' to state 102
+  12:   On AND to state 103
+  13:   On OR to state 104
+  14:   On '?' to state 105
+  15:   On '=' to state 106
+  16:   On MATH_IS to state 107
+
+
+State 143:
+57: expression -> expression INCDEC opValue  . 
+  Reduce by 57: expression -> expression INCDEC opValue  . 
+
+
+State 144:
+59: expression -> expression '+' expression  . 
+48: expression -> expression  . '[' expression ']' 
+57: expression -> expression  . INCDEC opValue 
+59: expression -> expression  . '+' expression 
+60: expression -> expression  . '-' expression 
+61: expression -> expression  . MULTIPLY opValue expression 
+62: expression -> expression  . SHIFT opValue expression 
+63: expression -> expression  . ORDER opValue expression 
+64: expression -> expression  . EQUALITY opValue expression 
+65: expression -> expression  . '&' expression 
+66: expression -> expression  . '^' expression 
+67: expression -> expression  . '|' expression 
+68: expression -> expression  . AND expression 
+69: expression -> expression  . OR expression 
+70: expression -> expression  . '?' expression ':' expression 
+71: expression -> expression  . '=' expression 
+72: expression -> expression  . MATH_IS opValue expression 
+  0:   On '[' to state 92
+  1:   On INCDEC to state 93
+  2 (removed by precedence):   On '+' to state 94
+  3 (removed by precedence):   On '-' to state 95
+  4:   On MULTIPLY to state 96
+  5 (removed by precedence):   On SHIFT to state 97
+  6 (removed by precedence):   On ORDER to state 98
+  7 (removed by precedence):   On EQUALITY to state 99
+  8 (removed by precedence):   On '&' to state 100
+  9 (removed by precedence):   On '^' to state 101
+  10 (removed by precedence):   On '|' to state 102
+  11 (removed by precedence):   On AND to state 103
+  12 (removed by precedence):   On OR to state 104
+  13 (removed by precedence):   On '?' to state 105
+  14 (removed by precedence):   On '=' to state 106
+  15 (removed by precedence):   On MATH_IS to state 107
+  Reduce by 59: expression -> expression '+' expression  . 
+
+
+State 145:
+60: expression -> expression '-' expression  . 
+48: expression -> expression  . '[' expression ']' 
+57: expression -> expression  . INCDEC opValue 
+59: expression -> expression  . '+' expression 
+60: expression -> expression  . '-' expression 
+61: expression -> expression  . MULTIPLY opValue expression 
+62: expression -> expression  . SHIFT opValue expression 
+63: expression -> expression  . ORDER opValue expression 
+64: expression -> expression  . EQUALITY opValue expression 
+65: expression -> expression  . '&' expression 
+66: expression -> expression  . '^' expression 
+67: expression -> expression  . '|' expression 
+68: expression -> expression  . AND expression 
+69: expression -> expression  . OR expression 
+70: expression -> expression  . '?' expression ':' expression 
+71: expression -> expression  . '=' expression 
+72: expression -> expression  . MATH_IS opValue expression 
+  0:   On '[' to state 92
+  1:   On INCDEC to state 93
+  2 (removed by precedence):   On '+' to state 94
+  3 (removed by precedence):   On '-' to state 95
+  4:   On MULTIPLY to state 96
+  5 (removed by precedence):   On SHIFT to state 97
+  6 (removed by precedence):   On ORDER to state 98
+  7 (removed by precedence):   On EQUALITY to state 99
+  8 (removed by precedence):   On '&' to state 100
+  9 (removed by precedence):   On '^' to state 101
+  10 (removed by precedence):   On '|' to state 102
+  11 (removed by precedence):   On AND to state 103
+  12 (removed by precedence):   On OR to state 104
+  13 (removed by precedence):   On '?' to state 105
+  14 (removed by precedence):   On '=' to state 106
+  15 (removed by precedence):   On MATH_IS to state 107
+  Reduce by 60: expression -> expression '-' expression  . 
+
+
+State 146:
+61: expression -> expression MULTIPLY opValue  . expression 
+  0:   On expression to state 175
+  1:   On exprStart_ to state 58
+  2:   On '[' to state 59
+  3:   On identifier to state 60
+  4:   On '`' to state 61
+  5:   On '(' to state 62
+  6:   On '+' to state 63
+  7:   On '-' to state 64
+  8:   On '~' to state 65
+  9:   On '!' to state 66
+  10:   On INCDEC to state 67
+  11:   On exprUnit_ to state 72
+  12:   On IDENTIFIER to state 20
+  13:   On string to state 78
+  14:   On NUMBER to state 79
+  15:   On string_ to state 80
+  16:   On STRING to state 81
+
+
+State 147:
+62: expression -> expression SHIFT opValue  . expression 
+  0:   On expression to state 176
+  1:   On exprStart_ to state 58
+  2:   On '[' to state 59
+  3:   On identifier to state 60
+  4:   On '`' to state 61
+  5:   On '(' to state 62
+  6:   On '+' to state 63
+  7:   On '-' to state 64
+  8:   On '~' to state 65
+  9:   On '!' to state 66
+  10:   On INCDEC to state 67
+  11:   On exprUnit_ to state 72
+  12:   On IDENTIFIER to state 20
+  13:   On string to state 78
+  14:   On NUMBER to state 79
+  15:   On string_ to state 80
+  16:   On STRING to state 81
+
+
+State 148:
+63: expression -> expression ORDER opValue  . expression 
+  0:   On expression to state 177
+  1:   On exprStart_ to state 58
+  2:   On '[' to state 59
+  3:   On identifier to state 60
+  4:   On '`' to state 61
+  5:   On '(' to state 62
+  6:   On '+' to state 63
+  7:   On '-' to state 64
+  8:   On '~' to state 65
+  9:   On '!' to state 66
+  10:   On INCDEC to state 67
+  11:   On exprUnit_ to state 72
+  12:   On IDENTIFIER to state 20
+  13:   On string to state 78
+  14:   On NUMBER to state 79
+  15:   On string_ to state 80
+  16:   On STRING to state 81
+
+
+State 149:
+64: expression -> expression EQUALITY opValue  . expression 
+  0:   On expression to state 178
+  1:   On exprStart_ to state 58
+  2:   On '[' to state 59
+  3:   On identifier to state 60
+  4:   On '`' to state 61
+  5:   On '(' to state 62
+  6:   On '+' to state 63
+  7:   On '-' to state 64
+  8:   On '~' to state 65
+  9:   On '!' to state 66
+  10:   On INCDEC to state 67
+  11:   On exprUnit_ to state 72
+  12:   On IDENTIFIER to state 20
+  13:   On string to state 78
+  14:   On NUMBER to state 79
+  15:   On string_ to state 80
+  16:   On STRING to state 81
+
+
+State 150:
+65: expression -> expression '&' expression  . 
+48: expression -> expression  . '[' expression ']' 
+57: expression -> expression  . INCDEC opValue 
+59: expression -> expression  . '+' expression 
+60: expression -> expression  . '-' expression 
+61: expression -> expression  . MULTIPLY opValue expression 
+62: expression -> expression  . SHIFT opValue expression 
+63: expression -> expression  . ORDER opValue expression 
+64: expression -> expression  . EQUALITY opValue expression 
+65: expression -> expression  . '&' expression 
+66: expression -> expression  . '^' expression 
+67: expression -> expression  . '|' expression 
+68: expression -> expression  . AND expression 
+69: expression -> expression  . OR expression 
+70: expression -> expression  . '?' expression ':' expression 
+71: expression -> expression  . '=' expression 
+72: expression -> expression  . MATH_IS opValue expression 
+  0:   On '[' to state 92
+  1:   On INCDEC to state 93
+  2:   On '+' to state 94
+  3:   On '-' to state 95
+  4:   On MULTIPLY to state 96
+  5:   On SHIFT to state 97
+  6:   On ORDER to state 98
+  7:   On EQUALITY to state 99
+  8 (removed by precedence):   On '&' to state 100
+  9 (removed by precedence):   On '^' to state 101
+  10 (removed by precedence):   On '|' to state 102
+  11 (removed by precedence):   On AND to state 103
+  12 (removed by precedence):   On OR to state 104
+  13 (removed by precedence):   On '?' to state 105
+  14 (removed by precedence):   On '=' to state 106
+  15 (removed by precedence):   On MATH_IS to state 107
+  Reduce by 65: expression -> expression '&' expression  . 
+
+
+State 151:
+66: expression -> expression '^' expression  . 
+48: expression -> expression  . '[' expression ']' 
+57: expression -> expression  . INCDEC opValue 
+59: expression -> expression  . '+' expression 
+60: expression -> expression  . '-' expression 
+61: expression -> expression  . MULTIPLY opValue expression 
+62: expression -> expression  . SHIFT opValue expression 
+63: expression -> expression  . ORDER opValue expression 
+64: expression -> expression  . EQUALITY opValue expression 
+65: expression -> expression  . '&' expression 
+66: expression -> expression  . '^' expression 
+67: expression -> expression  . '|' expression 
+68: expression -> expression  . AND expression 
+69: expression -> expression  . OR expression 
+70: expression -> expression  . '?' expression ':' expression 
+71: expression -> expression  . '=' expression 
+72: expression -> expression  . MATH_IS opValue expression 
+  0:   On '[' to state 92
+  1:   On INCDEC to state 93
+  2:   On '+' to state 94
+  3:   On '-' to state 95
+  4:   On MULTIPLY to state 96
+  5:   On SHIFT to state 97
+  6:   On ORDER to state 98
+  7:   On EQUALITY to state 99
+  8:   On '&' to state 100
+  9 (removed by precedence):   On '^' to state 101
+  10 (removed by precedence):   On '|' to state 102
+  11 (removed by precedence):   On AND to state 103
+  12 (removed by precedence):   On OR to state 104
+  13 (removed by precedence):   On '?' to state 105
+  14 (removed by precedence):   On '=' to state 106
+  15 (removed by precedence):   On MATH_IS to state 107
+  Reduce by 66: expression -> expression '^' expression  . 
+
+
+State 152:
+67: expression -> expression '|' expression  . 
+48: expression -> expression  . '[' expression ']' 
+57: expression -> expression  . INCDEC opValue 
+59: expression -> expression  . '+' expression 
+60: expression -> expression  . '-' expression 
+61: expression -> expression  . MULTIPLY opValue expression 
+62: expression -> expression  . SHIFT opValue expression 
+63: expression -> expression  . ORDER opValue expression 
+64: expression -> expression  . EQUALITY opValue expression 
+65: expression -> expression  . '&' expression 
+66: expression -> expression  . '^' expression 
+67: expression -> expression  . '|' expression 
+68: expression -> expression  . AND expression 
+69: expression -> expression  . OR expression 
+70: expression -> expression  . '?' expression ':' expression 
+71: expression -> expression  . '=' expression 
+72: expression -> expression  . MATH_IS opValue expression 
+  0:   On '[' to state 92
+  1:   On INCDEC to state 93
+  2:   On '+' to state 94
+  3:   On '-' to state 95
+  4:   On MULTIPLY to state 96
+  5:   On SHIFT to state 97
+  6:   On ORDER to state 98
+  7:   On EQUALITY to state 99
+  8:   On '&' to state 100
+  9:   On '^' to state 101
+  10 (removed by precedence):   On '|' to state 102
+  11 (removed by precedence):   On AND to state 103
+  12 (removed by precedence):   On OR to state 104
+  13 (removed by precedence):   On '?' to state 105
+  14 (removed by precedence):   On '=' to state 106
+  15 (removed by precedence):   On MATH_IS to state 107
+  Reduce by 67: expression -> expression '|' expression  . 
+
+
+State 153:
+68: expression -> expression AND expression  . 
+48: expression -> expression  . '[' expression ']' 
+57: expression -> expression  . INCDEC opValue 
+59: expression -> expression  . '+' expression 
+60: expression -> expression  . '-' expression 
+61: expression -> expression  . MULTIPLY opValue expression 
+62: expression -> expression  . SHIFT opValue expression 
+63: expression -> expression  . ORDER opValue expression 
+64: expression -> expression  . EQUALITY opValue expression 
+65: expression -> expression  . '&' expression 
+66: expression -> expression  . '^' expression 
+67: expression -> expression  . '|' expression 
+68: expression -> expression  . AND expression 
+69: expression -> expression  . OR expression 
+70: expression -> expression  . '?' expression ':' expression 
+71: expression -> expression  . '=' expression 
+72: expression -> expression  . MATH_IS opValue expression 
+  0:   On '[' to state 92
+  1:   On INCDEC to state 93
+  2:   On '+' to state 94
+  3:   On '-' to state 95
+  4:   On MULTIPLY to state 96
+  5:   On SHIFT to state 97
+  6:   On ORDER to state 98
+  7:   On EQUALITY to state 99
+  8:   On '&' to state 100
+  9:   On '^' to state 101
+  10:   On '|' to state 102
+  11 (removed by precedence):   On AND to state 103
+  12 (removed by precedence):   On OR to state 104
+  13 (removed by precedence):   On '?' to state 105
+  14 (removed by precedence):   On '=' to state 106
+  15 (removed by precedence):   On MATH_IS to state 107
+  Reduce by 68: expression -> expression AND expression  . 
+
+
+State 154:
+69: expression -> expression OR expression  . 
+48: expression -> expression  . '[' expression ']' 
+57: expression -> expression  . INCDEC opValue 
+59: expression -> expression  . '+' expression 
+60: expression -> expression  . '-' expression 
+61: expression -> expression  . MULTIPLY opValue expression 
+62: expression -> expression  . SHIFT opValue expression 
+63: expression -> expression  . ORDER opValue expression 
+64: expression -> expression  . EQUALITY opValue expression 
+65: expression -> expression  . '&' expression 
+66: expression -> expression  . '^' expression 
+67: expression -> expression  . '|' expression 
+68: expression -> expression  . AND expression 
+69: expression -> expression  . OR expression 
+70: expression -> expression  . '?' expression ':' expression 
+71: expression -> expression  . '=' expression 
+72: expression -> expression  . MATH_IS opValue expression 
+  0:   On '[' to state 92
+  1:   On INCDEC to state 93
+  2:   On '+' to state 94
+  3:   On '-' to state 95
+  4:   On MULTIPLY to state 96
+  5:   On SHIFT to state 97
+  6:   On ORDER to state 98
+  7:   On EQUALITY to state 99
+  8:   On '&' to state 100
+  9:   On '^' to state 101
+  10:   On '|' to state 102
+  11:   On AND to state 103
+  12 (removed by precedence):   On OR to state 104
+  13 (removed by precedence):   On '?' to state 105
+  14 (removed by precedence):   On '=' to state 106
+  15 (removed by precedence):   On MATH_IS to state 107
+  Reduce by 69: expression -> expression OR expression  . 
+
+
+State 155:
+70: expression -> expression '?' expression  . ':' expression 
+48: expression -> expression  . '[' expression ']' 
+57: expression -> expression  . INCDEC opValue 
+59: expression -> expression  . '+' expression 
+60: expression -> expression  . '-' expression 
+61: expression -> expression  . MULTIPLY opValue expression 
+62: expression -> expression  . SHIFT opValue expression 
+63: expression -> expression  . ORDER opValue expression 
+64: expression -> expression  . EQUALITY opValue expression 
+65: expression -> expression  . '&' expression 
+66: expression -> expression  . '^' expression 
+67: expression -> expression  . '|' expression 
+68: expression -> expression  . AND expression 
+69: expression -> expression  . OR expression 
+70: expression -> expression  . '?' expression ':' expression 
+71: expression -> expression  . '=' expression 
+72: expression -> expression  . MATH_IS opValue expression 
+  0:   On ':' to state 179
+  1:   On '[' to state 92
+  2:   On INCDEC to state 93
+  3:   On '+' to state 94
+  4:   On '-' to state 95
+  5:   On MULTIPLY to state 96
+  6:   On SHIFT to state 97
+  7:   On ORDER to state 98
+  8:   On EQUALITY to state 99
+  9:   On '&' to state 100
+  10:   On '^' to state 101
+  11:   On '|' to state 102
+  12:   On AND to state 103
+  13:   On OR to state 104
+  14:   On '?' to state 105
+  15:   On '=' to state 106
+  16:   On MATH_IS to state 107
+
+
+State 156:
+71: expression -> expression '=' expression  . 
+48: expression -> expression  . '[' expression ']' 
+57: expression -> expression  . INCDEC opValue 
+59: expression -> expression  . '+' expression 
+60: expression -> expression  . '-' expression 
+61: expression -> expression  . MULTIPLY opValue expression 
+62: expression -> expression  . SHIFT opValue expression 
+63: expression -> expression  . ORDER opValue expression 
+64: expression -> expression  . EQUALITY opValue expression 
+65: expression -> expression  . '&' expression 
+66: expression -> expression  . '^' expression 
+67: expression -> expression  . '|' expression 
+68: expression -> expression  . AND expression 
+69: expression -> expression  . OR expression 
+70: expression -> expression  . '?' expression ':' expression 
+71: expression -> expression  . '=' expression 
+72: expression -> expression  . MATH_IS opValue expression 
+  0:   On '[' to state 92
+  1:   On INCDEC to state 93
+  2:   On '+' to state 94
+  3:   On '-' to state 95
+  4:   On MULTIPLY to state 96
+  5:   On SHIFT to state 97
+  6:   On ORDER to state 98
+  7:   On EQUALITY to state 99
+  8:   On '&' to state 100
+  9:   On '^' to state 101
+  10:   On '|' to state 102
+  11:   On AND to state 103
+  12:   On OR to state 104
+  13:   On '?' to state 105
+  14:   On '=' to state 106
+  15:   On MATH_IS to state 107
+  Reduce by 71: expression -> expression '=' expression  . 
+
+
+State 157:
+72: expression -> expression MATH_IS opValue  . expression 
+  0:   On expression to state 180
+  1:   On exprStart_ to state 58
+  2:   On '[' to state 59
+  3:   On identifier to state 60
+  4:   On '`' to state 61
+  5:   On '(' to state 62
+  6:   On '+' to state 63
+  7:   On '-' to state 64
+  8:   On '~' to state 65
+  9:   On '!' to state 66
+  10:   On INCDEC to state 67
+  11:   On exprUnit_ to state 72
+  12:   On IDENTIFIER to state 20
+  13:   On string to state 78
+  14:   On NUMBER to state 79
+  15:   On string_ to state 80
+  16:   On STRING to state 81
+
+
+State 158:
+107: stCompound_ -> openCurly statements closeCurly  . 
+  Reduce by 107: stCompound_ -> openCurly statements closeCurly  . 
+
+
+State 159:
+47: expression -> '[' argsOpt ']'  . 
+  Reduce by 47: expression -> '[' argsOpt ']'  . 
+
+
+State 160:
+30: args -> args ','  . argsExpr 
+  0:   On argsExpr to state 181
+  1:   On expression to state 115
+  2:   On ORDER to state 116
+  3:   On exprStart_ to state 58
+  4:   On '[' to state 59
+  5:   On identifier to state 60
+  6:   On '`' to state 61
+  7:   On '(' to state 62
+  8:   On '+' to state 63
+  9:   On '-' to state 64
+  10:   On '~' to state 65
+  11:   On '!' to state 66
+  12:   On INCDEC to state 67
+  13:   On exprUnit_ to state 72
+  14:   On IDENTIFIER to state 20
+  15:   On string to state 78
+  16:   On NUMBER to state 79
+  17:   On string_ to state 80
+  18:   On STRING to state 81
+
+
+State 161:
+29: argsExpr -> ORDER opValue  . 
+  Reduce by 29: argsExpr -> ORDER opValue  . 
+
+
+State 162:
+49: expression -> identifier '(' argsOpt  . ')' 
+  0:   On ')' to state 182
+
+
+State 163:
+50: expression -> '`' expression '`'  . 
+  Reduce by 50: expression -> '`' expression '`'  . 
+
+
+State 164:
+51: expression -> '(' expression ')'  . 
+  Reduce by 51: expression -> '(' expression ')'  . 
+
+
+State 165:
+58: expression -> '(' cast ')'  . expression 
+  0:   On expression to state 183
+  1:   On exprStart_ to state 58
+  2:   On '[' to state 59
+  3:   On identifier to state 60
+  4:   On '`' to state 61
+  5:   On '(' to state 62
+  6:   On '+' to state 63
+  7:   On '-' to state 64
+  8:   On '~' to state 65
+  9:   On '!' to state 66
+  10:   On INCDEC to state 67
+  11:   On exprUnit_ to state 72
+  12:   On IDENTIFIER to state 20
+  13:   On string to state 78
+  14:   On NUMBER to state 79
+  15:   On string_ to state 80
+  16:   On STRING to state 81
+
+
+State 166:
+56: expression -> INCDEC opValue expression  . 
+48: expression -> expression  . '[' expression ']' 
+57: expression -> expression  . INCDEC opValue 
+59: expression -> expression  . '+' expression 
+60: expression -> expression  . '-' expression 
+61: expression -> expression  . MULTIPLY opValue expression 
+62: expression -> expression  . SHIFT opValue expression 
+63: expression -> expression  . ORDER opValue expression 
+64: expression -> expression  . EQUALITY opValue expression 
+65: expression -> expression  . '&' expression 
+66: expression -> expression  . '^' expression 
+67: expression -> expression  . '|' expression 
+68: expression -> expression  . AND expression 
+69: expression -> expression  . OR expression 
+70: expression -> expression  . '?' expression ':' expression 
+71: expression -> expression  . '=' expression 
+72: expression -> expression  . MATH_IS opValue expression 
+  0:   On '[' to state 92
+  1:   On INCDEC to state 93
+  2 (removed by precedence):   On '+' to state 94
+  3 (removed by precedence):   On '-' to state 95
+  4 (removed by precedence):   On MULTIPLY to state 96
+  5 (removed by precedence):   On SHIFT to state 97
+  6 (removed by precedence):   On ORDER to state 98
+  7 (removed by precedence):   On EQUALITY to state 99
+  8 (removed by precedence):   On '&' to state 100
+  9 (removed by precedence):   On '^' to state 101
+  10 (removed by precedence):   On '|' to state 102
+  11 (removed by precedence):   On AND to state 103
+  12 (removed by precedence):   On OR to state 104
+  13 (removed by precedence):   On '?' to state 105
+  14 (removed by precedence):   On '=' to state 106
+  15 (removed by precedence):   On MATH_IS to state 107
+  Reduce by 56: expression -> INCDEC opValue expression  . 
+
+
+State 167:
+82: returnStatement -> retLeave_ syntaxExpression retExpr_  . 
+  Reduce by 82: returnStatement -> retLeave_ syntaxExpression retExpr_  . 
+
+
+State 168:
+78: retExpr_ -> expression  . 
+48: expression -> expression  . '[' expression ']' 
+57: expression -> expression  . INCDEC opValue 
+59: expression -> expression  . '+' expression 
+60: expression -> expression  . '-' expression 
+61: expression -> expression  . MULTIPLY opValue expression 
+62: expression -> expression  . SHIFT opValue expression 
+63: expression -> expression  . ORDER opValue expression 
+64: expression -> expression  . EQUALITY opValue expression 
+65: expression -> expression  . '&' expression 
+66: expression -> expression  . '^' expression 
+67: expression -> expression  . '|' expression 
+68: expression -> expression  . AND expression 
+69: expression -> expression  . OR expression 
+70: expression -> expression  . '?' expression ':' expression 
+71: expression -> expression  . '=' expression 
+72: expression -> expression  . MATH_IS opValue expression 
+  0:   On '[' to state 92
+  1:   On INCDEC to state 93
+  2:   On '+' to state 94
+  3:   On '-' to state 95
+  4:   On MULTIPLY to state 96
+  5:   On SHIFT to state 97
+  6:   On ORDER to state 98
+  7:   On EQUALITY to state 99
+  8:   On '&' to state 100
+  9:   On '^' to state 101
+  10:   On '|' to state 102
+  11:   On AND to state 103
+  12:   On OR to state 104
+  13:   On '?' to state 105
+  14:   On '=' to state 106
+  15:   On MATH_IS to state 107
+  Reduce by 78: retExpr_ -> expression  . 
+
+
+State 169:
+84: whileStatement -> while_ '(' syntaxExpression  . condition syntaxCloseParen closeParenBreakOK statement 
+  0:   On condition to state 184
+  1:   On expression to state 185
+  2:   On conditionVar_ to state 186
+  3:   On exprStart_ to state 58
+  4:   On '[' to state 59
+  5:   On identifier to state 60
+  6:   On '`' to state 61
+  7:   On '(' to state 62
+  8:   On '+' to state 63
+  9:   On '-' to state 64
+  10:   On '~' to state 65
+  11:   On '!' to state 66
+  12:   On INCDEC to state 67
+  13:   On varType to state 187
+  14:   On exprUnit_ to state 72
+  15:   On IDENTIFIER to state 20
+  16:   On varType_ to state 6
+  17:   On string to state 78
+  18:   On NUMBER to state 79
+  19:   On INT to state 8
+  20:   On STRINGTYPE to state 9
+  21:   On LIST to state 10
+  22:   On string_ to state 80
+  23:   On STRING to state 81
+
+
+State 170:
+104: ifStatement -> if_ '(' syntaxExpression  . ifCond_ syntaxCloseParen ')' syntaxExpression statement ifStatementElse_ 
+  0:   On ifCond_ to state 188
+  1:   On condition to state 189
+  2:   On ';' to state 190
+  3:   On flowInit to state 191
+  4:   On expression to state 192
+  5:   On conditionVar_ to state 186
+  6:   On flowArgs to state 193
+  7:   On varType to state 194
+  8:   On exprStart_ to state 58
+  9:   On '[' to state 59
+  10:   On identifier to state 60
+  11:   On '`' to state 61
+  12:   On '(' to state 62
+  13:   On '+' to state 63
+  14:   On '-' to state 64
+  15:   On '~' to state 65
+  16:   On '!' to state 66
+  17:   On INCDEC to state 67
+  18:   On varType_ to state 6
+  19:   On exprUnit_ to state 72
+  20:   On IDENTIFIER to state 20
+  21:   On INT to state 8
+  22:   On STRINGTYPE to state 9
+  23:   On LIST to state 10
+  24:   On string to state 78
+  25:   On NUMBER to state 79
+  26:   On string_ to state 80
+  27:   On STRING to state 81
+
+
+State 171:
+96: forStatement -> for_ '(' syntaxInit  . optInit syntaxSemicol ';' syntaxExpression optCondition syntaxSemicol ';' syntaxExpression forOptInc_ syntaxCloseParen closeParenBreakOK statement 
+  0:   On optInit to state 195
+  1:   On flowInit to state 196
+  2:   On argsNull to state 197
+  3:   On flowArgs to state 193
+  4:   On varType to state 198
+  5:   On expression to state 199
+  6:   On varType_ to state 6
+  7:   On exprStart_ to state 58
+  8:   On '[' to state 59
+  9:   On identifier to state 60
+  10:   On '`' to state 61
+  11:   On '(' to state 62
+  12:   On '+' to state 63
+  13:   On '-' to state 64
+  14:   On '~' to state 65
+  15:   On '!' to state 66
+  16:   On INCDEC to state 67
+  17:   On INT to state 8
+  18:   On STRINGTYPE to state 9
+  19:   On LIST to state 10
+  20:   On exprUnit_ to state 72
+  21:   On IDENTIFIER to state 20
+  22:   On string to state 78
+  23:   On NUMBER to state 79
+  24:   On string_ to state 80
+  25:   On STRING to state 81
+  Reduce by 32: argsNull ->  . 
+
+
+State 172:
+125: fdParams_ -> fdParams_ ',' syntaxTypename fdParam_  . 
+  Reduce by 125: fdParams_ -> fdParams_ ',' syntaxTypename fdParam_  . 
+
+
+State 173:
+40: localVars -> localVars ',' defineVar  . syntaxCommaOrSemicol 
+  0:   On syntaxCommaOrSemicol to state 200
+  Reduce by 4: syntaxCommaOrSemicol ->  . 
+
+
+State 174:
+48: expression -> expression '[' expression ']'  . 
+  Reduce by 48: expression -> expression '[' expression ']'  . 
+
+
+State 175:
+61: expression -> expression MULTIPLY opValue expression  . 
+48: expression -> expression  . '[' expression ']' 
+57: expression -> expression  . INCDEC opValue 
+59: expression -> expression  . '+' expression 
+60: expression -> expression  . '-' expression 
+61: expression -> expression  . MULTIPLY opValue expression 
+62: expression -> expression  . SHIFT opValue expression 
+63: expression -> expression  . ORDER opValue expression 
+64: expression -> expression  . EQUALITY opValue expression 
+65: expression -> expression  . '&' expression 
+66: expression -> expression  . '^' expression 
+67: expression -> expression  . '|' expression 
+68: expression -> expression  . AND expression 
+69: expression -> expression  . OR expression 
+70: expression -> expression  . '?' expression ':' expression 
+71: expression -> expression  . '=' expression 
+72: expression -> expression  . MATH_IS opValue expression 
+  0:   On '[' to state 92
+  1:   On INCDEC to state 93
+  2 (removed by precedence):   On '+' to state 94
+  3 (removed by precedence):   On '-' to state 95
+  4 (removed by precedence):   On MULTIPLY to state 96
+  5 (removed by precedence):   On SHIFT to state 97
+  6 (removed by precedence):   On ORDER to state 98
+  7 (removed by precedence):   On EQUALITY to state 99
+  8 (removed by precedence):   On '&' to state 100
+  9 (removed by precedence):   On '^' to state 101
+  10 (removed by precedence):   On '|' to state 102
+  11 (removed by precedence):   On AND to state 103
+  12 (removed by precedence):   On OR to state 104
+  13 (removed by precedence):   On '?' to state 105
+  14 (removed by precedence):   On '=' to state 106
+  15 (removed by precedence):   On MATH_IS to state 107
+  Reduce by 61: expression -> expression MULTIPLY opValue expression  . 
+
+
+State 176:
+62: expression -> expression SHIFT opValue expression  . 
+48: expression -> expression  . '[' expression ']' 
+57: expression -> expression  . INCDEC opValue 
+59: expression -> expression  . '+' expression 
+60: expression -> expression  . '-' expression 
+61: expression -> expression  . MULTIPLY opValue expression 
+62: expression -> expression  . SHIFT opValue expression 
+63: expression -> expression  . ORDER opValue expression 
+64: expression -> expression  . EQUALITY opValue expression 
+65: expression -> expression  . '&' expression 
+66: expression -> expression  . '^' expression 
+67: expression -> expression  . '|' expression 
+68: expression -> expression  . AND expression 
+69: expression -> expression  . OR expression 
+70: expression -> expression  . '?' expression ':' expression 
+71: expression -> expression  . '=' expression 
+72: expression -> expression  . MATH_IS opValue expression 
+  0:   On '[' to state 92
+  1:   On INCDEC to state 93
+  2:   On '+' to state 94
+  3:   On '-' to state 95
+  4:   On MULTIPLY to state 96
+  5 (removed by precedence):   On SHIFT to state 97
+  6 (removed by precedence):   On ORDER to state 98
+  7 (removed by precedence):   On EQUALITY to state 99
+  8 (removed by precedence):   On '&' to state 100
+  9 (removed by precedence):   On '^' to state 101
+  10 (removed by precedence):   On '|' to state 102
+  11 (removed by precedence):   On AND to state 103
+  12 (removed by precedence):   On OR to state 104
+  13 (removed by precedence):   On '?' to state 105
+  14 (removed by precedence):   On '=' to state 106
+  15 (removed by precedence):   On MATH_IS to state 107
+  Reduce by 62: expression -> expression SHIFT opValue expression  . 
+
+
+State 177:
+63: expression -> expression ORDER opValue expression  . 
+48: expression -> expression  . '[' expression ']' 
+57: expression -> expression  . INCDEC opValue 
+59: expression -> expression  . '+' expression 
+60: expression -> expression  . '-' expression 
+61: expression -> expression  . MULTIPLY opValue expression 
+62: expression -> expression  . SHIFT opValue expression 
+63: expression -> expression  . ORDER opValue expression 
+64: expression -> expression  . EQUALITY opValue expression 
+65: expression -> expression  . '&' expression 
+66: expression -> expression  . '^' expression 
+67: expression -> expression  . '|' expression 
+68: expression -> expression  . AND expression 
+69: expression -> expression  . OR expression 
+70: expression -> expression  . '?' expression ':' expression 
+71: expression -> expression  . '=' expression 
+72: expression -> expression  . MATH_IS opValue expression 
+  0:   On '[' to state 92
+  1:   On INCDEC to state 93
+  2:   On '+' to state 94
+  3:   On '-' to state 95
+  4:   On MULTIPLY to state 96
+  5:   On SHIFT to state 97
+  6 (removed by precedence):   On ORDER to state 98
+  7 (removed by precedence):   On EQUALITY to state 99
+  8 (removed by precedence):   On '&' to state 100
+  9 (removed by precedence):   On '^' to state 101
+  10 (removed by precedence):   On '|' to state 102
+  11 (removed by precedence):   On AND to state 103
+  12 (removed by precedence):   On OR to state 104
+  13 (removed by precedence):   On '?' to state 105
+  14 (removed by precedence):   On '=' to state 106
+  15 (removed by precedence):   On MATH_IS to state 107
+  Reduce by 63: expression -> expression ORDER opValue expression  . 
+
+
+State 178:
+64: expression -> expression EQUALITY opValue expression  . 
+48: expression -> expression  . '[' expression ']' 
+57: expression -> expression  . INCDEC opValue 
+59: expression -> expression  . '+' expression 
+60: expression -> expression  . '-' expression 
+61: expression -> expression  . MULTIPLY opValue expression 
+62: expression -> expression  . SHIFT opValue expression 
+63: expression -> expression  . ORDER opValue expression 
+64: expression -> expression  . EQUALITY opValue expression 
+65: expression -> expression  . '&' expression 
+66: expression -> expression  . '^' expression 
+67: expression -> expression  . '|' expression 
+68: expression -> expression  . AND expression 
+69: expression -> expression  . OR expression 
+70: expression -> expression  . '?' expression ':' expression 
+71: expression -> expression  . '=' expression 
+72: expression -> expression  . MATH_IS opValue expression 
+  0:   On '[' to state 92
+  1:   On INCDEC to state 93
+  2:   On '+' to state 94
+  3:   On '-' to state 95
+  4:   On MULTIPLY to state 96
+  5:   On SHIFT to state 97
+  6:   On ORDER to state 98
+  7 (removed by precedence):   On EQUALITY to state 99
+  8 (removed by precedence):   On '&' to state 100
+  9 (removed by precedence):   On '^' to state 101
+  10 (removed by precedence):   On '|' to state 102
+  11 (removed by precedence):   On AND to state 103
+  12 (removed by precedence):   On OR to state 104
+  13 (removed by precedence):   On '?' to state 105
+  14 (removed by precedence):   On '=' to state 106
+  15 (removed by precedence):   On MATH_IS to state 107
+  Reduce by 64: expression -> expression EQUALITY opValue expression  . 
+
+
+State 179:
+70: expression -> expression '?' expression ':'  . expression 
+  0:   On expression to state 201
+  1:   On exprStart_ to state 58
+  2:   On '[' to state 59
+  3:   On identifier to state 60
+  4:   On '`' to state 61
+  5:   On '(' to state 62
+  6:   On '+' to state 63
+  7:   On '-' to state 64
+  8:   On '~' to state 65
+  9:   On '!' to state 66
+  10:   On INCDEC to state 67
+  11:   On exprUnit_ to state 72
+  12:   On IDENTIFIER to state 20
+  13:   On string to state 78
+  14:   On NUMBER to state 79
+  15:   On string_ to state 80
+  16:   On STRING to state 81
+
+
+State 180:
+72: expression -> expression MATH_IS opValue expression  . 
+48: expression -> expression  . '[' expression ']' 
+57: expression -> expression  . INCDEC opValue 
+59: expression -> expression  . '+' expression 
+60: expression -> expression  . '-' expression 
+61: expression -> expression  . MULTIPLY opValue expression 
+62: expression -> expression  . SHIFT opValue expression 
+63: expression -> expression  . ORDER opValue expression 
+64: expression -> expression  . EQUALITY opValue expression 
+65: expression -> expression  . '&' expression 
+66: expression -> expression  . '^' expression 
+67: expression -> expression  . '|' expression 
+68: expression -> expression  . AND expression 
+69: expression -> expression  . OR expression 
+70: expression -> expression  . '?' expression ':' expression 
+71: expression -> expression  . '=' expression 
+72: expression -> expression  . MATH_IS opValue expression 
+  0:   On '[' to state 92
+  1:   On INCDEC to state 93
+  2:   On '+' to state 94
+  3:   On '-' to state 95
+  4:   On MULTIPLY to state 96
+  5:   On SHIFT to state 97
+  6:   On ORDER to state 98
+  7:   On EQUALITY to state 99
+  8:   On '&' to state 100
+  9:   On '^' to state 101
+  10:   On '|' to state 102
+  11:   On AND to state 103
+  12:   On OR to state 104
+  13:   On '?' to state 105
+  14:   On '=' to state 106
+  15:   On MATH_IS to state 107
+  Reduce by 72: expression -> expression MATH_IS opValue expression  . 
+
+
+State 181:
+30: args -> args ',' argsExpr  . 
+  Reduce by 30: args -> args ',' argsExpr  . 
+
+
+State 182:
+49: expression -> identifier '(' argsOpt ')'  . 
+  Reduce by 49: expression -> identifier '(' argsOpt ')'  . 
+
+
+State 183:
+58: expression -> '(' cast ')' expression  . 
+48: expression -> expression  . '[' expression ']' 
+57: expression -> expression  . INCDEC opValue 
+59: expression -> expression  . '+' expression 
+60: expression -> expression  . '-' expression 
+61: expression -> expression  . MULTIPLY opValue expression 
+62: expression -> expression  . SHIFT opValue expression 
+63: expression -> expression  . ORDER opValue expression 
+64: expression -> expression  . EQUALITY opValue expression 
+65: expression -> expression  . '&' expression 
+66: expression -> expression  . '^' expression 
+67: expression -> expression  . '|' expression 
+68: expression -> expression  . AND expression 
+69: expression -> expression  . OR expression 
+70: expression -> expression  . '?' expression ':' expression 
+71: expression -> expression  . '=' expression 
+72: expression -> expression  . MATH_IS opValue expression 
+  0:   On '[' to state 92
+  1:   On INCDEC to state 93
+  2 (removed by precedence):   On '+' to state 94
+  3 (removed by precedence):   On '-' to state 95
+  4 (removed by precedence):   On MULTIPLY to state 96
+  5 (removed by precedence):   On SHIFT to state 97
+  6 (removed by precedence):   On ORDER to state 98
+  7 (removed by precedence):   On EQUALITY to state 99
+  8 (removed by precedence):   On '&' to state 100
+  9 (removed by precedence):   On '^' to state 101
+  10 (removed by precedence):   On '|' to state 102
+  11 (removed by precedence):   On AND to state 103
+  12 (removed by precedence):   On OR to state 104
+  13 (removed by precedence):   On '?' to state 105
+  14 (removed by precedence):   On '=' to state 106
+  15 (removed by precedence):   On MATH_IS to state 107
+  Reduce by 58: expression -> '(' cast ')' expression  . 
+
+
+State 184:
+84: whileStatement -> while_ '(' syntaxExpression condition  . syntaxCloseParen closeParenBreakOK statement 
+  0:   On syntaxCloseParen to state 202
+  Reduce by 3: syntaxCloseParen ->  . 
+
+
+State 185:
+74: condition -> expression  . 
+48: expression -> expression  . '[' expression ']' 
+57: expression -> expression  . INCDEC opValue 
+59: expression -> expression  . '+' expression 
+60: expression -> expression  . '-' expression 
+61: expression -> expression  . MULTIPLY opValue expression 
+62: expression -> expression  . SHIFT opValue expression 
+63: expression -> expression  . ORDER opValue expression 
+64: expression -> expression  . EQUALITY opValue expression 
+65: expression -> expression  . '&' expression 
+66: expression -> expression  . '^' expression 
+67: expression -> expression  . '|' expression 
+68: expression -> expression  . AND expression 
+69: expression -> expression  . OR expression 
+70: expression -> expression  . '?' expression ':' expression 
+71: expression -> expression  . '=' expression 
+72: expression -> expression  . MATH_IS opValue expression 
+  0:   On '[' to state 92
+  1:   On INCDEC to state 93
+  2:   On '+' to state 94
+  3:   On '-' to state 95
+  4:   On MULTIPLY to state 96
+  5:   On SHIFT to state 97
+  6:   On ORDER to state 98
+  7:   On EQUALITY to state 99
+  8:   On '&' to state 100
+  9:   On '^' to state 101
+  10:   On '|' to state 102
+  11:   On AND to state 103
+  12:   On OR to state 104
+  13:   On '?' to state 105
+  14:   On '=' to state 106
+  15:   On MATH_IS to state 107
+  Reduce by 74: condition -> expression  . 
+
+
+State 186:
+75: condition -> conditionVar_  . 
+  Reduce by 75: condition -> conditionVar_  . 
+
+
+State 187:
+73: conditionVar_ -> varType  . defineVar 
+  0:   On defineVar to state 203
+  1:   On defineVar_ to state 17
+  2:   On identifier to state 32
+  3:   On IDENTIFIER to state 20
+
+
+State 188:
+104: ifStatement -> if_ '(' syntaxExpression ifCond_  . syntaxCloseParen ')' syntaxExpression statement ifStatementElse_ 
+  0:   On syntaxCloseParen to state 204
+  Reduce by 3: syntaxCloseParen ->  . 
+
+
+State 189:
+101: ifCond_ -> condition  . 
+  Reduce by 101: ifCond_ -> condition  . 
+
+
+State 190:
+102: ifCond_ -> ';'  . condition 
+  0:   On condition to state 205
+  1:   On expression to state 185
+  2:   On conditionVar_ to state 186
+  3:   On exprStart_ to state 58
+  4:   On '[' to state 59
+  5:   On identifier to state 60
+  6:   On '`' to state 61
+  7:   On '(' to state 62
+  8:   On '+' to state 63
+  9:   On '-' to state 64
+  10:   On '~' to state 65
+  11:   On '!' to state 66
+  12:   On INCDEC to state 67
+  13:   On varType to state 187
+  14:   On exprUnit_ to state 72
+  15:   On IDENTIFIER to state 20
+  16:   On varType_ to state 6
+  17:   On string to state 78
+  18:   On NUMBER to state 79
+  19:   On INT to state 8
+  20:   On STRINGTYPE to state 9
+  21:   On LIST to state 10
+  22:   On string_ to state 80
+  23:   On STRING to state 81
+
+
+State 191:
+103: ifCond_ -> flowInit  . ';' condition 
+  0:   On ';' to state 206
+
+
+State 192:
+74: condition -> expression  . 
+48: expression -> expression  . '[' expression ']' 
+57: expression -> expression  . INCDEC opValue 
+59: expression -> expression  . '+' expression 
+60: expression -> expression  . '-' expression 
+61: expression -> expression  . MULTIPLY opValue expression 
+62: expression -> expression  . SHIFT opValue expression 
+63: expression -> expression  . ORDER opValue expression 
+64: expression -> expression  . EQUALITY opValue expression 
+65: expression -> expression  . '&' expression 
+66: expression -> expression  . '^' expression 
+67: expression -> expression  . '|' expression 
+68: expression -> expression  . AND expression 
+69: expression -> expression  . OR expression 
+70: expression -> expression  . '?' expression ':' expression 
+71: expression -> expression  . '=' expression 
+72: expression -> expression  . MATH_IS opValue expression 
+86: flowArgs -> expression  . 
+  0:   On '[' to state 92
+  1:   On INCDEC to state 93
+  2:   On '+' to state 94
+  3:   On '-' to state 95
+  4:   On MULTIPLY to state 96
+  5:   On SHIFT to state 97
+  6:   On ORDER to state 98
+  7:   On EQUALITY to state 99
+  8:   On '&' to state 100
+  9:   On '^' to state 101
+  10:   On '|' to state 102
+  11:   On AND to state 103
+  12:   On OR to state 104
+  13:   On '?' to state 105
+  14:   On '=' to state 106
+  15:   On MATH_IS to state 107
+  Reduce by 74: condition -> expression  . 
+  Reduce by 86: flowArgs -> expression  . 
+
+
+State 193:
+89: flowInit -> flowArgs  . 
+85: flowArgs -> flowArgs  . ',' expression 
+  0:   On ',' to state 207
+  Reduce by 89: flowInit -> flowArgs  . 
+
+
+State 194:
+90: flowInit -> varType  . flowInitDefs_ 
+73: conditionVar_ -> varType  . defineVar 
+  0:   On flowInitDefs_ to state 208
+  1:   On defineVar to state 209
+  2:   On defineVar_ to state 17
+  3:   On identifier to state 32
+  4:   On IDENTIFIER to state 20
+
+
+State 195:
+96: forStatement -> for_ '(' syntaxInit optInit  . syntaxSemicol ';' syntaxExpression optCondition syntaxSemicol ';' syntaxExpression forOptInc_ syntaxCloseParen closeParenBreakOK statement 
+  0:   On syntaxSemicol to state 210
+  Reduce by 10: syntaxSemicol ->  . 
+
+
+State 196:
+91: optInit -> flowInit  . 
+  Reduce by 91: optInit -> flowInit  . 
+
+
+State 197:
+92: optInit -> argsNull  . 
+  Reduce by 92: optInit -> argsNull  . 
+
+
+State 198:
+90: flowInit -> varType  . flowInitDefs_ 
+  0:   On flowInitDefs_ to state 208
+  1:   On defineVar to state 211
+  2:   On defineVar_ to state 17
+  3:   On identifier to state 32
+  4:   On IDENTIFIER to state 20
+
+
+State 199:
+86: flowArgs -> expression  . 
+48: expression -> expression  . '[' expression ']' 
+57: expression -> expression  . INCDEC opValue 
+59: expression -> expression  . '+' expression 
+60: expression -> expression  . '-' expression 
+61: expression -> expression  . MULTIPLY opValue expression 
+62: expression -> expression  . SHIFT opValue expression 
+63: expression -> expression  . ORDER opValue expression 
+64: expression -> expression  . EQUALITY opValue expression 
+65: expression -> expression  . '&' expression 
+66: expression -> expression  . '^' expression 
+67: expression -> expression  . '|' expression 
+68: expression -> expression  . AND expression 
+69: expression -> expression  . OR expression 
+70: expression -> expression  . '?' expression ':' expression 
+71: expression -> expression  . '=' expression 
+72: expression -> expression  . MATH_IS opValue expression 
+  0:   On '[' to state 92
+  1:   On INCDEC to state 93
+  2:   On '+' to state 94
+  3:   On '-' to state 95
+  4:   On MULTIPLY to state 96
+  5:   On SHIFT to state 97
+  6:   On ORDER to state 98
+  7:   On EQUALITY to state 99
+  8:   On '&' to state 100
+  9:   On '^' to state 101
+  10:   On '|' to state 102
+  11:   On AND to state 103
+  12:   On OR to state 104
+  13:   On '?' to state 105
+  14:   On '=' to state 106
+  15:   On MATH_IS to state 107
+  Reduce by 86: flowArgs -> expression  . 
+
+
+State 200:
+40: localVars -> localVars ',' defineVar syntaxCommaOrSemicol  . 
+  Reduce by 40: localVars -> localVars ',' defineVar syntaxCommaOrSemicol  . 
+
+
+State 201:
+70: expression -> expression '?' expression ':' expression  . 
+48: expression -> expression  . '[' expression ']' 
+57: expression -> expression  . INCDEC opValue 
+59: expression -> expression  . '+' expression 
+60: expression -> expression  . '-' expression 
+61: expression -> expression  . MULTIPLY opValue expression 
+62: expression -> expression  . SHIFT opValue expression 
+63: expression -> expression  . ORDER opValue expression 
+64: expression -> expression  . EQUALITY opValue expression 
+65: expression -> expression  . '&' expression 
+66: expression -> expression  . '^' expression 
+67: expression -> expression  . '|' expression 
+68: expression -> expression  . AND expression 
+69: expression -> expression  . OR expression 
+70: expression -> expression  . '?' expression ':' expression 
+71: expression -> expression  . '=' expression 
+72: expression -> expression  . MATH_IS opValue expression 
+  0:   On '[' to state 92
+  1:   On INCDEC to state 93
+  2:   On '+' to state 94
+  3:   On '-' to state 95
+  4:   On MULTIPLY to state 96
+  5:   On SHIFT to state 97
+  6:   On ORDER to state 98
+  7:   On EQUALITY to state 99
+  8:   On '&' to state 100
+  9:   On '^' to state 101
+  10:   On '|' to state 102
+  11:   On AND to state 103
+  12:   On OR to state 104
+  13:   On '?' to state 105
+  14 (removed by precedence):   On '=' to state 106
+  15 (removed by precedence):   On MATH_IS to state 107
+  Reduce by 70: expression -> expression '?' expression ':' expression  . 
+
+
+State 202:
+84: whileStatement -> while_ '(' syntaxExpression condition syntaxCloseParen  . closeParenBreakOK statement 
+  0:   On closeParenBreakOK to state 212
+  1:   On ')' to state 213
+
+
+State 203:
+73: conditionVar_ -> varType defineVar  . 
+  Reduce by 73: conditionVar_ -> varType defineVar  . 
+
+
+State 204:
+104: ifStatement -> if_ '(' syntaxExpression ifCond_ syntaxCloseParen  . ')' syntaxExpression statement ifStatementElse_ 
+  0:   On ')' to state 214
+
+
+State 205:
+102: ifCond_ -> ';' condition  . 
+  Reduce by 102: ifCond_ -> ';' condition  . 
+
+
+State 206:
+103: ifCond_ -> flowInit ';'  . condition 
+  0:   On condition to state 215
+  1:   On expression to state 185
+  2:   On conditionVar_ to state 186
+  3:   On exprStart_ to state 58
+  4:   On '[' to state 59
+  5:   On identifier to state 60
+  6:   On '`' to state 61
+  7:   On '(' to state 62
+  8:   On '+' to state 63
+  9:   On '-' to state 64
+  10:   On '~' to state 65
+  11:   On '!' to state 66
+  12:   On INCDEC to state 67
+  13:   On varType to state 187
+  14:   On exprUnit_ to state 72
+  15:   On IDENTIFIER to state 20
+  16:   On varType_ to state 6
+  17:   On string to state 78
+  18:   On NUMBER to state 79
+  19:   On INT to state 8
+  20:   On STRINGTYPE to state 9
+  21:   On LIST to state 10
+  22:   On string_ to state 80
+  23:   On STRING to state 81
+
+
+State 207:
+85: flowArgs -> flowArgs ','  . expression 
+  0:   On expression to state 216
+  1:   On exprStart_ to state 58
+  2:   On '[' to state 59
+  3:   On identifier to state 60
+  4:   On '`' to state 61
+  5:   On '(' to state 62
+  6:   On '+' to state 63
+  7:   On '-' to state 64
+  8:   On '~' to state 65
+  9:   On '!' to state 66
+  10:   On INCDEC to state 67
+  11:   On exprUnit_ to state 72
+  12:   On IDENTIFIER to state 20
+  13:   On string to state 78
+  14:   On NUMBER to state 79
+  15:   On string_ to state 80
+  16:   On STRING to state 81
+
+
+State 208:
+90: flowInit -> varType flowInitDefs_  . 
+87: flowInitDefs_ -> flowInitDefs_  . ',' defineVar 
+  0:   On ',' to state 217
+  Reduce by 90: flowInit -> varType flowInitDefs_  . 
+
+
+State 209:
+73: conditionVar_ -> varType defineVar  . 
+88: flowInitDefs_ -> defineVar  . 
+  Reduce by 73: conditionVar_ -> varType defineVar  . 
+  Reduce by 88: flowInitDefs_ -> defineVar  . 
+
+
+State 210:
+96: forStatement -> for_ '(' syntaxInit optInit syntaxSemicol  . ';' syntaxExpression optCondition syntaxSemicol ';' syntaxExpression forOptInc_ syntaxCloseParen closeParenBreakOK statement 
+  0:   On ';' to state 218
+
+
+State 211:
+88: flowInitDefs_ -> defineVar  . 
+  Reduce by 88: flowInitDefs_ -> defineVar  . 
+
+
+State 212:
+84: whileStatement -> while_ '(' syntaxExpression condition syntaxCloseParen closeParenBreakOK  . statement 
+  0:   On statement to state 219
+  1:   On stAlt_ to state 43
+  2:   On varType to state 44
+  3:   On stBreak_ to state 45
+  4:   On stContinue_ to state 46
+  5:   On stCompound_ to state 47
+  6:   On ';' to state 48
+  7:   On expression to state 49
+  8:   On returnStatement to state 50
+  9:   On whileStatement to state 51
+  10:   On ifStatement to state 52
+  11:   On forStatement to state 53
+  12:   On errTok_ to state 54
+  13:   On varType_ to state 6
+  14:   On BREAK to state 55
+  15:   On CONTINUE to state 56
+  16:   On openCurly to state 57
+  17:   On exprStart_ to state 58
+  18:   On '[' to state 59
+  19:   On identifier to state 60
+  20:   On '`' to state 61
+  21:   On '(' to state 62
+  22:   On '+' to state 63
+  23:   On '-' to state 64
+  24:   On '~' to state 65
+  25:   On '!' to state 66
+  26:   On INCDEC to state 67
+  27:   On retLeave_ to state 68
+  28:   On while_ to state 69
+  29:   On if_ to state 70
+  30:   On for_ to state 71
+  31:   On INT to state 8
+  32:   On STRINGTYPE to state 9
+  33:   On LIST to state 10
+  34:   On '{' to state 28
+  35:   On exprUnit_ to state 72
+  36:   On IDENTIFIER to state 20
+  37:   On RETURN to state 73
+  38:   On EXIT to state 74
+  39:   On WHILE to state 75
+  40:   On IF to state 76
+  41:   On FOR to state 77
+  42:   On string to state 78
+  43:   On NUMBER to state 79
+  44:   On string_ to state 80
+  45:   On STRING to state 81
+
+
+State 213:
+15: closeParenBreakOK -> ')'  . 
+  Reduce by 15: closeParenBreakOK -> ')'  . 
+
+
+State 214:
+104: ifStatement -> if_ '(' syntaxExpression ifCond_ syntaxCloseParen ')'  . syntaxExpression statement ifStatementElse_ 
+  0:   On syntaxExpression to state 220
+  Reduce by 6: syntaxExpression ->  . 
+
+
+State 215:
+103: ifCond_ -> flowInit ';' condition  . 
+  Reduce by 103: ifCond_ -> flowInit ';' condition  . 
+
+
+State 216:
+85: flowArgs -> flowArgs ',' expression  . 
+48: expression -> expression  . '[' expression ']' 
+57: expression -> expression  . INCDEC opValue 
+59: expression -> expression  . '+' expression 
+60: expression -> expression  . '-' expression 
+61: expression -> expression  . MULTIPLY opValue expression 
+62: expression -> expression  . SHIFT opValue expression 
+63: expression -> expression  . ORDER opValue expression 
+64: expression -> expression  . EQUALITY opValue expression 
+65: expression -> expression  . '&' expression 
+66: expression -> expression  . '^' expression 
+67: expression -> expression  . '|' expression 
+68: expression -> expression  . AND expression 
+69: expression -> expression  . OR expression 
+70: expression -> expression  . '?' expression ':' expression 
+71: expression -> expression  . '=' expression 
+72: expression -> expression  . MATH_IS opValue expression 
+  0:   On '[' to state 92
+  1:   On INCDEC to state 93
+  2:   On '+' to state 94
+  3:   On '-' to state 95
+  4:   On MULTIPLY to state 96
+  5:   On SHIFT to state 97
+  6:   On ORDER to state 98
+  7:   On EQUALITY to state 99
+  8:   On '&' to state 100
+  9:   On '^' to state 101
+  10:   On '|' to state 102
+  11:   On AND to state 103
+  12:   On OR to state 104
+  13:   On '?' to state 105
+  14:   On '=' to state 106
+  15:   On MATH_IS to state 107
+  Reduce by 85: flowArgs -> flowArgs ',' expression  . 
+
+
+State 217:
+87: flowInitDefs_ -> flowInitDefs_ ','  . defineVar 
+  0:   On defineVar to state 221
+  1:   On defineVar_ to state 17
+  2:   On identifier to state 32
+  3:   On IDENTIFIER to state 20
+
+
+State 218:
+96: forStatement -> for_ '(' syntaxInit optInit syntaxSemicol ';'  . syntaxExpression optCondition syntaxSemicol ';' syntaxExpression forOptInc_ syntaxCloseParen closeParenBreakOK statement 
+  0:   On syntaxExpression to state 222
+  Reduce by 6: syntaxExpression ->  . 
+
+
+State 219:
+84: whileStatement -> while_ '(' syntaxExpression condition syntaxCloseParen closeParenBreakOK statement  . 
+  Reduce by 84: whileStatement -> while_ '(' syntaxExpression condition syntaxCloseParen closeParenBreakOK statement  . 
+
+
+State 220:
+104: ifStatement -> if_ '(' syntaxExpression ifCond_ syntaxCloseParen ')' syntaxExpression  . statement ifStatementElse_ 
+  0:   On statement to state 223
+  1:   On stAlt_ to state 43
+  2:   On varType to state 44
+  3:   On stBreak_ to state 45
+  4:   On stContinue_ to state 46
+  5:   On stCompound_ to state 47
+  6:   On ';' to state 48
+  7:   On expression to state 49
+  8:   On returnStatement to state 50
+  9:   On whileStatement to state 51
+  10:   On ifStatement to state 52
+  11:   On forStatement to state 53
+  12:   On errTok_ to state 54
+  13:   On varType_ to state 6
+  14:   On BREAK to state 55
+  15:   On CONTINUE to state 56
+  16:   On openCurly to state 57
+  17:   On exprStart_ to state 58
+  18:   On '[' to state 59
+  19:   On identifier to state 60
+  20:   On '`' to state 61
+  21:   On '(' to state 62
+  22:   On '+' to state 63
+  23:   On '-' to state 64
+  24:   On '~' to state 65
+  25:   On '!' to state 66
+  26:   On INCDEC to state 67
+  27:   On retLeave_ to state 68
+  28:   On while_ to state 69
+  29:   On if_ to state 70
+  30:   On for_ to state 71
+  31:   On INT to state 8
+  32:   On STRINGTYPE to state 9
+  33:   On LIST to state 10
+  34:   On '{' to state 28
+  35:   On exprUnit_ to state 72
+  36:   On IDENTIFIER to state 20
+  37:   On RETURN to state 73
+  38:   On EXIT to state 74
+  39:   On WHILE to state 75
+  40:   On IF to state 76
+  41:   On FOR to state 77
+  42:   On string to state 78
+  43:   On NUMBER to state 79
+  44:   On string_ to state 80
+  45:   On STRING to state 81
+
+
+State 221:
+87: flowInitDefs_ -> flowInitDefs_ ',' defineVar  . 
+  Reduce by 87: flowInitDefs_ -> flowInitDefs_ ',' defineVar  . 
+
+
+State 222:
+96: forStatement -> for_ '(' syntaxInit optInit syntaxSemicol ';' syntaxExpression  . optCondition syntaxSemicol ';' syntaxExpression forOptInc_ syntaxCloseParen closeParenBreakOK statement 
+  0:   On optCondition to state 224
+  1:   On condition to state 225
+  2:   On expression to state 185
+  3:   On conditionVar_ to state 186
+  4:   On exprStart_ to state 58
+  5:   On '[' to state 59
+  6:   On identifier to state 60
+  7:   On '`' to state 61
+  8:   On '(' to state 62
+  9:   On '+' to state 63
+  10:   On '-' to state 64
+  11:   On '~' to state 65
+  12:   On '!' to state 66
+  13:   On INCDEC to state 67
+  14:   On varType to state 187
+  15:   On exprUnit_ to state 72
+  16:   On IDENTIFIER to state 20
+  17:   On varType_ to state 6
+  18:   On string to state 78
+  19:   On NUMBER to state 79
+  20:   On INT to state 8
+  21:   On STRINGTYPE to state 9
+  22:   On LIST to state 10
+  23:   On string_ to state 80
+  24:   On STRING to state 81
+  Reduce by 77: optCondition ->  . 
+
+
+State 223:
+104: ifStatement -> if_ '(' syntaxExpression ifCond_ syntaxCloseParen ')' syntaxExpression statement  . ifStatementElse_ 
+  0:   On ifStatementElse_ to state 226
+  1:   On ifElse_ to state 227
+  2:   On ELSE to state 228
+  Reduce by 100: ifStatementElse_ ->  . 
+Solved SR CONFLICT on ELSE:
+	shift to state 228, removed ELSE from LA-set of rule 100)
+
+
+State 224:
+96: forStatement -> for_ '(' syntaxInit optInit syntaxSemicol ';' syntaxExpression optCondition  . syntaxSemicol ';' syntaxExpression forOptInc_ syntaxCloseParen closeParenBreakOK statement 
+  0:   On syntaxSemicol to state 229
+  Reduce by 10: syntaxSemicol ->  . 
+
+
+State 225:
+76: optCondition -> condition  . 
+  Reduce by 76: optCondition -> condition  . 
+
+
+State 226:
+104: ifStatement -> if_ '(' syntaxExpression ifCond_ syntaxCloseParen ')' syntaxExpression statement ifStatementElse_  . 
+  Reduce by 104: ifStatement -> if_ '(' syntaxExpression ifCond_ syntaxCloseParen ')' syntaxExpression statement ifStatementElse_  . 
+
+
+State 227:
+99: ifStatementElse_ -> ifElse_  . statement 
+  0:   On statement to state 230
+  1:   On stAlt_ to state 43
+  2:   On varType to state 44
+  3:   On stBreak_ to state 45
+  4:   On stContinue_ to state 46
+  5:   On stCompound_ to state 47
+  6:   On ';' to state 48
+  7:   On expression to state 49
+  8:   On returnStatement to state 50
+  9:   On whileStatement to state 51
+  10:   On ifStatement to state 52
+  11:   On forStatement to state 53
+  12:   On errTok_ to state 54
+  13:   On varType_ to state 6
+  14:   On BREAK to state 55
+  15:   On CONTINUE to state 56
+  16:   On openCurly to state 57
+  17:   On exprStart_ to state 58
+  18:   On '[' to state 59
+  19:   On identifier to state 60
+  20:   On '`' to state 61
+  21:   On '(' to state 62
+  22:   On '+' to state 63
+  23:   On '-' to state 64
+  24:   On '~' to state 65
+  25:   On '!' to state 66
+  26:   On INCDEC to state 67
+  27:   On retLeave_ to state 68
+  28:   On while_ to state 69
+  29:   On if_ to state 70
+  30:   On for_ to state 71
+  31:   On INT to state 8
+  32:   On STRINGTYPE to state 9
+  33:   On LIST to state 10
+  34:   On '{' to state 28
+  35:   On exprUnit_ to state 72
+  36:   On IDENTIFIER to state 20
+  37:   On RETURN to state 73
+  38:   On EXIT to state 74
+  39:   On WHILE to state 75
+  40:   On IF to state 76
+  41:   On FOR to state 77
+  42:   On string to state 78
+  43:   On NUMBER to state 79
+  44:   On string_ to state 80
+  45:   On STRING to state 81
+
+
+State 228:
+98: ifElse_ -> ELSE  . 
+  Reduce by 98: ifElse_ -> ELSE  . 
+
+
+State 229:
+96: forStatement -> for_ '(' syntaxInit optInit syntaxSemicol ';' syntaxExpression optCondition syntaxSemicol  . ';' syntaxExpression forOptInc_ syntaxCloseParen closeParenBreakOK statement 
+  0:   On ';' to state 231
+
+
+State 230:
+99: ifStatementElse_ -> ifElse_ statement  . 
+  Reduce by 99: ifStatementElse_ -> ifElse_ statement  . 
+
+
+State 231:
+96: forStatement -> for_ '(' syntaxInit optInit syntaxSemicol ';' syntaxExpression optCondition syntaxSemicol ';'  . syntaxExpression forOptInc_ syntaxCloseParen closeParenBreakOK statement 
+  0:   On syntaxExpression to state 232
+  Reduce by 6: syntaxExpression ->  . 
+
+
+State 232:
+96: forStatement -> for_ '(' syntaxInit optInit syntaxSemicol ';' syntaxExpression optCondition syntaxSemicol ';' syntaxExpression  . forOptInc_ syntaxCloseParen closeParenBreakOK statement 
+  0:   On forOptInc_ to state 233
+  1:   On flowArgs to state 234
+  2:   On argsNull to state 235
+  3:   On expression to state 199
+  4:   On exprStart_ to state 58
+  5:   On '[' to state 59
+  6:   On identifier to state 60
+  7:   On '`' to state 61
+  8:   On '(' to state 62
+  9:   On '+' to state 63
+  10:   On '-' to state 64
+  11:   On '~' to state 65
+  12:   On '!' to state 66
+  13:   On INCDEC to state 67
+  14:   On exprUnit_ to state 72
+  15:   On IDENTIFIER to state 20
+  16:   On string to state 78
+  17:   On NUMBER to state 79
+  18:   On string_ to state 80
+  19:   On STRING to state 81
+  Reduce by 32: argsNull ->  . 
+
+
+State 233:
+96: forStatement -> for_ '(' syntaxInit optInit syntaxSemicol ';' syntaxExpression optCondition syntaxSemicol ';' syntaxExpression forOptInc_  . syntaxCloseParen closeParenBreakOK statement 
+  0:   On syntaxCloseParen to state 236
+  Reduce by 3: syntaxCloseParen ->  . 
+
+
+State 234:
+94: forOptInc_ -> flowArgs  . 
+85: flowArgs -> flowArgs  . ',' expression 
+  0:   On ',' to state 207
+  Reduce by 94: forOptInc_ -> flowArgs  . 
+
+
+State 235:
+95: forOptInc_ -> argsNull  . 
+  Reduce by 95: forOptInc_ -> argsNull  . 
+
+
+State 236:
+96: forStatement -> for_ '(' syntaxInit optInit syntaxSemicol ';' syntaxExpression optCondition syntaxSemicol ';' syntaxExpression forOptInc_ syntaxCloseParen  . closeParenBreakOK statement 
+  0:   On closeParenBreakOK to state 237
+  1:   On ')' to state 213
+
+
+State 237:
+96: forStatement -> for_ '(' syntaxInit optInit syntaxSemicol ';' syntaxExpression optCondition syntaxSemicol ';' syntaxExpression forOptInc_ syntaxCloseParen closeParenBreakOK  . statement 
+  0:   On statement to state 238
+  1:   On stAlt_ to state 43
+  2:   On varType to state 44
+  3:   On stBreak_ to state 45
+  4:   On stContinue_ to state 46
+  5:   On stCompound_ to state 47
+  6:   On ';' to state 48
+  7:   On expression to state 49
+  8:   On returnStatement to state 50
+  9:   On whileStatement to state 51
+  10:   On ifStatement to state 52
+  11:   On forStatement to state 53
+  12:   On errTok_ to state 54
+  13:   On varType_ to state 6
+  14:   On BREAK to state 55
+  15:   On CONTINUE to state 56
+  16:   On openCurly to state 57
+  17:   On exprStart_ to state 58
+  18:   On '[' to state 59
+  19:   On identifier to state 60
+  20:   On '`' to state 61
+  21:   On '(' to state 62
+  22:   On '+' to state 63
+  23:   On '-' to state 64
+  24:   On '~' to state 65
+  25:   On '!' to state 66
+  26:   On INCDEC to state 67
+  27:   On retLeave_ to state 68
+  28:   On while_ to state 69
+  29:   On if_ to state 70
+  30:   On for_ to state 71
+  31:   On INT to state 8
+  32:   On STRINGTYPE to state 9
+  33:   On LIST to state 10
+  34:   On '{' to state 28
+  35:   On exprUnit_ to state 72
+  36:   On IDENTIFIER to state 20
+  37:   On RETURN to state 73
+  38:   On EXIT to state 74
+  39:   On WHILE to state 75
+  40:   On IF to state 76
+  41:   On FOR to state 77
+  42:   On string to state 78
+  43:   On NUMBER to state 79
+  44:   On string_ to state 80
+  45:   On STRING to state 81
+
+
+State 238:
+96: forStatement -> for_ '(' syntaxInit optInit syntaxSemicol ';' syntaxExpression optCondition syntaxSemicol ';' syntaxExpression forOptInc_ syntaxCloseParen closeParenBreakOK statement  . 
+  Reduce by 96: forStatement -> for_ '(' syntaxInit optInit syntaxSemicol ';' syntaxExpression optCondition syntaxSemicol ';' syntaxExpression forOptInc_ syntaxCloseParen closeParenBreakOK statement  . 
+
+
+

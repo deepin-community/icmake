@@ -1,0 +1,12 @@
+icm-pp version 10.00.00
+
+  * As with flexc++ canonical paths are not used anymore. Instead
+    absolute paths are used.
+
+  * icm-pp doesn't use a parser: removed from the source tree
+
+  * the test/ directory contains various icmake scripts which can be
+    preprocessed by icm-pp. It also contains example .pim files which may be
+    used for regression testing
+
+ -- Frank B. Brokken <f.b.brokken@rug.nl>  Mon, 03 May 2021 11:36:46 +0200

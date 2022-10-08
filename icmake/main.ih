@@ -1,0 +1,20 @@
+#include <iostream>
+#include <string>
+
+#include <bobcat/exception>
+
+#include "../xerr/xerr.ih"
+#include "../support/tools/tools.h"
+
+#include "splitter/splitter.h"
+#include "handler/handler.h"
+
+using namespace std;
+using namespace FBB;
+
+bool done(char const *program, Splitter::Action action);
+
+void about(char const *program);
+void usage(string const &progname);
+void version(string const &progname);
+

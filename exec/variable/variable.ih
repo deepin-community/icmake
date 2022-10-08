@@ -1,0 +1,10 @@
+#include "variable.h"
+
+#include "../../xerr/xerr.ih"
+
+#include "../int/int.h"
+#include "../string/string.h"
+#include "../list/list.h"
+
+using namespace std;
+

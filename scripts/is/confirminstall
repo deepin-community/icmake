@@ -1,0 +1,14 @@
+int confirmInstall(string source, string dest)
+{
+    if (!g_confirmInstall)          // confirmation not required
+        return 1;                   // unconditional installation
+
+    if (source == dest)
+        printf("Install `", dest, "' [yN] ? ");
+    else
+        printf("Install `", source, "' as `", dest, "' [yN] ? ");
+
+    int ret = getch() == "y";
+    printf('\n');
+    return ret;
+}

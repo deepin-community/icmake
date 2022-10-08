@@ -1,0 +1,60 @@
+// when inspecting files in the srcList they are compaired with
+// their object files and possibly a library.
+// When no library is constructed, the name of the library that would
+// otherwise be constructed is specified.
+//
+//  The following truth table covers the various possibilities:
+//
+//  ---------------------------------------------------------------------
+//      time scale            source older            remove 
+//  <--------------------->    obj lib       compile  fm list   remark
+//  ---------------------------------------------------------------------
+//      src     obj             +   -           -       +   
+//      obj     src             -   -           +       -             
+//      src     lib             -   +           -       +   
+//      lib     src             -   -           +       -             
+//      src  {lib,obj}          +   +           -       +
+//      lib     src     obj     +   -           -       +         1
+//      obj     src     lib     -   +           +       -         2
+//          {obj,lib}   src     -   -           +       -
+//  ---------------------------------------------------------------------
+//  remarks:    1: src was compiled, but not yet added to the lib 
+//                  (e.g., because the next compilation failed)
+//              2: the library was updated after the latest change to
+//                  src. In that case obj won't exist anymore: this
+//                  case doesn't exist, and can be ignored.
+//
+//  conclusion: src is compiled if src older obj or src older lib.
+
+list inspect(string destDir, 
+             int prefix, string srcDir, list srcList, string library)
+{
+    string oprefix = destDir + "/" + (string)prefix;
+    srcDir += "/";
+
+    #ifdef USE_ALL
+        string all = srcDir + USE_ALL;
+    #endif
+
+    for (int idx = listlen(srcList); idx--; )
+    {
+        string file  = srcList[idx];   
+        string source = srcDir + file;
+        string ofile = oprefix + change_ext(file, "o");    // make o-filename
+
+        // printf("inspect: source: ", source, ", ofile: ", ofile, ", lib: ",
+        //        library, "\n");
+
+        #ifdef USE_ALL
+            if (ofile older all)
+            {
+                if (listfind(srcList, file) == -1)
+                    srcList += (list)file;
+            }
+            else 
+        #endif
+            if (source older ofile || source older library)
+                srcList -= (list)file;
+    }
+    return srcList;
+}

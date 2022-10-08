@@ -1,0 +1,6 @@
+string setOpt(string install_im, string envvar)
+{
+    list optvar = getenv(envvar);    
+
+    return optvar[0] == "1" ? optvar[1] : install_im;
+}

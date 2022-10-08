@@ -1,0 +1,41 @@
+void installFile(string source)
+{
+    string path = get_path(g_installDest);      // make sure the dest. path
+    if (path != "")                             // exists
+        md(path);
+
+    if (exists(source))
+        system("install " + (g_option == _s ? "-s " : "") + source + ' ' + 
+                                                            g_installDest);
+    else
+        printf('`', source, "' not found\n");
+}
+
+void install()
+{
+    printf("INSTALL ", g_installType, ' ', g_installDest, 
+            g_option == _s ? ", stripped\n" : "\n");
+
+    if (g_installType == _iProgram)
+        installFile(TMP_DIR + "/bin/binary");
+
+    #ifdef LIBRARY
+    else if (g_installType == _iStatic)
+        installFile(TMP_DIR + "/lib" LIBRARY ".a");
+
+    #ifdef SHARED
+    else if (g_installType == _iShared)
+    {
+        md(g_installDest);
+
+        if (g_option == _s)
+            system("strip --strip-unneeded " TMP_DIR "/lib" LIBRARY ".so." +
+                                                            g_version);
+
+        system("cp -d " TMP_DIR "/lib" LIBRARY ".so.* " + g_installDest);
+    }
+    #endif  // SHARED
+    #endif  // LIBRARY
+
+    exit(0);
+}

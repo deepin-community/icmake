@@ -1,0 +1,6 @@
+closeParenBreakOK:
+    ')'
+    {
+        ++d_breakOK;
+    }
+;

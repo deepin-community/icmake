@@ -1,0 +1,19 @@
+#include <iostream>
+#include <string>
+#include <exception>
+
+#include <bobcat/arg>
+
+#include "../support/bimheader/bimheader.h"
+#include "../support/tools/tools.h"
+
+#include "unassembler/unassembler.h"
+
+#include "../xerr/xerr.ih"
+
+using namespace std;
+using namespace FBB;
+
+void usage(string const &progname);
+void copyright(string const &progname);
+

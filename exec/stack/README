@@ -1,0 +1,53 @@
+The vector-based stack grows from low to high indices. The original OS-RSS
+stack has a fixed size and grows from high to low values. The compiler uses
+the original OS-RSS indices. Here is the correspondence between the compiler's
+and current idea of the stack:
+
+            compiler            vector-stack
+    BP + 4     100      arg3        13      BP - 4
+    BP + 3      99      arg2        14      BP - 3
+    BP + 2      98      arg1        15      BP - 2
+    BP + 1      97      RA          16      BP - 1
+    BP->        96      old BP      17      <-- BP
+    BP - 1      95      local 1     18      BP + 1
+    BP - 2      94      local 2     19      BP - 1
+
+So, indices are sign-toggled by Stack.
+
+When calling RSS functions (like printf) there's no real RA, but the BP must
+be pushed. In order to maintain the above stack organization a dummy value is
+pushed when executing a RSS function.
+
+-----------------------------------------------------------------------------
+
+When a function is called, the arguments are pushed from the last argument to
+the first.
+
+Then the return address is pushed, and then the current BP. The current BP is
+then pointing at the index of the stack where the old BP was pushed.
+
+Next the local variables are stored on the stack in their order of definition.
+
+When calling a function like 
+
+       fun(int param1, int param2)
+        {
+            int local1;
+            int local2;
+        }
+
+the stack orgaization therefore looks like this:
+
+        [ param2 ]
+        [ param1 ]
+        [ RA     ]
+        [ old BP ]
+        [ local1 ]
+        [ local2 ]
+
+And therefore param1 is reached as d_stack[BP + 2], while local1 is reached as
+d_stack[BP - 1]. 
+
+The class Stack's index operator handles the BP offsets, and so in code
+referring to the Stack object d_stack[2] is used to reach param1, and
+d_stack[-1] is used to reach local1.

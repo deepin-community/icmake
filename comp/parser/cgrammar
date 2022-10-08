@@ -1,0 +1,913 @@
+_args:
+    _args
+    comma
+    errExpression
+    {
+        $$ = smvAddArg(&$1, &$3);
+    }
+|
+    errExpression
+    {
+        $$ = SVarg(&$1);
+    }
+;
+
+args:
+    _args
+    {
+        $$ = smvArgs2code(&$1);     // convert the arguments to code
+    }
+;
+breakOK:
+    {
+        ++gp_breakOK;
+    }
+;
+breakStmnt:
+    BREAK
+    {
+        $$ = pmv_break();
+    }
+;
+closeBrace: 
+    {
+        gp_parse_error = err_closeBrace_expected;
+        symtab_pop();
+    }                       /* '{' for matching */
+    '}' 
+;
+closeParen:   
+    {
+        gp_parse_error = err_closeParen_expected; 
+    }
+    ')' 
+;
+comma:      
+    {
+        gp_parse_error = err_comma_expected; 
+    }        
+    ',' 
+;
+compound:
+    openBrace
+    statements
+    closeBrace
+    {
+        $$ = SVmove(&$2);
+    }
+;
+condition:
+    errExpression
+|
+    typedCondition
+;
+continueStmnt:
+    CONTINUE
+    {
+        $$ = pmv_continue();
+    }
+;
+
+defVarOrFun:
+    typedVarlist semicol
+    {
+        svCatenate(&gp_init, &$1);
+        }
+|
+    typeOfVar functionDef
+|
+    _voidtype   functionDef
+;
+
+errExpression:
+    {
+        gp_parse_error = err_in_expression;
+    }
+    expression
+    {
+        $$ = SVmove(&$2);
+    }
+;
+exprCode:
+    errExpression
+    {
+        $$ = pmv_expression(&$1);
+    }
+;
+_p_casttype:
+    INT
+|
+    LIST
+|
+    STRINGTYPE
+;
+
+_string:
+    _string STRING
+    {                                       
+        ssAppendBuf(util_string());         // append the next string 
+    }
+|
+    STRING
+    {
+        ssSetBuf(util_string());            // assign the 1st string
+    }
+;
+
+_func_or_var:
+    function closeParen
+|
+    IDENTIFIER
+    {
+        msg("identifier: %s", util_string());
+        $$ = pmv_fetchVar();
+    }
+;
+
+_backtick:   
+    {
+        gp_parse_error = err_backtick_expected;
+    }
+    '`' 
+;
+
+expression:
+    expression '=' expression
+    {
+        msg("inc/expression.5: assignment (=)");
+        $$ = pmv_assign(&$1, &$3);
+    }
+|
+    expression '[' expression ']'
+    {
+        $$ = pmv_indexOp(&$1, &$3);
+    }
+|
+    expression MUL_IS expression
+    {
+        $$ = pmv_compoundAss(&$1, &$3, pmv_multiply, "*=");
+    }
+|
+    expression DIV_IS expression
+    {
+        $$ = pmv_compoundAss(&$1, &$3, pmv_divide, "/=");
+    }
+|
+    expression MOD_IS expression
+    {
+        $$ = pmv_compoundAss(&$1, &$3, pmv_modulo, "%=");
+    }
+|
+    expression PLUS_IS expression
+    {
+        $$ = pmv_compoundAss(&$1, &$3, pmv_addition, "+=");
+    }
+|
+    expression MINUS_IS expression
+    {
+        $$ = pmv_compoundAss(&$1, &$3, pmv_subtract, "-=");
+    }
+|
+    expression AND_IS expression
+    {
+        $$ = pmv_compoundAss(&$1, &$3, pmv_bitand, "&=");
+    }
+|
+    expression OR_IS expression
+    {
+        $$ = pmv_compoundAss(&$1, &$3, pmv_bitor, "|=");
+    }
+|
+    expression XOR_IS expression
+    {
+        $$ = pmv_compoundAss(&$1, &$3, pmv_xor, "^=");
+    }
+|
+    expression SHL_IS expression
+    {
+        $$ = pmv_compoundAss(&$1, &$3, pmv_shl, "<<=");
+    }
+|
+    expression SHR_IS expression
+    {
+        $$ = pmv_compoundAss(&$1, &$3, pmv_shr, ">>=");
+    }
+|
+    expression OR expression
+    {
+        $$ = pmv_or(&$1, &$3);
+    }
+|
+    expression AND expression
+    {
+        $$ = pmv_and(&$1, &$3);
+    }
+|
+    expression EQUAL expression
+    {
+        $$ = pmv_equal(&$1, &$3);
+    }
+|
+    expression NOT_EQUAL expression
+    {
+        $$ = pmv_notEqual(&$1, &$3);
+    }
+|
+    expression '?' expression ':' expression
+    {
+        $$ = pmv_ternary(&$1, &$3, &$5);
+    }
+|
+    expression '<' expression
+    {
+        $$ = pmv_smaller(&$1, &$3);
+    }
+|
+    expression '>' expression
+    {
+        $$ = pmv_greater(&$1, &$3);
+    }
+|
+    expression SMALLER_EQUAL expression
+    {
+        $$ = pmv_smEqual(&$1, &$3);
+    }
+|
+    expression GREATER_EQUAL expression
+    {
+        $$ = pmv_grEqual(&$1, &$3);
+    }
+|
+    expression '+' expression
+    {
+        $$ = pmv_addition(&$1, &$3);
+    }
+|
+    expression '&' expression
+    {
+        $$ = pmv_bitand(&$1, &$3);
+    }
+|
+    expression '|' expression
+    {
+        $$ = pmv_bitor(&$1, &$3);
+    }
+|
+    expression '^' expression
+    {
+        $$ = pmv_xor(&$1, &$3);
+    }
+|
+    expression SHL expression
+    {
+        $$ = pmv_shl(&$1, &$3);
+    }
+|
+    expression SHR expression
+    {
+        $$ = pmv_shr(&$1, &$3);
+    }
+|
+    expression '-' expression
+    {
+        $$ = pmv_subtract(&$1, &$3);
+    }
+|
+    expression '*' expression
+    {
+        $$ = pmv_multiply(&$1, &$3);
+    }
+|
+    expression YOUNGER expression
+    {
+        $$ = pmv_young(&$1, &$3);
+    }
+|
+    expression OLDER expression
+    {
+        $$ = pmv_old(&$1, &$3);
+    }
+|
+    expression '/' expression
+    {
+        $$ = pmv_divide(&$1, &$3);
+    }
+|
+    expression '%' expression
+    {
+        $$ = pmv_modulo(&$1, &$3);
+    }
+|
+    '-' expression          %prec '!'
+    {
+        $$ = pmv_negate(&$2);
+    }
+|
+    INC expression
+    {
+        $$ = pmv_incDec(pre_op, op_inc, &$2);
+    }
+|
+    expression INC
+    {
+        $$ = pmv_incDec(post_op, op_inc, &$1);
+    }
+|
+    DEC expression
+    {
+        $$ = pmv_incDec(pre_op, op_dec, &$2);
+    }
+|
+    expression DEC
+    {
+        $$ = pmv_incDec(post_op, op_dec, &$1);
+    }
+|
+    '+' expression          %prec '!'
+    {
+        $$ = SVmove(&$2);
+    }
+|
+    '~'
+    expression          %prec '!'
+    {
+        $$ = pmv_compl(&$2);
+    }
+|
+    '!' expression
+    {
+        $$ = pmv_not(&$2);
+    }
+|
+    '(' _p_casttype ')' expression         %prec '!'
+    {
+        $$ = pmv_cast(svType(&$2), &$4);
+    }
+|
+    _string
+    {
+        $$ = SVtype(e_str | e_const, ssBuf());
+    }
+|
+    NUMBER
+    {
+        $$ = SVtype(e_int | e_const, util_string());
+    }
+|
+    '[' args ']'
+    {
+        msg("[ list ]");
+        $$ = pmv_listConst(&$2);
+    }
+|
+    '(' expression closeParen
+    {
+        $$ = SVmove(&$2);
+    }
+|
+    _func_or_var
+|
+    '`' expression _backtick
+    {
+        $$ = pmv_oneArg(f_backtick, &$2);
+    }
+;
+_for:
+    FOR nesting
+    {
+        symtab_push();
+    }
+;
+
+_expr_list:
+    _expr_list ',' exprCode
+    {
+        svCatenate(&$1, &$3);
+        $$ = SVmove(&$1);
+    }
+|
+    exprCode
+;
+
+_opt_init_expression:
+    _expr_list
+|
+    typedVarlist
+|
+    zeroSemVal
+;
+
+_opt_cond_expression:
+    errExpression
+|
+    {
+        $$ = SVint(1);
+    }
+;
+
+_opt_inc_expression:
+    _expr_list
+|
+    zeroSemVal
+;
+
+forStmnt:   // $3: init, $5: cond, $7 inc, $10 stmnt
+    _for openParen
+        _opt_init_expression semicol
+            _opt_cond_expression semicol
+                _opt_inc_expression closeParen
+        breakOK
+        statement
+        popDead
+    {
+        $$ = pmv_for(&$3, &$5, &$7, &$10);
+    }
+;
+_zero_arg_funs:
+    GETCH
+|
+    GETPID
+|
+    GETS
+;
+
+_one_arg_funs:
+    ASCII
+|
+    EVAL
+|
+    EXISTS
+|
+    LISTLEN
+|
+    ECHO_TOKEN
+|
+    CMD_TAIL
+|
+    CMD_HEAD
+|
+    ARG_HEAD
+|
+    ARG_TAIL
+|
+    G_BASE
+|
+    G_PATH
+|
+    G_EXT
+|
+    G_DEXT
+|
+    PUTENV
+|
+    GETENV
+|
+    STRLEN
+|
+    STRUPR
+|
+    STRLWR
+|
+    TRIM
+|
+    TRIMLEFT
+|
+    TRIMRIGHT
+;
+
+_two_arg_funs:
+    C_EXT                           /* string, string */
+|
+    C_BASE
+|
+    C_PATH
+|
+    ELEMENT                         /* int, list | int, string */
+|
+    FGETS                           /* list fgets(string, int) */
+|
+    FIELDS                          /* string, string */
+|
+    LISTFIND                        /* list, string */
+|
+    LISTUNION                       /* list, list | list, string */
+|
+    STRCHR                          /* string, string */
+|
+    STRFIND                         /* string, string */
+|
+    RESIZE                          /* string, int */
+;
+
+_optint_string:
+    STAT
+|
+    CHDIR
+|
+    SYSTEM
+;
+
+_comma_expr:
+    ',' errExpression
+    {
+        $$ = SVmove(&$2);
+    }
+|
+    zeroSemVal
+;
+
+_optint_special:                        /* optional extra int arg is OK */
+    EXEC                                /* indicating P_CHECK (0) or    */
+|                                       /* P_NOCHECK (2)                */
+    EXECUTE
+;
+
+_comma_arglist:
+    ','
+    args                                /* argument list, see   */
+    {                                   /* README.args          */
+        $$ = SVmove(&$2);         
+    }
+|
+    zeroSemVal                          /* 0 arguments          */
+;
+
+_opt_arglist:
+    args
+|
+    zeroSemVal
+;
+
+_funname:
+    IDENTIFIER
+    {
+        $$ = SVint(p_functionIdx());
+    }
+;
+
+function:
+    _zero_arg_funs                       /* getch() or gets() */
+    openParen
+    {
+        $$ = pmv_zeroArgs(svType(&$1));
+    }
+|
+    _one_arg_funs openParen errExpression
+    {
+        $$ = pmv_oneArg(svType(&$1), &$3);
+    }
+|
+    _two_arg_funs openParen errExpression comma errExpression
+    {
+        $$ = pmv_twoArgs(svType(&$1), &$3, &$5);
+    }
+|
+    SUBSTR                              /* three arg function */
+    openParen errExpression comma errExpression comma errExpression
+    {
+        $$ = pmv_threeArgs($1.type, &$3, &$5, &$7);
+    }
+|
+    _optint_string                      /* CHDIR, SYSTEM, STAT */
+    openParen
+    errExpression                      /* int inserted if string */
+    _comma_expr                         /* may be string if first == int */
+    {
+        $$ = pmv_optIntString(svType(&$1), &$3, &$4);
+    }
+|
+    _optint_special                     /* $1 EXEC, EXECUTE            */
+    openParen                           /*      alternatives:          */
+    errExpression                       /* $3   fun(int, string, ...)  */
+    _comma_arglist                      /* $4   or fun(string, ...)    */
+    {
+        $$ = pmv_checkSpecial(svType(&$1), &$3, &$4);
+    }
+|
+    PRINTF openParen args                 /* first may be anything */
+    {
+        $$ = pmv_specials(f_printf, &$3);
+    }
+|
+    FPRINTF openParen args                /* argcount >= 2 required */
+    {
+        $$ = pmv_fprintf(svType(&$1), &$3);
+    }
+|
+    STRFORMAT openParen args        /* first may be anything */
+    {
+        $$ = pmv_specials(f_strformat, &$3);
+    }
+|
+    _funname openParen _opt_arglist
+    {
+        $$ = pmv_callFunction(svValue(&$1), &$3);
+    }
+|
+    makeList
+;
+    /*
+        parameters are defined as local variables of the current function,
+        while counting the number of parameters. 
+        At the end of a function definition head its symtab nParams fields
+        holds the number of its parameters, which are represented by the
+        initial nParams elements of symtab's local variables array.
+    */
+
+_partype:
+    typeOfVar enterID
+;
+
+_pars:
+    _pars comma _partype
+|
+    _partype
+;
+
+_opt_parlist:
+    _pars
+|
+    /* empty */
+;
+
+_funvars:
+    openParen _opt_parlist ')' openBrace
+    {
+        symtab_setFunParams(); /* the # variables so far are the parameters */
+    }
+;
+
+_funid:
+    IDENTIFIER
+    {
+        p_beginFunction();
+    }
+;
+
+functionDef:
+    _funid                          /* name of the function */
+    _funvars                         /* returns init code */
+    statements
+    closeBrace
+    {
+        p_endFunction(&$3);
+    }
+;
+_if:
+    IF nesting
+    {
+        symtab_push();
+    }
+;
+
+_else:
+    ELSE statement
+    {
+        $$ = SVmove(&$2);
+    }
+|
+    zeroSemVal
+;
+
+ifStmnt:      //  $3                   $5                         $8
+    _if openParen condition closeParen statement popDead pushDead _else popDead
+    {
+        $$ = pmv_if(&$3, &$5, &$8);
+        symtab_pop();
+    }
+;
+_makelistCall:
+    MAKELIST
+    openParen
+    errExpression
+    {
+        $$ = SVmove(&$3);
+    }
+;
+
+_makeList_normal:
+    {
+        $$ = SVint(IS_FILE);
+    }
+;
+
+_old_young:
+    OLDER
+|
+    YOUNGER
+;
+
+_older_younger:
+    {
+        gp_parse_error = err_older_younger; 
+    }
+    _old_young
+    {
+        $$ = SVmove(&$2);
+    }
+;
+
+makeList:
+    _makelistCall                   /* regex ($1)                   */
+    _makeList_normal                /* O_FILE  IS_FILE expression   */
+    {
+        $$ = pmv_makeList1(&$1, &$2); // makelist of a file regex
+
+    }
+|
+    _makelistCall                   /* match mode (O_FILE, $1)      */
+    comma
+    errExpression                   /* regex ($3)                   */
+    {
+        $$ = pmv_makeList1(&$3, &$1);
+    }
+|
+    _makelistCall                   /* regex            ($1)    */
+    comma _older_younger            /* decision mode    ($3)    */
+    comma errExpression             /* compare file     ($5)    */
+    _makeList_normal                /* O_FILE mode      ($6)    */
+    {
+        $$ = pmv_makeList2(svType(&$3), &$6, &$1, &$5);
+    }
+|
+    _makelistCall                   /* match mode       ($1)        */
+    comma errExpression             /* regex            ($3)        */
+    comma _older_younger            /* decision mode    ($5)        */
+    comma errExpression             /* compare file     ($7)        */
+    {
+        $$ = pmv_makeList2(svType(&$5), &$1, &$3, &$7);
+    }
+;
+
+
+
+nesting:
+    pushDead
+    {
+        ++gp_nestLevel;
+    }
+;
+ok:
+    ';'
+    {
+        yyerrok;
+    }
+;
+openBrace:
+    {
+        gp_parse_error = err_openBrace_expected;
+    }    
+    '{'                             /* } (for matching) */
+    {
+        symtab_push();
+    }
+;
+
+openParen:
+    {
+        gp_parse_error = err_openParen_expected;
+    }
+    '('
+;
+popDead:
+    {
+        deadPop();
+    }
+;
+pushDead:
+    {
+        deadPush();                     // set new dead-level
+    }
+;
+_return_tail:
+    errExpression
+|
+    zeroSemVal
+;
+
+_leave:
+    RETURN
+    {
+        msg("saw return");
+    }
+|
+    EXIT
+;
+
+returnStmnt:
+    _leave
+    _return_tail
+    {
+        $$ = pmv_return(svType(&$1), &$2);
+        msg("SAW return stmt");
+    }
+;
+semicol:    
+    {
+        gp_parse_error = err_semicol_expected; 
+    }      
+    ';' 
+;
+_stm:
+    compound
+|
+    ';'
+    zeroSemVal
+    {
+        $$ = SVmove(&$2);
+    }
+|
+    exprCode   semicol
+|
+    whileStmnt
+|
+    ifStmnt
+|
+    forStmnt
+|
+    returnStmnt semicol
+|
+    breakStmnt  semicol
+|
+    continueStmnt semicol
+|
+    error ok
+    {
+        $$ = SVint(0);
+        svPushStack(&$$);
+    }
+;
+
+statement:
+    _stm
+|
+    typedVarlist semicol
+;
+
+statements:
+    statements
+    statement
+    {
+        $$ = pmv_catStmnts(&$1, &$2);
+    }
+|
+    zeroSemVal
+;
+typedCondition:
+    typeOfVar varCondition
+    {
+        $$ = SVmove(&$2);
+    }
+;
+typedVarlist:
+    typeOfVar varExprList
+    {
+        $$ = SVmove(&$2);
+    }
+;
+
+
+varCondition:
+    enterVarID
+    {
+        svAddCode(&$1, op_push_imm, 0);
+        $$ = SVmove(&$1);
+    }
+|
+    enterVarID '=' expression
+    {
+        $$ = pmv_assign(&$1, &$3);    /* explicit initialization */
+    }        
+;
+
+_while:
+    WHILE
+    nesting
+;
+
+whileStmnt: //     $3                          $6
+    _while openParen condition closeParen breakOK statement popDead
+    {
+        $$ = pmv_while(&$3, &$6, 1);
+    }
+;
+
+enterID:
+    IDENTIFIER
+    {
+        p_defineVar();    /* the first n variables of a function, up to the
+                            end of the parameter list are the parameters. */
+    }
+;
+enterVarID:
+    enterID
+    {
+        $$ = pmv_fetchVar();
+    }
+;
+
+
+>>> typeOfVar:      -> varType
+>>> varExpr:
+>>> varExprList:    varsDefList
+>>> zeroSemVal:

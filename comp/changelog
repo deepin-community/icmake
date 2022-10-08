@@ -1,0 +1,5 @@
+icm-comp version 10.00.00
+
+  * C++ version of icmake's icm-comp parser.
+
+ -- Frank B. Brokken <f.b.brokken@rug.nl>  Mon, 07 May 2021 15:00:16 +0200

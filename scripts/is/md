@@ -1,0 +1,4 @@
+void md(string dir)
+{
+    syscall("mkdir -p " + dir);    
+}

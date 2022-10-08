@@ -1,0 +1,7 @@
+#include "symtab.h"
+
+#include "../../xerr/xerr.ih"
+
+
+using namespace std;
+

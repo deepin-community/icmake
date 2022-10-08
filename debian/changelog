@@ -1,0 +1,652 @@
+icmake (10.01.01-2) unstable; urgency=medium
+
+  * Upload to unstable
+  * Relax bobcat build dependency to 5.07.00; 5.09.00 isn't strictly needed
+    and this makes the bobcat transition slightly simpler.
+  * Bump Standards-Version to 4.6.0
+
+ -- tony mancill <tmancill@debian.org>  Tue, 09 Nov 2021 09:17:24 -0800
+
+icmake (10.01.01-1) experimental; urgency=medium
+
+  * Upstream removed a leftover debug message
+
+ -- Frank B. Brokken <f.b.brokken@rug.nl>  Sat, 03 Jul 2021 12:42:49 +0200
+
+icmake (10.01.00-1) UNRELEASED; urgency=medium
+
+  * The icmake program again recognizes but ignores the -q option (frequently
+    used in icmake scripts) . See also the upstream changelog.
+
+ -- Frank B. Brokken <f.b.brokken@rug.nl>  Thu, 01 Jul 2021 11:02:25 +0200
+
+icmake (10.00.00-1) experimental; urgency=medium
+
+  [ Frank B. Brokken ]
+  * New release, converted icmake to C++, added several new options and a new
+    man-page, updated existing man-pages, changed the icm_dep output, all
+    support executables are now in /usr/libexec/icmake, the icmake-doc debian
+    package has been discontinued, as almost all of its files are already
+    available in /usr/share/doc/icmake. Refer to the upstream changelog files
+    for details.
+
+  [ tony mancill ]
+  * Upload to experimental during the Bullseye freeze.
+
+ -- Frank B. Brokken <f.b.brokken@rug.nl>  Mon, 14 Jun 2021 10:24:17 +0200
+
+icmake (9.03.01-1) unstable; urgency=medium
+
+  * Upstream fixed handling directories without sources if precompiled
+    headers were requested (Closes: #948766, #948765, #948768)
+
+ -- Frank B. Brokken <f.b.brokken@rug.nl>  Mon, 13 Jan 2020 10:13:25 +0100
+
+icmake (9.03.00-2) unstable; urgency=medium
+
+  * Address FTBFS for binary-indep target (Closes: #948755)
+  * Allow builds without stripped binaries with nostrip
+
+ -- tony mancill <tmancill@debian.org>  Sun, 12 Jan 2020 21:30:55 -0800
+
+icmake (9.03.00-1) unstable; urgency=medium
+
+  [ Frank B. Brokken ]
+  * New upstream version 9.03.00
+  * The icmake grammar now supports list constants ( '[' string+ ']' )
+  * Fixed handling of int-comparison functions
+  * After compilation precompiled headers are stored in TMP_DIR/gch
+  * Icmbuild's commands were extended with 'cleantmp' and 'cleangch'
+  * All manpages received a complete overhaul
+  * Removed debian/compat, added debhelper-compat to debian control
+  * Bumped the standards version in debian/control to 4.4.1
+  * New upstream version 9.03.00
+
+  [ tony mancill ]
+  * Set "Rules-Requires-Root: no" in debian/control
+  * Add lintian-overide for icmun manpage warning
+
+ -- tony mancill <tmancill@debian.org>  Sun, 12 Jan 2020 15:57:16 -0800
+
+icmake (9.02.08-2) unstable; urgency=medium
+
+  * Only create manpage symlinks for arch:any packages (Closes: #921221)
+    Thank you to Sven Joachim and Andreas Beckmann for the assistance.
+
+ -- tony mancill <tmancill@debian.org>  Sun, 03 Feb 2019 11:32:26 -0800
+
+icmake (9.02.08-1) unstable; urgency=medium
+
+  [ Frank B. Brokken ]
+  * Upstream migrated from Github to Gitlab
+  * New upstream version 9.02.08
+  * Added fortify flags to debian/rules
+
+  [ tony mancill ]
+  * Bump Standards-Version to 4.3.0
+  * Remove debian/icmake.maintscript (which referred to a version older
+    than old-old-stable)
+  * Set icmake-doc as Multi-arch: foreign
+
+ -- tony mancill <tmancill@debian.org>  Sat, 02 Feb 2019 15:19:49 -0800
+
+icmake (9.02.07-2) unstable; urgency=medium
+
+  * Update Vcs fields for migration from Alioth -> Salsa
+  * Bump Standards-Version to 4.1.4
+  * Address FTBFS with dpkg-buildpackage -A (Closes: #901109)
+  * Update Homepage, Source and watch for new upstream location
+
+ -- tony mancill <tmancill@debian.org>  Thu, 14 Jun 2018 21:51:35 -0700
+
+icmake (9.02.07-1) unstable; urgency=low
+
+  * New upstream release resets the terminal after ctrl-C
+
+ -- Frank B. Brokken <f.b.brokken@rug.nl>  Fri, 16 Mar 2018 09:21:26 +0100
+
+icmake (9.02.06-1) unstable; urgency=low
+
+  * New upstream release fixes two errors in icmbuild's install command
+
+ -- Frank B. Brokken <f.b.brokken@rug.nl>  Thu, 08 Feb 2018 14:20:45 +0100
+
+icmake (9.02.05-1) unstable; urgency=low
+
+  * New upstream release fixes an error in the icmconf(7) man-page
+
+  * Specified '11' in 'compat'
+
+  * Updated debian/rules to use the DH sequencer.
+
+ -- Frank B. Brokken <f.b.brokken@rug.nl>  Thu, 25 Jan 2018 09:28:31 +0100
+
+icmake (9.02.04-1) unstable; urgency=low
+
+  [ Frank B. Brokken ]
+  * New upstream release prevents writing additional DEFCOM lines to existing
+    icmconf files.
+
+  * Changed http-based uris in the `control' file into https-based uris.
+
+  [ tony mancill ]
+  * Bump Standards-Version to 4.1.3.
+
+ -- Frank B. Brokken <f.b.brokken@rug.nl>  Sun, 31 Dec 2017 11:50:50 +0100
+
+icmake (9.02.03-1) unstable; urgency=medium
+
+  * New upstream release updates the usr/share/icmake/icmconf file and
+    contains some additional cosmetic changes.
+
+  * Updated the debian/control file
+
+ -- Frank B. Brokken <f.b.brokken@rug.nl>  Thu, 02 Nov 2017 09:33:15 +0100
+
+icmake (9.02.02-1) unstable; urgency=medium
+
+  * New upstram release fixes a typo in [/usr/lib/icmake/]icmbuild causing it
+    sometimes to fail. Do not use release 9.02.01.
+
+ -- Frank B. Brokken <f.b.brokken@rug.nl>  Tue, 01 Nov 2016 13:52:52 +0100
+
+icmake (9.02.01-1) unstable; urgency=medium
+
+  * New upstram release fixes a minor flaw in [/usr/lib/icmake/]icmbuild.
+
+ -- Frank B. Brokken <f.b.brokken@rug.nl>  Tue, 01 Nov 2016 10:01:25 +0100
+
+icmake (9.02.00-1) unstable; urgency=medium
+
+  * New upstram release introduces a little icmbuild support program calling
+    the icmbuild script. This solves problesm the icmbuild script has to
+    provide usage information when icmconf is absent. Man-pages etc. were
+    adapted accordingly.
+
+ -- Frank B. Brokken <f.b.brokken@rug.nl>  Sat, 24 Sep 2016 16:42:03 +0200
+
+icmake (9.01.00-1) unstable; urgency=medium
+
+  * Man-page upgrade (somehow not included in 9.00.00)
+
+ -- Frank B. Brokken <f.b.brokken@rug.nl>  Sat, 03 Sep 2016 15:21:06 +0200
+
+icmake (9.00.00-1) unstable; urgency=medium
+
+  * New release adds new support program (/usr/lib/icmake/)icm-dep determining
+    the (local) classes depending on classes listed in the CLASSES file.
+
+  * Several new options were added to icmake: see the upstream changelog file
+    for icmake 9.00.00 for details.
+
+ -- Frank B. Brokken <f.b.brokken@rug.nl>  Sat, 23 Jul 2016 21:11:48 +0200
+
+icmake (8.01.00-1) unstable; urgency=medium
+
+  [ Frank B. Brokken ]
+  * New upstream release defines new builtin functions, extends the facilities
+    of the icmstart script, repairs some bugs, and implements various cosmetic
+    improvements.
+
+  [ tony mancill ]
+  * Add manpage-typos.patch.
+
+ -- tony mancill <tmancill@debian.org>  Sun, 14 Feb 2016 10:26:18 -0800
+
+icmake (8.00.05-1) unstable; urgency=medium
+
+  [ Frank B. Brokken ]
+  * New upstream release fixes a bug in processing #undef IDENTIFIER
+    directives on amd64 architectures.  (Closes: #808686)
+
+  [ tony mancill ]
+  * Freshen debian/copyright.  Update format and upstream link.
+
+ -- tony mancill <tmancill@debian.org>  Tue, 22 Dec 2015 20:50:28 -0800
+
+icmake (8.00.04-1) unstable; urgency=medium
+
+  * New upstream release fixes handling of backslash line continuation chars.
+
+ -- Frank B. Brokken <f.b.brokken@rug.nl>  Fri, 11 Dec 2015 22:05:22 +0100
+
+icmake (8.00.03-1) unstable; urgency=medium
+
+  * New upstream release fixes a flaw when defining functions
+
+ -- Frank B. Brokken <f.b.brokken@rug.nl>  Fri, 11 Dec 2015 15:01:49 +0100
+
+icmake (8.00.02-1) unstable; urgency=medium
+
+  * New upstream release fixes a leftover size_t / unsigned mismatch.
+
+ -- Frank B. Brokken <f.b.brokken@rug.nl>  Tue, 08 Dec 2015 19:28:10 +0100
+
+icmake (8.00.01-1) unstable; urgency=medium
+
+  * New upstream release fixes size_t / unsigned mismatches on amd64
+    architectures.
+
+  * Applied patches provided by Tony Mancill :-)
+
+ -- Frank B. Brokken <f.b.brokken@rug.nl>  Tue, 08 Dec 2015 11:11:39 +0100
+
+icmake (8.00.00-1) unstable; urgency=medium
+
+  [ Frank B. Brokken ]
+  * New major version upgrade extends icmake's flow-control grammar, allows
+    variables to be defined at (almost) any location. In addition variables
+    can now be initialized using any valid expression statement. Also, several
+    new run-time support (rss) functions were added to the set of standard
+    rss-functions. Internally, the organization of icmake's code received a
+    complete overhaul, greatly simplifying maintenance. See the upstream
+    changelog for specific details.
+
+  [ tony mancill ]
+  * Bump debian/compat from 8 to level 9.
+  * Add patch to update icmake pathname in example scripts.
+  * Add a typos patch to be forwarded upstream.
+
+ -- tony mancill <tmancill@debian.org>  Sun, 06 Dec 2015 15:02:28 -0800
+
+icmake (7.23.02-1) unstable; urgency=medium
+
+  * Upstream fixed a > 20 year old bug in icmake's preprocessor icm-pp
+
+ -- Frank B. Brokken <f.b.brokken@rug.nl>  Fri, 16 Oct 2015 14:48:54 +0200
+
+icmake (7.23.01-1) unstable; urgency=medium
+
+  * Upstream fixed a flaw in /usr/bin/icmbuild
+
+  * In 7.23.00-1 the get-orig-source target was removed from debian/rules
+
+ -- Frank B. Brokken <f.b.brokken@rug.nl>  Thu, 15 Oct 2015 17:08:04 +0200
+
+icmake (7.23.00-1) unstable; urgency=medium
+
+  * New upstream release's icmbuild can support precompiled headers
+
+  * Changed Homepage in debian/control to http://fbb-git.github.io/icmake/
+
+ -- Frank B. Brokken <f.b.brokken@rug.nl>  Thu, 15 Oct 2015 14:58:14 +0200
+
+icmake (7.22.01-1) unstable; urgency=medium
+
+  * New upstream release prevents warnings from the 'ar' program.
+
+ -- Frank B. Brokken <f.b.brokken@rug.nl>  Sat, 16 May 2015 20:44:06 +0200
+
+icmake (7.22.00-2) unstable; urgency=medium
+
+  * Update Vcs URLs to canonical form.
+  * Upload to unstable.
+
+ -- tony mancill <tmancill@debian.org>  Sun, 26 Apr 2015 14:43:48 -0700
+
+icmake (7.22.00-1) experimental; urgency=low
+
+  * New upstream release.
+    - Added new option to icmstart: -b to initialize a basic program
+      installation
+    - Several minor changes, merely cosmetic: see the upstream changelog
+  * Bump Standards-Version to 3.9.6 (no changes necessary)
+  * Drop build-dependency on hardening-wrapper.
+
+ -- Frank B. Brokken <f.b.brokken@rug.nl>  Tue, 20 Jan 2015 16:00:10 +0100
+
+icmake (7.21.01-1) unstable; urgency=low
+
+  * New upstream release fixes some issues encountered on Macs
+
+ -- Frank B. Brokken <f.b.brokken@rug.nl>  Mon, 20 Jan 2014 11:07:06 +0100
+
+icmake (7.21.00-1) unstable; urgency=low
+
+  * New upstream release repairs segfaults reported by Alexandre Reber.
+    - (Closes: #716015, #716053, #716288)
+  * Bump Standards-Version to 3.9.4 (no changes necessary).
+
+ -- Frank B. Brokken <f.b.brokken@rug.nl>  Fri, 02 Aug 2013 08:56:11 +0200
+
+icmake (7.20.00-1) unstable; urgency=low
+
+  [ Franke B. Brokken ]
+  * New upstream release supports backslash-line continuation fir CLASSES
+    files
+
+  [ tony mancill ]
+  * Update Vcs fields in debian/control to point to collab-maint repo.
+  * Set DEB_BUILD_HARDENING in d/rules.
+
+ -- Frank B. Brokken <f.b.brokken@rug.nl>  Sat, 09 Mar 2013 14:32:24 +0100
+
+icmake (7.19.00-1) unstable; urgency=low
+
+  * New upstream release reorganizes icmconf and its manpage supporting
+    standard environment variables
+
+ -- Frank B. Brokken <f.b.brokken@rug.nl>  Mon, 16 Jul 2012 20:14:19 +0200
+
+icmake (7.18.00-2) unstable; urgency=low
+
+  * Apply dh_installdeb maintscript support patch. (Closes: #659758)
+    - Thanks to Colin Watson.
+  * Set d/compat level to 8.
+  * Bump Standards-Version to 3.9.3 (no changes necessary).
+  * Fix typo in icmake-doc synopsis in d/control.
+    - Thanks to Vincent Blut. (Closes: #643898, #654620)
+
+ -- tony mancill <tmancill@debian.org>  Fri, 24 Feb 2012 05:54:25 +0000
+
+icmake (7.18.00-1) unstable; urgency=low
+
+  * New upstream release's default skeleton files are tailored to flexc++ and
+    bisonc++ >= 3.00.00. Also, the documentation about setting up class
+    dependencies in the CLASSES file used by icmbuild was improved
+    (cf. icmconf(7))
+
+ -- Frank B. Brokken <f.b.brokken@rug.nl>  Wed, 22 Feb 2012 14:15:25 +0100
+
+icmake (7.17.00-1) unstable; urgency=low
+
+  * New upstream release updates icmake's release years and modified the
+    icmbuild script's handling of class dependencies.
+
+ -- Frank B. Brokken <f.b.brokken@rug.nl>  Tue, 03 Jan 2012 17:43:15 +0100
+
+icmake (7.16.01-1) unstable; urgency=low
+
+  * New upstream release fixes minor flaw.
+
+ -- Frank B. Brokken <f.b.brokken@rug.nl>  Wed, 28 Sep 2011 20:44:04 +0200
+
+icmake (7.16.00-1) unstable; urgency=low
+
+  [ Frank B. Brokken ]
+  * New upstream release, acknowledges CFLAGS, LDFLAGS etc.
+  * Bump standards version to 3.9.2 (no changes).
+
+  [ tony mancill ]
+  * Add optional build-arch and build-indep targets to debian/rules as
+    per Debian Policy section 4.9.
+
+ -- tony mancill <tmancill@debian.org>  Sun, 26 Jun 2011 09:27:35 -0700
+
+icmake (7.15.00-1) unstable; urgency=low
+
+  * New upstream release, moved 'mail.frank' to upstream
+
+  * Files /etc/icmake/{AUTHOR,VERSION,YEARS} are now obsolete. See icmstart(1)
+    for details. The files are removed by the upgrading process unless they
+    were modified `by hand', in which case they are moved to *.dpkg-bak.
+
+ -- Frank B. Brokken <f.b.brokken@rug.nl>  Mon, 14 Feb 2011 20:30:36 +0100
+
+icmake (7.14.1-1) unstable; urgency=low
+
+  * New upstream release
+
+ -- Frank B. Brokken <f.b.brokken@rug.nl>  Sun, 30 Jan 2011 20:21:20 +0100
+
+icmake (7.14.0-1) unstable; urgency=low
+
+  * New upstream release: repaired shared lib. construction, new icmbuild
+                          facilities and new man-page, and various bug-fixes
+
+ -- Frank B. Brokken <f.b.brokken@rug.nl>  Fri, 14 Jan 2011 13:20:50 +0100
+
+icmake (7.13.1-2) unstable; urgency=low
+
+  * Set distribution to unstable.
+
+ -- tony mancill <tmancill@debian.org>  Fri, 24 Dec 2010 10:43:13 -0800
+
+icmake (7.13.1-1) experimental; urgency=low
+
+  * New upstream release
+
+ -- Frank B. Brokken <f.b.brokken@rug.nl>  Sun, 03 Oct 2010 14:44:42 +0200
+
+icmake (7.13.0-1) experimental; urgency=low
+
+  [ Frank B. Brokken ]
+  * New upstream release
+
+  [ tony mancill ]
+  * debian/watch, debian/copright:
+      Update to point to the new upstream location.
+  * Bump standards version to 3.9.1 (no changes).
+  * Convert to source format 3.0 (quilt).
+  * Rework debian/rules for debhelper 7.
+  * Set distribution to experimental until squeeze freeze ends.
+
+ -- tony mancill <tmancill@debian.org>  Sat, 02 Oct 2010 15:21:36 -0700
+
+icmake (7.12.5-1) unstable; urgency=low
+
+  * New upstream release
+
+ -- Frank B. Brokken <f.b.brokken@rug.nl>  Wed, 23 Dec 2009 10:46:39 +0100
+
+icmake (7.12.4-1) unstable; urgency=low
+
+  * New upstream release
+
+ -- Frank B. Brokken <f.b.brokken@rug.nl>  Tue, 22 Dec 2009 15:15:42 +0100
+
+icmake (7.12.3-1) unstable; urgency=low
+
+  * New upstream release
+    (Closes: #537574)
+
+ -- Frank B. Brokken <f.b.brokken@rug.nl>  Wed, 29 Jul 2009 13:23:58 +0200
+
+icmake (7.12.2-1) unstable; urgency=low
+
+  [ Frank B. Brokken ]
+  * New upstream release
+
+  [ tony mancill ]
+  * debian/control:
+    - Modify short description of icmake-doc
+
+ -- tony mancill <tmancill@debian.org>  Fri, 17 Jul 2009 11:04:49 -0700
+
+icmake (7.12.1-1) unstable; urgency=low
+
+  * New upstream release
+  * Split-off a supplementary documention package icmake-doc
+  * Application package icmake now suggests icmake-doc
+  * Added binary-indep, install-indep for icmake-doc construction
+  * Added Homepage and Vcs-Svn tags to `control'
+
+ -- Frank B. Brokken <f.b.brokken@rug.nl>  Fri, 17 Apr 2009 08:39:01 +0200
+
+icmake (7.11.1-1) unstable; urgency=low
+
+  [ Frank B. Brokken ]
+  * New upstream release
+
+  [ George Danchev ]
+  * Drop all patches, as they have been applied upstream
+  * Drop dpatch from build-dependencies
+  * Convert to machine-interpretable copyright format
+
+ -- Frank B. Brokken <f.b.brokken@rug.nl>  Sun, 24 Aug 2008 21:04:33 +0200
+
+icmake (7.11-2) unstable; urgency=low
+
+  * Updated to standards 3.8.0, repaired incorrectly formatted copyright
+    notice and message about missing size_t.dptach message
+
+ -- Frank B. Brokken <f.b.brokken@rug.nl>  Sat, 16 Aug 2008 09:15:29 +0200
+
+icmake (7.11-1) unstable; urgency=low
+
+  * New upstream version
+    (Closes: #414604, #450502, #437189)
+  * Added Tony Mancill to Uploaders.
+
+ -- Frank B. Brokken <f.b.brokken@rug.nl>  Thu, 08 Nov 2007 20:29:35 +0100
+
+icmake (7.10-1) unstable; urgency=low
+
+  * New upstream version
+
+ -- Frank B. Brokken <f.b.brokken@rug.nl>  Mon, 12 Mar 2007 19:51:15 +0100
+
+icmake (7.02-1) unstable; urgency=low
+
+  * Due to an oversight in the upstream version the icmbuild and icmstart
+    scripts weren't installed. Repaired in this release, which also required a
+    minor debian/rules file modification.
+
+ -- Frank B. Brokken <f.b.brokken@rug.nl>  Wed, 21 Feb 2007 15:01:24 +0100
+
+icmake (7.01-1) unstable; urgency=low
+
+  * New upstream version requiring slight modification of `rules'
+
+ -- Frank B. Brokken <f.b.brokken@rug.nl>  Wed, 07 Feb 2007 16:22:56 +0100
+
+icmake (7.00-1) unstable; urgency=low
+
+  * New upstream version.
+
+  [ George Danchev ]
+  * Added Frank B. Brokken <f.b.brokken@rug.nl> and
+    George Danchev <danchev@spnet.net> to Uploaders
+  * Added debian/watch file
+
+  [ Frank B. Brokken ]
+  * Removed patch-stamp from build-stamp target
+  * Added doc/icmbuild.1 and doc/icmstart.1 to dh_installman
+  * Added doc/README.icmbuild and doc/icmake.doc to dh_installdocs
+  * Added skeleton files (in usr/share/icmake) to `install'
+  * Removed superfluous `conffiles'
+
+ -- Frank B. Brokken <f.b.brokken@rug.nl>  Thu, 18 Jan 2007 14:30:04 +0100
+
+icmake (6.30-3) unstable; urgency=low
+
+  * Updated debhelper build-dep to >= 5.0.0
+    (closes: #393667)
+
+ -- Francesco Paolo Lovergine <frankie@debian.org>  Wed, 25 Oct 2006 21:50:21 +0200
+
+icmake (6.30-2) unstable; urgency=medium
+
+  * Added patch size_t.dpatch. Thanks Andreas Jochens.
+    (closes: #392150)
+
+ -- Francesco Paolo Lovergine <frankie@debian.org>  Mon, 16 Oct 2006 11:45:56 +0200
+
+icmake (6.30-1) unstable; urgency=medium
+
+  * New upstream version. Thanks to Frank B. Brokken.
+    Fixes also a few linda/lintian warns.
+    (closes: #388495)
+  * All debian patches merged upstream. Dpatch framework retained for future/user use, just in case.
+  * Moved to compatibility level 5.
+  * Policy bumped to 3.7.2
+  * Added examples file for dh_installexamples.
+
+ -- Francesco Paolo Lovergine <frankie@debian.org>  Tue, 10 Oct 2006 13:25:28 +0200
+
+icmake (6.22-7) unstable; urgency=low
+
+  * New patch: negate.c.dpatch
+    Removed invalid lvalue casting which causes FTBS with recent gcc.
+    (closes: #286426)
+
+ -- Francesco Paolo Lovergine <frankie@debian.org>  Tue, 21 Dec 2004 22:32:59 +0100
+
+icmake (6.22-6) unstable; urgency=low
+
+  * Added patch:
+    missing_break.dpatch
+    (closes: #266703)
+
+ -- Francesco Paolo Lovergine <frankie@debian.org>  Thu, 19 Aug 2004 14:56:09 +0200
+
+icmake (6.22-5) unstable; urgency=low
+
+  * Policy updated to 3.6.1. No more changes.
+  * Added dpatch support.
+  * Added patches:
+        funchdir.dpatch
+        man.dpatch
+    (closes: #183785)
+
+ -- Francesco Paolo Lovergine <frankie@debian.org>  Fri, 30 Jul 2004 11:20:38 +0200
+
+icmake (6.22-4) unstable; urgency=low
+
+  * New maintainer
+    (closes: #88382)
+  * Updated policy.
+
+ -- Francesco Paolo Lovergine <frankie@debian.org>  Sat, 28 Dec 2002 12:28:43 +0100
+
+icmake (6.22-3) unstable; urgency=low
+
+  * QA upload.
+  * Switched from debstd to debhelper.
+  * Moved internal binaries to /usr/lib/icmake.  Closes: #63636.
+  * Linked icmun.1 to icmake.1.
+  * bootstrap: Compile with debugging information and do not strip.
+  * debian/copyright: Update upstream URL.
+  * debian/changelog: Remove obsolete Emacs local variables.
+  * Conforms to Standards version 3.5.6.
+
+ -- Matej Vela <vela@debian.org>  Tue, 10 Sep 2002 08:17:08 +0200
+
+icmake (6.22-2) unstable; urgency=low
+
+  * Orphaned this package.
+
+ -- Adrian Bunk <bunk@fs.tum.de>  Fri, 25 Jan 2002 14:11:29 +0100
+
+icmake (6.22-1) unstable; urgency=low
+
+  * New maintainer. (closes: #71851)
+  * New upstream release.
+  * Added "-isp" to dpkg-gencontrol in debian/rules.
+  * Added build dependencies.
+  * Standards-Version: 3.1.1
+
+ -- Adrian Bunk <bunk@fs.tum.de>  Mon, 19 Feb 2001 17:29:38 +0100
+
+icmake (6.21-5) unstable; urgency=low
+
+  * Changed maintainer to QA. After all I orphaned this package two years
+    ago.
+
+ -- Michael Meskes <meskes@debian.org>  Thu,  7 Sep 2000 13:17:47 -0700
+
+icmake (6.21-4) unstable; urgency=low
+
+  * Added missing copyright addition.
+
+ -- Michael Meskes <meskes@debian.org>  Wed, 11 Feb 1998 15:23:11 +0100
+
+icmake (6.21-3) unstable; urgency=low
+
+  * Fixed for lintian.
+  * Replaced gets() with fgets().
+
+ -- Michael Meskes <meskes@debian.org>  Wed, 11 Feb 1998 14:11:52 +0100
+
+icmake (6.21-2) unstable; urgency=low
+
+  * Reworked with debmake (#12740).
+  * Added links to undocumented man page.
+
+ -- Michael Meskes <meskes@debian.org>  Thu, 11 Sep 1997 12:05:44 +0200
+
+icmake (6.21-1) unstable; urgency=LOW
+
+  * Initial upload
+
+ -- Michael Meskes <meskes@debian.org>  Mon, 21 Oct 1996 12:16:24 +0200

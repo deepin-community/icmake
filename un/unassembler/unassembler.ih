@@ -1,0 +1,19 @@
+#include "unassembler.h"
+
+#include <iomanip>
+#include <iostream>
+
+#include <bobcat/exception>
+
+#include "../../support/as/as.h"
+#include "../../support/tools/tools.h"
+#include "../../support/exprtype/exprtype.h"
+#include "../../support/bimheader/bimheader.h"
+#include "../../support/builtinfunctions/builtinfunctions.h"
+#include "../../support/opcodes/opcodes.h"
+
+#include "../../xerr/xerr.ih"
+
+using namespace std;
+using namespace FBB;
+

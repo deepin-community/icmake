@@ -1,0 +1,370 @@
+includefile(release.yo)
+
+htmlbodyopt(text)(#27408B)
+htmlbodyopt(bgcolor)(#FFFAF0)
+whenhtml(mailto(Frank B. Brokken: f.b.brokken@rug.nl))
+
+DEFINEMACRO(sop)(3)(\
+    it() bf(-ARG1) ARG2 nl()ARG3\
+)
+
+DEFINEMACRO(itt)(1)(\
+    it()tt(ARG1)\
+)
+
+DEFINEMACRO(itb)(1)(\
+    it()bf(ARG1)nl()\
+)
+
+DELETEMACRO(tt)
+DEFINEMACRO(tt)(1)(em(ARG1))
+
+COMMENT( man-request, section, date, distribution file, general name)
+manpage(icmconf)(7)(_CurYrs_)(icmake._CurVers_)
+        (configuration file for bf(icmbuild)(1))
+
+COMMENT( man-request, larger title )
+manpagename(icmconf)(Configuration file for the bf(icmbuild)(1) 
+                    program maintenance script)
+
+manpagedescription()
+
+The tt(icmconf) configuration file is used to specify and fine-tune the
+program maintenance performed by the bf(icmbuild)(1) program and script. It
+can be used to activate and specify various directives that determine how the
+program or library maintenance is performed.
+
+The directives are biased towards the construction of a bf(C++) program, but
+program maintenance for other languages (e.g., bf(C)) can also easily be
+configured.
+
+The bf(icmbuild)(1) script ignores empty lines and lines whose first non-blank
+characters are two consecutive forward slashes (//). Long lines can be split
+over multiple lines by writing a final backslash character at lines continuing
+at the next line (refer to the bf(icmake)(1) man-page for further details).
+
+manpagesection(CLASS DEPENDENCIES)
+
+Traditional make-utilities recompile all dependent sources once header files
+are modified. When developing bf(C++) programs this is hardly ever requird, as
+adding new member functions to classes does not require you to recompile
+already existing source files. Recompilation em(is) required when the data
+member organization of classes is altered.
+
+To handle class dependencies in a more sensible way, bf(icmake)(1) checks
+class dependencies using its support program tt(/usr/lib/icmake/icm-dep),
+visiting the classes listed in the tt(CLASSES) file if tt(icmconf's USE_ALL)
+directive was specified. If a directory mentioned in the tt(CLASSES) file
+contains a file having a name that's equal to the name specified at the
+tt(USE_ALL) parameter, then all sources of classes that depend on that
+particular class are also recompiled. In practice this means that when you
+change the data organization of a class you only need to tt(touch) it that
+directory the file whose name was specified by the tt(USE_ALL)
+directive. E.g., if your class is named tt(Data), its sources are in the
+sub-directory tt(./data), and tt(#define USE_ALL "a") was specified then after
+modifying the data organization of the class tt(Data) you only need to issue
+the command tt(touch data/a). Subsequently, at the next tt(icmbuild) call all
+sources in tt(./data) as well as all sources in directories whose (header)
+files include tt(data.h) are recompiled as well.
+
+Likewise, if tt(PRECOMP) was defined, then a similar action is performed for
+the precompiled headers: if a local header file that's (directly or
+indirectly) included by a class's internal header file has changed, then that
+class's precompiled header as well as all precompiled headers of dependent
+classes are recompiled.
+
+The bf(icmbuild)(1) script itself does not inspect these dependencies, but
+calls tt(/usr/lib/icmake/icm-dep) to perform the requird tests. The program
+tt(icm-dep's) short usage summary is written to the standard output stream
+when calling tt(icmake -d) (or directly: tt(/usr/lib/icmake/icm-dep)).
+
+manpagesection(DEFINES IN ICMCONF )
+
+    All of the following tt(#defines) are required except those that are shown
+as commented tt(#defines) (e.g., tt(//#define REFRESH)). 
+
+    itemization(
+    itb(//#define ADD_LIBRARIES       "")
+       when a program must be linked against additional libraries (other than
+        the name of the program's library itself (specified at tt(LIBRARY))
+        then those libraries should be specified here. E.g., when a program is
+        linked against tt(libbobcat) then the specification is:
+    verb(
+    #define ADD_LIBRARIES  "bobcat"
+    )
+       If your program is linked against multiple libraries, then use a
+        blank-separated list of libraries (like tt(#define ADD_LIBRARIES "math
+        bobcat"));
+
+    itb(//#define ADD_LIBRARY_PATHS  "")
+       this directtive must be specified if tt(ADD_LIBRARIES) is also
+        specified, although it may be specified as an empty string.  When
+        additional libraries (specified at tt(ADD_LIBRARIES)) are located in
+        non-standard library locations (e.g., not in tt(/lib) and
+        tt(/usr/lib)) then these additional paths are (blank space separated)
+        specified here. Specify only the paths, not the tt(-L) flags.
+
+        It is stronly advised to specify full pathnames here.  Relative path
+        specifications can be used by specify paths relative to the directory
+        that is specified at the tt(TMP_DIR) directive (see below);
+
+    itb(//#define CLS)
+       the em(clear screen) directive. If defined tt(tput clear) is called to
+        clear the terminal screen before starting compilations. By default
+        it is not defined. Alternatively the tt(-c) option can be passed to
+        tt(icmbuild);
+
+    itb(#define CXX "g++")
+       the C++ compiler to use. For a bf(C) compiler specify, e.g., tt(#define
+        CC "gcc"). Their settings are overruled by identically named
+        environment variables. If only bf(C) files are compiled then
+        tt(#define CXX) can be omitted;
+
+    itb(#define CXXFLAGS "--std=c++2a -Wall -O2")
+       bf(C++) compiler options to use (here showing the default
+        options). When the bf(C) compiler is used, use tt(#define CFLAGS)
+        rather than tt(CXXFLAGS). Their settings are overruled by identically
+        named environment variables. If only bf(C) files are compiled then
+        tt(#define CXXFLAGS) can be omitted;
+
+    itb(//#define DEFCOM  "...")
+       a tt(DEFCOM) directive may be added to the tt(icmconf) file (the
+        bf(icmstart)(1) script can do this for you). It can be specified as:
+       verb(
+    #define DEFCOM  "program"
+        )
+       in which case tt(icmbuild) does program maintenance, or as
+       verb(
+    #define DEFCOM  "library"
+       )
+        in which case tt(icmbuild) does library maintenance.;
+
+    itb(//#define ICM_DEP           "-V go")
+       the existence and implied existence of tt(USE_ALL) files (see the
+        description of the tt(USE_ALL) directive), as well as the correct ages
+        of precompiled headers can be checked by tt(icmake's) support program
+        tt(icm_dep). By default tt(icm_dep) is called with the shown
+        default arguments. If tt(icm_dep) should not be called define
+        tt(ICM_DEP) as an empty string (tt("")). bf(Icmake)(1)'s man-page
+        contains a separate section about the tt(icm_dep) support program;
+
+    itb(//#define IH                  ".ih")
+       the extension used for internal header files. See tt(#define PRECOMP)
+        below. If tt(PRECOMP) is specified ttIH) must also be specified;
+
+    itb(//#define LDFLAGS             "")
+       linker options to use. By default no options are passed to the
+        linker. Its setting is overruled by an identically named environment
+        variable;
+
+    itb(//#define LIBRARY           "modules")
+       by defining this directive a local library is constructed. When a
+        binary program is built it is linked against this library rather
+        than to the individual object modules.
+
+       If a library instead of a program must be constructed (see also the
+        tt(DEFCOM) directive), then the tt(LIBRARY) directive specifies the
+        library's base name (without the tt(lib) prefix and without the tt(.a)
+        extension). In that case source files are expected in sub-directories
+        of the project's main directory (i.e., the directory containing
+        tt(icmconf)). In that case avoid having source and header files 
+        in the project's main directory. Instead, move such files to a
+        separate sub-directory;
+
+    itb(//#define MAIN                "main.cc")
+       the source file in which the tt(int main) function is defined. This
+        directive is required when doing program (rather than library)
+        maintenance.
+
+        Note: if source files are located in the project's main directory but
+        library maintenance is intended (e.g., by specifying tt(#define DEFCOM
+        library)) then define tt(MAIN) to specify a pseudo main source, whose
+        base name is the base name of the header file in the project's main
+        directory. This, however, is considered a kludge, and should be
+        avoided by moving those source and header files to a separate
+        sub-directory;
+
+    itb(//#define NO_PRECOMP_WARNING")
+       when tt(PRECOMP) is defined (see below) a warning is issued when a
+        class-directory does not contain a tt(IH) file. Such warnings are
+        suppressed by defining tt(NO_PRECOMP_WARNING). This option is
+        only considered when tt(PRECOMP) has been defined;
+
+    itb(#define OBJ_EXT             ".o")
+       this directive specifies the extension of object modules created by
+        the compiler;
+
+    itb(//#define PRECOMP           "-x c++-header")
+       define this directive to construct precompiled headers (in which case
+        the tt(IH)) directive must also have been specified). Dependencies
+        between (precompiled) headers are automatically considered.
+
+        Existing precompiled headers are removed by tt(icmbuild cleangch) (or
+        tt(icmbuild clean). When source files of other languages are compiled
+        the tt(PRECOMP's -x) argument must be adapted to those languages;
+
+    itb(//#define REFRESH)
+       define tt(REFRESH) to relink the binary program when tt(icmbuild
+        program) is called, even though no file was (re)compiled. This is
+        useful when the program links to external libraries which were updated
+        separately from the currrent project;
+
+    itb(//#define SHARED)
+       this directive is only interpreted when tt(LIBRARY) is also specified.
+        If defined a shared library (extension tt(.so*)) is built in addition
+        to a static library (extension tt(.a));
+
+       The shared library receives tt(VERSION) as its version number while
+        soft links using tt(VERSION)'s (see below) major version number an no
+        version number are also made available. E.g., if tt(VERSION) is
+        defined as tt(1.02.03) and tt(#define LIBRARY "demo") then the
+        shared library becomes tt(libdemo.so.1.02.03), with
+        tt(libdemo.so.1) soft-linking to it, and tt(libdemo.so)
+        soft-linking to tt(libdemo.so.1);
+
+    itb(//#define SHAREDREQ "")
+       when creating a shared library tt(SHAREDREQ) specifies the names of
+        libraries and library paths that are required by the constructed
+        shared library itself.  E.g., if a library is found in
+        tt(/usr/lib/special), assuming that the name of the required library
+        is tt(libspecial.so), then use the specification tt(#define SHAREDREQ
+        "-L/usr/lib/special -lspecial").  The tt(/lib) and tt(/usr/lib) paths
+        are usually automatically visited by the linker and do not have the be
+        specified. This directive is required (possibly as an empty string) if
+        tt(SHARED) is defined;
+
+    itb(#define SOURCES "*.cc")
+       the pattern to locate sources in directories;
+
+    itb(#define TMP_DIR "tmp")
+       the directory in which intermediate results are stored. To avoid
+        cross-device communications it's probably best to define tt(TMP_DIR)
+        as a sub-directory of the project's main directory;
+
+    itb(//#define USE_ALL "a")
+       when defining this directive tt(icmbuild) looks for directories
+        containing files having the names defined by the tt(USE_ALL)
+        specification. All source files in those directories as well as all
+        source files in directories that (recursively) depend on the set of
+        directories under consideration are recompiled, after which the
+        tt(USE_ALL) files are removed;
+
+    itb(//#define USE_ECHO ON)
+       when defined as tt(ON) (rather than tt(OFF)) (system) commands executed
+        by tt(icmbuild) are echoed;
+
+    itb(//#define USE_VERSION)
+       when defined (it is defined by default) a file tt(VERSION) is read by
+        tt(icmconf) to determine the program's or library's version, and the
+        project's release years. The file tt(VERSION) must be available in the
+        project's main directory and should contain lines like these:
+      verb(
+    VERSION=9.03.00
+    YEARS=1992-2020
+      )
+    )
+
+manpagesection(PARSER MAINTENANCE)
+
+The following directives are available in cases where  a program uses a parser
+generator creating a parser class from a grammar specification. By default
+they're all commented out. 
+
+    itemization(
+    itb(//#define PARSER_DIR "")
+       the sub-directory containing the parser's specification file. If the
+        tt(PARSER_DIR) directory is specified then all other directives in
+        this section must also be specified;
+
+    itb(//#define PARSFILES "")
+       if the parser specification file named at tt(PARSSPEC) itself includes
+        additional specification files, then patterns matching these
+        additional grammar specification files should be specified here. The
+        pattern is interpreted in the directory specified at tt(PARSER_DIR)
+        and could contain a subdirectory name (e.g. tt(specs/*)). When files
+        matching the pattern are modified then a new parser is created;
+
+    itb(//#define PARSFLAGS "-V")
+       the flags that are used when calling the program specified at
+        tt(PARSGEN);
+
+    itb(//#define PARSGEN "bisonc++")
+       the name of the program generating the parser;
+
+    itb(//#define PARSOUT "parse.cc") 
+       the name of the file generated by the parser generator (used by
+        tt(icmbuild) when checking the timestamps of parser specification
+        file(s));
+
+    itb(//#define PARSSPEC "grammar")
+       the name of the parser specification file. This file is
+        expected in the directory specified by the tt(PARSER_DIR) directive.
+    )
+
+manpagesection(SCANNER MAINTENANCE)
+
+The following directives are available in cases where  a program uses a scanner
+generator creating a lexical scanner class from a set of regular
+expressions. By default they're all commented out. 
+
+    itemization(
+    itb(#define SCANNER_DIR "")
+       the subdirectory containing the scanner's specification file.  If the
+        tt(SCANNER_DIR) directory is specified then all other directives in
+        this section must also be specified;
+
+    itb(#define SCANFILES "")
+       if the lexical scanner specification file named at tt(SCANSPEC) itself
+        includes additional specification files, then patterns matching these
+        additional lexer specification files should be specified here. The
+        pattern is interpreted in the directory specified at tt(SCANNER_DIR)
+        and could contain a subdirectory name (e.g. tt(specs/*)). When files
+        matching the pattern are modified then a new lexical scanner is
+        created. By default no additional specification files are used;
+
+    itb(#define SCANFLAGS "")
+       the flags that are used when calling the program specified at
+        tt(SCANGEN);
+
+    itb(#define SCANGEN "flexc++")
+       the name of the program generating the lexical scanner;
+
+    itb(#define SCANOUT  "lex.cc")
+       the name of the file generated by the lexical scanner (which is used by
+        tt(icmbuild) when checking the timestamps of scanner specification
+        file(s)).
+
+    itb(#define SCANSPEC "lexer")
+       the name of the lexical scanner specification file. This file is
+        expected in the directory specified by the tt(SCANNER_DIR) directive.
+    )
+
+manpagefiles()
+    The mentioned paths are sugestive only and may be installation dependent:
+    itemization(
+    itb(/usr/share/icmake/CLASSES):
+        example of an bf(icmconf) tt(CLASSES) file;
+    itb(/usr/share/icmake/icmconf):
+        default (skeleton) bf(icmbuild) resource files, like tt(main.cc,
+        usage.cc), etc.;
+    itb(/etc/icmake):
+        directory containing the default system-wide bf(icmstart)(1)
+        configuration file;
+    itb($HOME/.icmake):
+       optional user-defined directory containing user-defined specifications
+        overruling the system-wide definitions. This directory is the proper
+        location for a file tt(AUTHOR) defining the tt(AUTHOR) directive with
+        the user's name. E.g., my tt(.icmake/AUTHOR) file contains:
+
+        verbinclude(/home/frank/.icmake/AUTHOR)
+
+    )
+
+manpageseealso()
+    bf(icmake)(1), bf(icmbuild)(1), bf(icmstart)(1), bf(icmstart.rc)(7).
+
+manpagebugs()
+    bf(icmbuild)(1) ends, displaying a fatal error message, if the current
+working directory does not contain a file tt(icmconf).
+
+includefile(trailer.inc)

@@ -1,0 +1,21 @@
+    // source entries must exist as files or directories
+    // If they start with ~/ then they are under the HOME dir. 
+    // if they start with / then they're absolute
+    // otherwise they are in the skeleton path(by default g_skelPath)
+    //
+    // plain source (e.g., CLASSES)         -> g_skelPath + CLASSES
+    // relative to home (e.g., ~/path/file) -> ${HOME}/path/file
+    // absolute: /path1/path2               -> /path1/path2
+    //
+string absSource(string source)
+{
+    if (strfind(source, "~/") == 0) // relative to home
+        source = readlink(source);  // readlink solves the ~/
+    else if (source[0] != '/')      // not absolute, then rel. to skelPath
+        source = g_skelPath + source;   
+
+    if (!isFileOrDir(source))       // and it must exist (either dir or file)
+        quit("Can't find source `" + source + "'");
+
+    return source;                  // return the absolute path
+}

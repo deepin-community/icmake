@@ -1,0 +1,21 @@
+#include <libgen.h>
+#include <getopt.h>
+
+#include <iostream>
+#include <string>
+#include <exception>
+
+#include <bobcat/arg>
+
+#include "../support/tools/tools.h"
+#include "../support/bimheader/bimheader.h"
+
+#include "cpu/cpu.h"
+
+#include "../xerr/xerr.ih"
+
+using namespace std;
+using namespace FBB;
+
+void usage(string const &progname);
+

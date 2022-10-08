@@ -1,0 +1,11 @@
+localVars:
+    localVars ',' defineVar syntaxCommaOrSemicol
+    {
+        $$ = move($1 << $3);
+    }
+|
+    defineVar syntaxCommaOrSemicol
+    {
+        $$ = move($1);
+    }
+;

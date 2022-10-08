@@ -1,0 +1,619 @@
+.TH "icmake" "1" "1992\-2021" "icmake\&.10\&.01\&.01" "A program maintenance utility"
+
+.PP 
+.SH "NAME"
+icmake \- A program maintenance (\fImake\fP) utility using a
+\fBC\fP\-like grammar
+.PP 
+.SH "SYNOPSIS"
+\fBicmake\fP option(s) \fI[source [dest]]\fP [args]
+.PP 
+.SH "DESCRIPTION"
+
+.PP 
+\fBIcmake\fP(1) is a generic tool handling program maintenance that can be used
+as an alternative for \fBmake\fP(1)\&. It\(cq\&s a generic tool in that
+\fIicmake\fP\-scripts, written in a language closely resembling the \fBC\fP
+programming language, can perform tasks that are traditionally the domain of
+scripting languages\&.
+.PP 
+\fBIcmake\fP allows programmers to use a programming language (closely resembling the
+well\-known \fBC\fP\-programming language) to define the actions that are required
+for (complex) program maintenance\&. For this, \fBicmake\fP offers various special
+operators as well as a set of support functions that have shown their
+usefulness in program maintenance\&.
+.PP 
+Although \fBicmake\fP scripts can be written from scratch, often the required
+activities are highly comparable\&. This observation resulted in the
+construction of two \fBicmake\fP scripts, which are part of the standard
+\fBicmake\fP distribution: \fBicmstart\fP(1), initializing a directory for program
+development and \fBicmbuild\fP(1), handling the actual program maintenance\&. By
+default both scripts are  tailored to initializing and maintaining \fBC++\fP
+programs (or, after minimal adaptation, \fBC\fP programs), but can easily be
+adapted to other programming languages\&. Both \fBicmstart\fP and \fBicmbuild\fP can
+be run without explicitly calling \fBicmake\fP\&.
+.PP 
+This man\-page covers \fBicmake\fP (the program), and its support programs\&. Refer to
+the \fBicmstart\fP(1)) man\-page for information about how a directory can be
+initialized (created) in which (by default) a \fBC++\fP or \fBC\fP program can be
+developed and refer to the \fBicmbuild\fP(1) man\-page for information about how
+\fBicmbuild\fP can be used to handle program maintenance\&. Refer to the
+bv(icmscript)(7) man\-page for a description of the syntax and facilities
+offered by \fBicmake\(cq\&s\fP scripting language\&.
+.PP 
+\fBIcmake\fP does not offer an \fIIntegrated Development Environment\fP (IDE)\&. \fBIcmake\fP
+merely performs tasks for which scripts can be written, and only a minimal set
+of pre\-defined scripts (\fBicmstart\fP and \fBicmbuild\fP) that have shown their
+usefulness when developing and maintaining programs are included in
+\fBicmake\(cq\&s\fP distribution\&.
+.PP 
+In its standard activation modes, \fBicmake\fP uses the following support programs:
+.IP o 
+\fIicm\-pp\fP     to pre\-process the icmake file 
+.IP o 
+\fIicm\-comp\fP   to byte\-code compile the \fBicmake\fP  \fBs\fP
+.IP o 
+\fIicm\-dep\fP to handle class\-dependencies (see the \fBICM\-DEP\fP
+section in this man\-page for more information about \fIicm\-dep\fP)\&.
+.IP o 
+\fIicm\-exec\fP to execute the byte\-code file
+
+.PP 
+In addition, primarily used for illustration, education, and debugging, the
+program \fIicmun\fP is available to disassemble compiled \fBicmake\fP byte\-code (\&.bim)
+files (`\fIbim\-files\fP\(cq\&)\&. \fBIcmun\fP is not installed in a standard \fIPATH\fP
+directory but in \fIicmake\(cq\&s\fP \fIlib\fP directory, which commonly is
+\fI/usr/lib/icmake\fP (see also section \fBICMUN\fP in this man\-page)\&. 
+.PP 
+Traditional make\-utilities recompile sources once header files are
+modified\&. When developing \fBC++\fP programs this is often not required, as
+adding new member functions to classes does not require you to recompile all
+source files of those classes\&. To handle class dependencies \fBicmbuld\fP(1) may
+optionally inspect class dependencies, (re)compiling sources of dependent
+classes when necessary\&. By default, class\-dependencies are not interpreted,
+but they are when the \fIPRECOMP\fP and/or \fIUSE_ALL\fP defines, found in the
+file \fIicmconf\fP file, are activated\&. Refer to the \fBicmconf\fP(7) man\-page for
+details\&.
+.PP 
+This manpage describes \fBicmake\fP\(cq\&s options in the next section, followed by two
+sections covering the support programs
+.IP o 
+\fBICM\-DEP\fP
+.br 
+\- the \fBicm\-dep\fP dependency analyzer;
+.IP o 
+\fBICMUN\fP
+.br 
+\- \fBicmake\(cq\&s\fP unassembler\&.
+
+.PP 
+Refer to the \fBicmscript\fP(7) man\-page for a description of \fBicmake\(cq\&s\fP
+\fBC\fP\-like scripting language\&.
+.PP 
+.SH "OPTIONS"
+
+.PP 
+Where available, single letter options are listed between parentheses
+beyond their associated long\-option variants\&. \fBIcmake\fP defines \fIaction\fP options
+and \fInon\-action\fP options\&. The first action option that is encountered is
+used\&.
+.PP 
+The following action options write some text to the standard output
+stream, whereafter \fBicmake\fP ends:
+.IP o 
+\fB\-\-about\fP (\fB\-a\fP)
+.br 
+Shows some information about \fBicmake\fP;
+.IP 
+.IP o 
+\fB\-\-help\fP (\fB\-h\fP)
+.br 
+Provides usage info, returning 0 to the operating system\&. Usage
+information is also provided if \fBicmake\fP is started without providing
+arguments\&. In that case 1 is returned to the operating system;
+.IP 
+.IP o 
+\fB\-\-version\fP (\fB\-v\fP)
+.br 
+Displays \fBicmake\fP\(cq\&s version\&.
+
+.PP 
+The remaining action options require additional options and/or arguments,
+and most of them process \fBicmake\fP source\- or bim\-files\&. Several of these action
+options write output files\&. By default these files are located in the same
+directories as the source files\(cq\& directories\&.
+.PP 
+The remaining action options are:
+.IP o 
+\fB\-\-compile\fP (\fB\-c\fP) \fI[options] source [bim\-file]\fP 
+.br 
+The \fIsource\fP file is first pre\-processed (by \fIicm\-pp\fP) whereafter
+the pre\-processed file is compiled (by \fIicm\-comp\fP), producing a
+\fIbim\-file\fP\&.  If the \fIbim\-file\fP name is not specified then
+\fIsource\(cq\&s\fP base\-name, receiving extension \fI\&.bim\fP, is used\&.
+.br 
+If the bim\-file exists and is younger than \fIsource\fP then \fIsource\fP
+is not compiled\&.
+.br 
+With this option pre\-processor symbol\-defining options can be used:
+symbols having values 1 which can be used in \fIsource\fP\&. E\&.g\&., when
+issuing the command
+.nf 
+
+    icmake \-c \-d one \-\-define two source dest\&.bim
+       
+.fi 
+then \fBicmake\fP compiles \fIsource\fP, defines the pre\-processor symbols
+\fIone\fP and \fItwo\fP (each having value 1), and produces the bim\-file
+\fIdest\&.bim\fP\&. Note that instead of using long options \fI\-\-define\fP
+short options \fI\-d\fP can also be used\&.
+.br 
+If \fIsource\fP is a previously pre\-processed file then option \fI\-P\fP
+must be specified to compile it\&. E\&.g\&.,
+.nf 
+
+    icmake \-c \-P source dest\&.bim
+       
+.fi 
+
+.IP 
+.IP o 
+\fB\-\-dependencies\fP (\fB\-d\fP) \fI[options] action\fP
+.br 
+\fBIcmake\fP calls \fBicm\-dep\fP to determine the dependencies among
+classes\&. All options and arguments following this option are forwarded
+to \fBicm\-dep\fP\&. Refer to the \fBICM\-DEP\fP section of this man\-page for
+information about \fIicm\-dep\fP;
+.IP 
+.IP o 
+\fB\-\-execute\fP (\fB\-e\fP) \fI[option] bim\-file [arguments]\fP
+.br 
+Executes the bim\-file, specified as \fBicmake\fP\(cq\&s first file argument\&. Before
+the \fIbim\-file\fP option \fI\-\-no\-version\-check\fP (or the equivalent
+short option \fI\-n\fP) can be specified to allow mismatches between
+\fBicmake\fP\(cq\&s main version and the \fBicmake\fP version that was used to compile
+the bim\-file\&. See also the description of the \fI\-\-no\-version\-check\fP
+option at the description of the non\-action options below\&.
+.br 
+Options and arguments specified beyond the \fIbim\-file\fP are forwarded
+as arguments to the \fIbim\-file\(cq\&s main\fP function (refer to the
+\fBicmscript\fP(7) man\-page for details about how to write
+\fBicmake\fP\-scripts);
+.IP 
+.IP o 
+\fB\-\-force\fP (\fB\-f\fP) \fI[options] source [bim\-file]\fP 
+.br 
+Acts like option \fI\-\-compile\fP, but compilation is always performed,
+even if the bim\-file is up\-to\-date\&. As with \fI\-\-compile\fP, if
+\fIsource\fP is a previously pre\-processed file then option \fI\-P\fP must
+be specified to compile it\&. E\&.g\&.,
+.nf 
+
+    icmake \-f \-P source dest\&.bim
+       
+.fi 
+
+.IP 
+.IP o 
+\fB\-\-preprocess\fP (\fB\-p\fP)  \fI[options] source [pim\-file]\fP 
+.br 
+The file specified as first argument is pre\-processed, producing a
+`\fI\&.pim\fP\(cq\& file\&. If a second filename argument is provided then that
+file becomes the \fI\&.pim\fP file\&. If not specified, then
+the first filename, using the extension \fI\&.pim\fP, is used\&. 
+.br 
+With this option pre\-processor symbol\-defining options can be used:
+symbols having values 1 which can be used in \fIsource\fP\&. E\&.g\&., when
+issuing the command
+.nf 
+
+    icmake \-p \-d one \-\-define two source dest\&.pim
+       
+.fi 
+then \fBicmake\fP pre\-processes \fIsource\fP, defines the pre\-processor symbols
+\fIone\fP and \fItwo\fP (each having value 1), and produces the pim\-file
+\fIdest\&.pim\fP\&. Note that instead of using long options \fI\-\-define\fP
+short options \fI\-d\fP can also be used;
+.IP 
+.IP o 
+\fB\-\-source\fP (\fB\-s\fP)  \fI[options] source [arguments]\fP 
+.br 
+\fBIcmake\fP uses \fI\-\-compile\fP to compile the \fBicmake\fP source file specified as
+first argument (constructing the default bim\-file if necessary) and
+then uses \fI\-\-execute\fP to execute the bim\-file, forwarding any
+subsequent \fIarguments\fP as\-is to the \fIbim\-file\(cq\&s main\fP
+function\&.
+.br 
+With this option pre\-processor options as well as the 
+\fI\-\-no\-version\-check\fP execute option can be used\&. When using the
+latter option it must follow the pre\-processor options (if specified)
+and it must be preceded by \fI\-\-execute\fP (or \fI\-e\fP)\&. E\&.g\&., when
+issuing the command
+.nf 
+
+    icmake \-s \-d one \-en source 
+       
+.fi 
+then \fBicmake\fP first compiles \fIsource\fP, defining the pre\-processor symbol
+\fIone\fP, and then executes the bim\-file, passing
+\fI\-\-no\-version\-check\fP to \fIicm\-exec\fP;
+.IP 
+.IP o 
+\fB\-t\fP \fItmpspec\fP \fI[options] source [arguments]\fP 
+.br 
+This option is intended for \fBicmake\fP\-scripts although it can also be used
+in a command\-line \fBicmake\fP call\&. Its argument \fItmpspec\fP is either a
+single dot (as in \fI\-t\&.\fP) in which case \fBicmake\fP determines the name of
+the bim\-file in the directory \fBicmake\fP uses for temporary files (see
+option \fI\-\-tmpdir\fP below), or it uses \fItmpspec\fP as the filename to
+write the bim\-file to (which file is also removed once the script\(cq\&s
+execution ends)\&.
+.br 
+At the \fIoptions\fP pre\-processor options as well as the 
+\fI\-\-no\-version\-check\fP execute option can be specified\&. When using the
+latter option it must follow the pre\-processor options (if specified)
+and it must be preceded by \fI\-\-execute\fP (or \fI\-e\fP)\&.
+.br 
+The argument \fIsource\fP is the name of the \fBicmake\fP script to process, and
+\fIsource\fP may optionally be followed by \fIarguments\fP\&. Those
+arguments are forwarded as\-is to the script\(cq\&s \fImain\fP function, where
+they appear as elements of its \fIlist argv\fP parameter\&.
+.IP 
+Rather than using the explicit command\-line call \fIicmake \-t\&. \&.\&.\&.\fP the
+\fI\-t\fP option is normally used in the first line of an (executable) (so
+usually \fIchmod +x source\fP has been specified before calling the
+script), where its pre\-processor and execute options can also be
+specified\&. For example after writing the executable script \fIhello\fP:
+.nf 
+
+    #!/usr/bin/icmake \-t\&.
+    
+    int main(int argc, list argv)
+    {
+        printf << \(dq\&hello: \(dq\& << argv << \(cq\&\en\(cq\&;
+    }
+       
+.fi 
+it can be called as \fIhello one \-two \-\-three\fP, producing output like:
+.nf 
+
+    hello: /tmp/10434\&.bim\&.MKqvAb one \-two \-\-three
+       
+.fi 
+(the name following \fIhello:\fP will be different, as it is the name of
+the compiled temporary bim\-file)\&. If \fBicmake\fP pre\-process and/or execute
+options are required they can be specified in the first line,
+following the \fI\-t\fP option\&. E\&.g\&.,
+.nf 
+
+    #!/usr/bin/icmake \-t\&. \-d one \-\-define two
+       
+.fi 
+
+.IP 
+.IP o 
+\fB\-\-unassemble\fP (\fB\-u\fP)
+.br 
+The file specified as first argument is an \fBicmake\fP bim\-file, which is
+unassembled\&. Refer to the \fBicmun\fP section further down this man\-page
+for more information about \fIicmun\fP;
+.IP 
+The program \fIicmun\fP unassembles bim\-files\&. This program also
+supports the \fI\-\-no\-version\-check\fP (\fI\-n\fP) option\&.
+
+.PP 
+Finally, there are some (non\-action) options that can be specified before
+specifying action options:
+.PP 
+.IP o 
+\fB\-\-no\-process\fP (\fB\-N\fP)
+.br 
+Implies option \fI\-\-verbose\fP\&. This option may precede options \fI\-d,
+\-e, \-s\fP and \fI\-t\fP (either as two separate options or by `gluing\(cq\& both
+options together, like \fI\-Ne\fP)\&. When specified, the actions are not
+activated, but the command(s) that would have been used are shown to
+the standard output;
+.IP 
+.IP o 
+\fB\-\-no\-version\-check\fP (\fB\-n\fP)
+.br 
+This option is available with the action options \fI\-\-execute,
+\-\-source, \-\-unassemble\fP, and \fI\-t\fP\&. When specified the main versions
+of icm\-bim files and \fBicmake\fP itself may differ\&. This option should
+normally not be used, and was added for development purposes only;
+.IP 
+.IP o 
+\fB\-\-tmpdir\fP=\fIdirectory\fP (\fB\-T\fP)
+.br 
+The specified directory is used for storing temporary files\&. E\&.g\&., when
+compiling an \fBicmake\fP script, the output of \fBicmake\fP\(cq\&s preprocessor is
+written to a temporary file which is removed when \fBicmake\fP ends\&. By
+default \fI/tmp\fP is used, unless \fI/tmp\fP is not a writable directory,
+in which case the current user\(cq\&s \fI$HOME\fP directory is used;
+.IP 
+.IP o 
+\fB\-\-verbose\fP (\fB\-V\fP)
+.br 
+The child processes and their arguments are written to the standard
+output stream before they are called\&. This option may precede options
+\fI\-d, \-e, \-s\fP and \fI\-t\fP (either as two separate options or by
+`gluing\(cq\& both options together, like \fI\-Ve\fP)\&.
+
+.PP 
+.SH "ICM\-DEP"
+
+.PP 
+\fBIcm\-dep\fP is a support program called by \fBicmake\fP to determine source\- and
+precompiled\-header file dependencies\&. \fBIcm\-dep\fP can be used for software
+projects that are developed as described in the C++
+Annotations, section \fIHeader
+file organization\fP in chapter \fIClasses\fP\&. For those projects classes are
+developed in their own directories, which are direct sub\-directory of
+the project\(cq\&s main program directory\&. Their class interfaces are provided
+in class\-header files bearing the names of the class\-directories, and all
+headers that are required by the class\(cq\&s sources are declared in a separate
+\fIinternal header\fP filed, commonly having extensions \fI\&.ih\fP\&.
+.PP 
+\fBIcmake\fP automatically calls \fBicm\-dep\fPd when \fIUSE_ALL\fP or \fIPRECOMP\fP is
+specified in \fIicmconf\fP files\&.  By default it is called with arguments
+\fI\-V go\fP\&. The \fI#define ICM_DEP\fP define\-specification in the \fIicmconf\fP
+file can be used to specify a different set of options\&.
+.PP 
+When \fBicm\-dep\fP is activated (i\&.e\&., its argument \fIgo\fP is specified) then
+\fBicm\-dep\fP determines directory dependencies, touching all files in
+directories that depend on directories containing modified files, and/or
+removing precompiled headers if they include headers from other directories
+that were modified\&. By providing another argument than \fIgo\fP \fBicm\-dep\fP
+performs a `dry run\(cq\&: it analyzes dependencies, but it won\(cq\&t remove or touch
+files\&.
+.PP 
+Options of \fBicm\-dep\fP may be specified immediately following \fBicmake\fP\(cq\&s
+\fI\-\-dependencies\fP option\&. \fBIcm\-dep\fP supports the following options:
+.IP o 
+\fB\-\-classes\fP=\fIfilename\fP (\fB\-c\fP)
+.br 
+By default, \fBicm\-dep\fP inspects dependencies of the directories
+mentioned in the file \fICLASSES\fP\&. Furthermore, if the \fBicmconf\fP(7)
+file specifies \fIPARSER_DIR\fP and \fISCANNER_DIR\fP then those
+directories are also considered\&.  Use this option to specify the file
+containing the names of directories to be inspected by \fBicm\-dep\fP\&.
+.IP 
+.IP o 
+\fB\-\-help\fP (\fB\-h\fP)
+.br 
+\fBIcm\-dep\fP writes a summary of its usage to the standard output and
+terminates, returning 0 to the operating system;
+.IP 
+.IP o 
+\fB\-\-icmconf\fP=\fIfilename\fP (\fB\-i\fP)
+.br 
+By default \fBicm\-dep\fP inspects the content of \fIicmconf\fP files, This
+option is used if instead of \fIicmconf\fP another file should be
+inspected;
+.IP 
+.IP o 
+\fB\-\-mainih\fP=\fImainheader\fP (\fB\-m\fP)
+.br 
+In the \fIicmconf\fP file the \fI#define IH\fP parameter is used to specify
+the suffix of class header files that should be precompiled, assuming
+that their filenames are equal to the names of the directories which
+are listed in the \fICLASSES\fP file\&. But \fICLASSES\fP does not specify
+the name of the program\(cq\&s top\-level directory\&. This option is used to
+specify the name of the top\-level header file to precompile\&. By
+default \fImain\&.ih\fP is used;
+.IP 
+.IP o 
+\fB\-\-gch\fP
+.br 
+If \fIicmconf\fP files contain \fI#define PRECOMP\fP specifications then
+\fBicm\-dep\fP checks whether precompiled headers must be refreshed\&.  If
+an \fIicmconf\fP file does not contain a \fI#define PRECOMP\fP
+specifications, but precompiled headers should nonetheless be
+inspected, then option \fI\-\-gch\fP can be specified;
+.IP 
+.IP o 
+\fB\-\-no\-gch\fP
+.br 
+If \fIicmconf\fP files contain \fI#define PRECOMP\fP specifications but 
+\fBicm\-dep\fP should not check whether precompiled headers must be
+refreshed then option \fI\-\-no\-gch\fP should be specified;
+.IP 
+.IP o 
+\fB\-\-no\-use\-all\fP
+.br 
+If \fIicmconf\fP files contain \fI#define USE_ALL \(dq\&filename\(dq\&\fP
+specifications then all source files in directories containing files
+named \fIfilename\fP are recompiled\&. When specifying this option
+inspections of \fI`USE_ALL\(cq\&\fP specifications is suppressed;
+.IP 
+.IP o 
+\fB\-\-use\-all\fP=\fIfilename\fP
+.br 
+If \fIicmconf\fP files contain \fI#define USE_ALL \(dq\&filename\(dq\&\fP
+specifications then all source files in directories containing files
+named \fIfilename\fP are recompiled\&. Specify this option to inspect the
+presence of \fIfilename\fP files if \fIicmconf\fP does not contain a
+\fI`USE_ALL\(cq\&\fP specification;
+.IP 
+.IP o 
+\fB\-\-verbose\fP (\fB\-V\fP)
+.br 
+This option can be specified multiple times\&. The number of times it is
+specified determines \fBicm\-dep\(cq\&s\fP verbosity\&. If not used then
+\fBicm\-dep\fP silently performs its duties\&. If specified once, then
+\fBicm\-dep\fP reports to the standard output what actions it performs;
+if specified twice it also reports non\-default options and
+automatically included directories; if specified three times it also
+reports class dependencies; if specified more often it reports what
+files it encountered and what decision it would make when \fIgo\fP would
+be specified;
+.IP 
+.IP o 
+\fB\-\-version\fP (\fB\-v\fP)
+.br 
+\fBIcm\-dep\fP reports its version number to the standard output and
+terminates, returning 0 to the operating system\&.
+
+.PP 
+As an example, for \fBicmake\fP itself the class dependencies, obtained using the
+option \fI\-VVV\fP are shown as:
+.nf 
+
+    Direct class dependencies:
+    \-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-
+                  uses:
+                  \-\-\-\-\-\-\-\-\-\-\-\-
+        class:     1  2  3  4 
+    \-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-
+             \&.  1  x  x  x  x 
+       options  2     x     x 
+       handler  3     x  x    
+    argoptions  4           x 
+    \-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-
+                   1  2  3  4 
+    \-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-
+    
+    Implied class dependencies:
+    \-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-
+                  uses:
+                  \-\-\-\-\-\-\-\-\-\-\-\-
+        class:     1  2  3  4 
+    \-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-
+             \&.  1  \-  x  x  x 
+       handler  2     \-  x  x 
+       options  3        \-  x 
+    argoptions  4           \- 
+    \-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-
+                   1  2  3  4 
+    \-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-
+    
+.fi 
+The second table immediately shows that there are no circular
+dependencies: its lower triangle remains empty\&. 
+.PP 
+.SH "icmun"
+
+.PP 
+The \fBicmun\fP support program expects one argument, a bim\-file\&. It
+disassembles the binary file an shows the assembler instructions and the
+structure of the bim\-file\&. Note that in standard installations \fBicmun\fP is
+not located in one of the directories of the \fIPATH\fP environment variable,
+but it is available in the \fI/usr/lib/icmake\fP directory, and the command
+\fIicmake \-u bim\-file\fP is normally used to unassemble the bim\-file\&.
+.PP 
+As an illustration, assume the following script is compiled by \fBicmake\fP (e\&.g\&., by
+calling \fIicmake \-c demo\&.im\fP):
+.nf 
+
+    void main()
+    {
+        printf(\(dq\&hello world\(dq\&);
+    }
+        
+.fi 
+the resulting \fIdemo\&.bim\fP file can be processed by \fBicmun\fP (e\&.g\&.,
+calling \fI/usr/lib/icmake/icmun demo\&.bim\fP\&. \fBIcmun\fP then writes the
+following to the standard output fle:
+.PP 
+.nf 
+
+    icmun by Frank B\&. Brokken (f\&.b\&.brokken@rug\&.nl)
+    icmun V10\&.00\&.00
+    Copyright (c) GPL 1992\-2021\&. NO WARRANTY\&.
+    
+    Binary file statistics:
+            strings      at offset  0x0025
+            variables    at offset  0x0032
+            filename     at offset  0x0032
+            code         at offset  0x0014
+            first opcode at offset  0x0021
+    
+    String constants dump:
+            [0025 (0000)] \(dq\&\(dq\&
+            [0026 (0001)] \(dq\&hello world\(dq\&
+    
+    Disassembled code:
+            [0014] 06 01 00   push string \(dq\&hello world\(dq\&
+            [0017] 05 01 00   push int 0001
+            [001a] 1b 1d      callrss 1d (printf)
+            [001c] 1c 02      add sp, 02
+            [001e] 04         push int 0
+            [001f] 24         pop reg
+            [0020] 23         ret
+            [0021] 21 14 00   call [0014]
+            [0024] 1d         exit
+        
+.fi 
+
+.PP 
+Offsets are shown using the hexadecimal number system and are absolute byte
+offsets in the bim\-file\&. The string constants dump also shows, between
+parentheses, the offsets of the individual strings relative to the beginning
+of the strings section\&. The disassembled code shows the opcodes of the
+instructions of the compiled icmake source files\&. If opcodes use arguments
+then these argument values are shown following their opcodes\&. Each opcode line
+ends by showing the opcode\(cq\&s mnemonic plus (if applicable) the nature of its
+argument\&.
+.PP 
+.SH "FILES"
+
+.PP 
+The mentioned paths are the ones that are used in the source distribution
+and are used by the Debian Linux distribution\&. However, they are sugestive
+only and may have been configured differently:
+.PP 
+.IP o 
+\fB/usr/bin/icmake\fP: the main \fBicmake\fP program;
+.IP o 
+\fB/usr/bin/icmbuild\fP: the wrapper program around the \fIicmbuild\fP
+script handling standard program maintenance;
+.IP o 
+\fB/usr/bin/icmstart\fP: an \fBicmake\fP\-script that is can be used to create
+the startup\-files of new projects;
+.IP o 
+\fB/usr/lib/icmake/icm\-comp\fP: the compiler called by \fBicmake\fP;
+.IP o 
+\fB/usr/lib/icmake/icm\-exec\fP: the byte\-code interpreter called by
+\fBicmake\fP; 
+.IP o 
+\fB/usr/lib/icmake/icm\-dep\fP: the support program handling class\- and
+precompiled header dependencies;
+.IP o 
+\fB/usr/lib/icmake/icm\-pp\fP: the preprocessor called by \fBicmake\fP;
+.IP o 
+\fB/usr/lib/icmake/icmun\fP: the \fBicmake\fP unassembler\&.
+
+.PP 
+.SH "EXAMPLES"
+
+.PP 
+The distribution (usually in \fI/usr/share/doc/icmake\fP) contains a
+directory \fIexamples\fP containing additional examples of \fBicmake\fP script\&. The
+\fIicmstart\fP script is an \fBicmake\fP script as is \fI/usr/lib/icmake/icmbuild\fP,
+which is called by the \fI/usr/bin/icmbuild\fP program\&. See also the \fBEXAMPLE\fP
+section in the \fBicmscript\fP(7) man\-page\&.
+.PP 
+.SH "SEE ALSO"
+\fBchmod\fP(1),
+\fBicmbuild\fP(1), \fBicmconf\fP(7), \fBicmscript\fP(7),
+\fBicmstart\fP(1), \fBicmstart\&.rc\fP(7), \fBmake\fP(1)
+.PP 
+.SH "BUGS"
+
+.PP 
+Be advised that starting \fBicmake\fP version 10\&.00\&.00 
+.IP o 
+the \fI\-\-summary\fP (\fI\-F\fP) option has been discontinued;
+.IP o 
+the \fI\-\-source\fP short option \fI\-i\fP has been replaced by \fI\-s\fP;
+.IP o 
+long option \fI\-\-icm\-dep\fP has been replaced by \fI\-\-dependencies\fP;
+
+.PP 
+.SH "COPYRIGHT"
+This is free software, distributed under the terms of the 
+GNU General Public License (GPL)\&.
+.PP 
+.SH "AUTHOR"
+Frank B\&. Brokken (\fBf\&.b\&.brokken@rug\&.nl\fP)\&.
+.PP 

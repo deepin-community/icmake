@@ -1,0 +1,82 @@
+See generator/backend.cc for the implementation of writing the binary file
+==========================================================================
+
+string str = "hello";
+int    val = 12;
+
+void main()
+{
+    val += strlen(str);
+}
+
+------------------------------------------------------------------------
+
+Binary file statistics:
+    strings      at offset  0x0036
+    variables    at offset  0x003c
+    filenames    at offset  0x003e
+    code         at offset  0x0014
+    first opcode at offset  0x0024
+
+
+'code' starts with the code of all defined functions. The end of the 'code'
+section defines the 'first opcode' location, where the initialization code of
+the global variables is appended, which in turn is followed by the code
+calling main, and a subsequent exit.
+
+
+
+Variable section dump:
+    variable 0000: string
+    variable 0001: int
+
+String constants dump:
+    [0036 (0000)] "hello"
+
+Disassembled code:
+    [0014] 07 01 00   push global int [0001]
+    [0017] 07 00 00   push global string [0000]
+    [001a] 1b 23      callrss 23 (strlen)
+    [001c] 1c 01      add sp, 01
+    [001e] 08         push reg
+    [001f] 11         add
+    [0020] 09 01 00   pop global int [0001]
+    [0023] 23         ret
+    [0024] 06 00 00   push string "hello"
+    [0027] 09 00 00   pop global string [0000]
+    [002a] 05 0c 00   push int 000c
+    [002d] 09 01 00   pop global int [0001]
+    [0030] 21 14 00   call [0014]
+    [0033] 04         push int 0
+    [0034] 24         pop reg
+    [0035] 1d         exit
+
+---------------------------------------------------------------------------
+
+            0:version   strings     globvars    filenames
+          --0--1--2--3--4--5--6--7--8--9--A--B--C--D--E--F-
+00000000:  39 2E 30 33 
+                       36 00 00 00 
+                                   3C 00 00 00 
+                                               3E 00 00 00  9.036...<...>...
+
+           
+           1st opcode: initializes the global variables, then prepares
+               for calling main, then pops main's reg and exits
+                        1st function code byte starts at 14
+          --0--1--2--3--4--5--6--7--8--9--A--B--C--D--E--F-
+00000010:  24 00 00 00 
+                       07 01 00 07 00 00 1B 23 1C 01 08 11  $..........#....
+
+                        24: 1st opcode byte: initialization of global vars
+          --0--1--2--3--4--5--6--7--8--9--A--B--C--D--E--F-
+00000020:  09 01 00 23 
+                        06 00 00 09 00 00 05 0C 00 09 01 00  ...#............
+
+                                                3c: global variable types
+                             36: strings              3e: used filename(s)
+          --0--1--2--3--4--5--6--7--8--9--A--B--C--D--E--F-
+00000030:  21 14 00 04 24 1D 
+                             68 65 6C 6C 6F 00 
+                                                02 01 69 6E  !...$.hello...in
+00000040:  70 75 74 0A                                      put.

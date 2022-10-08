@@ -1,0 +1,52 @@
+    // a line in the conffile may be organized as follows (name is either
+    //  a file or a directory; directories are copied completely):
+    //  name        - name is located in skelPath and installed at destPath
+    //  name  dest  - name is located in skelPath and installed at destPath/name
+    //                if name is a directory then the destination will be
+    //                destPath/dest/name. dest may also be /dest
+    //  path/name   - relative or absolute path's name will be installed at
+    //                destPath. Relative is relative to the startup directory
+    //  path/name dest - relative or absolute path's name will be installed
+    //                at destPath/dest. dest may also be /dest
+    // All lines may start with a P, L, D, or b.
+    // b and D may also be added to P or L
+    // Sources at P-lines are installed when using 'icmstart xxx program'
+    // Sources at L-lines are installed when using 'icmstart xxx library'
+    // Sources at D lines, or sources without P,L,D prefixes are 
+    //                     unconditionally installed.
+    // Sources at b-lines are ignored when the -b (basic) fla is specified
+    // Following a P,L,D,b combination (+space) an optional ? (+ space) may be
+    // specificed in which case installation of the source must be confirmed
+    // by the user
+
+void install_line(string confline)
+{
+    list sourceDest = getSourceDest(confline);
+
+    if (!sourceDest)
+        return;
+
+                                        // find the absolute source location
+    string realSource = absSource(sourceDest[0]);
+
+                                        // get the destination or use the
+                                        // source spec. as destination
+    string dest = sourceDest[listlen(sourceDest) > 1];
+
+//printf(sourceDest, 
+//        "\n\tsource = ", realSource, 
+//        "\n\tdest   = ", dest, '\n');
+
+    string realDest = absDest(dest);
+
+// printf("\trealDest = ", realDest, '\n');
+
+//    if (listfind(g_installed, realDest) != -1) // already processed 'dest'
+//        return;
+
+    if (!g_replace && !g_askReplace && exists(realDest))
+        return;
+
+    if (confirmInstall(sourceDest[0], dest))
+        install_entry(realSource, dest, realDest);
+}

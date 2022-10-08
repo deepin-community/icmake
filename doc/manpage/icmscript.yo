@@ -1,0 +1,731 @@
+includefile(release.yo)
+
+htmlbodyopt(text)(#27408B)
+htmlbodyopt(bgcolor)(#FFFAF0)
+whenhtml(mailto(Frank B. Brokken: f.b.brokken@rug.nl))
+
+DEFINEMACRO(lsvoption)(3)(\
+    bf(--ARG1)=tt(ARG3) (bf(-ARG2))\
+)
+DEFINEMACRO(lsoption)(2)(\
+    bf(--ARG1) (bf(-ARG2))\
+)
+DEFINEMACRO(lvoption)(2)(\
+    bf(--ARG1)=tt(ARG2)\
+)
+DEFINEMACRO(loption)(1)(\
+    bf(--ARG1)\
+)
+DEFINEMACRO(svoption)(2)(\
+    bf(-ARG1) tt(ARG2)\
+)
+DEFINEMACRO(soption)(1)(\
+    bf(-ARG1)\
+)
+
+DEFINEMACRO(itt)(1)(\
+    it()tt(ARG1)\
+)
+
+DEFINEMACRO(itb)(1)(\
+    it()bf(ARG1)nl()\
+)
+
+DEFINEMACRO(icm)(0)(bf(icmake))
+DEFINEMACRO(Icm)(0)(bf(Icmake))
+
+DELETEMACRO(tt)
+DEFINEMACRO(tt)(1)(em(ARG1))
+
+COMMENT( man-request, section, date, distribution file, general name)
+manpage(icmscript)(7)(_CurYrs_)(icmake._CurVers_)
+        (The icmake scripting language)
+
+COMMENT( man-request, larger title )
+manpagename(icmscript)(The bf(C)-like em(icmake) scripting language)
+
+COMMENT( all other: add after () )
+
+manpagedescription()
+
+      Icm()(1) is a generic tool handling program maintenance that can be used
+as an alternative for bf(make)(1). It's a generic tool in that
+tt(icmake)-scripts, written in a language closely resembling the bf(C)
+programming language, can perform tasks that are traditionally the domain of
+scripting languages.
+
+Icm() allows programmers to use a programming language (closely resembling the
+bf(C)-programming language) to define the actions that are required
+for (complex) program maintenance. For this, icm() offers various special
+operators as well as a set of support functions that have shown their
+usefulness in program maintenance.
+
+This man-page covers the icm() scripting language in de following sections:
+    itemization(
+    itb(DATA TYPES) - tt(int, list, string), and tt(void) (for functions);
+    itb(OUTLINE) - outline of icm() scripts: what are their requirements, the
+        structure and organization of their tt(main)-functions.
+    itb(PREPROCESSOR DIRECTIVES) - supported preprocessor directives, like
+        tt(#include) and tt(#define);
+    itb(PREDEFINED CONSTANTS) - like tt(O_FILE, OFF), and tt(S_IFREG);
+    itb(OPERATORS) - like tt(+, younger), and casts
+    itb(FLOW CONTROL) - tt(if, for, while), etc. (the tt(switch) is not
+        available);
+    itb(PREDEFINED FUNCTIONS) - executing programs, changing directories,
+        operations on tt(string) and tt(list) type variables, etc.. Functions
+        are marked as tt(INT FUNCTIONS), tt(LIST FUNCTIONS), tt(STRING
+        FUNCTIONS) 
+    itb(USER DEFINED FUNCTIONS) - at least tt(main), with or without its
+        common parameters tt(argc, argv,) and tt(envp).
+    )
+
+manpagesection(DATA TYPES)
+
+    Icm() supports the following five data and value types:
+
+    itemization(
+    itt(ASCII character constants)nl() 
+       ASCII character constants are ascii-characters, surrounded by single or
+        double quotes. Single characters (e.g., tt('a')) represent the
+        character itself. Standard escape sequences (e.g., tt('\n')) are
+        supported and are converted to their well-known values (e.g., tt('\n')
+        represents ascii value 10 (decimal)). Non-standard escape sequences
+        (e.g., tt('\x')) are converted to the ascii character following the
+        escape character (so tt('\x') equals tt('x')). Escaped sequences
+        consisting of three octal digits represent the ascii character
+        corresponding to the octal value, modulo 256 (e.g., tt('\113')
+        represents tt('K')). Escape sequences consisting of an x followed by
+        two hexadecimal digits represent the ascii character corresponding to
+        the hexadecimal value (e.g., tt('\x4b'), also representing tt('K'));
+
+    itt(int)nl() 
+       Integral values, ranging from tt(-0x8000) through tt(0x7fff). tt(int)
+        constants may be specified as decimal numbers (starting with digits 1
+        through 9), octal numbers (starting with 0, followed by one or more
+        octal digits), hexadecimal numbers (starting with 0x, followed by one
+        or more hexadecimal digits), or as tt(ASCII) character constants;
+
+    itt(string)nl()
+       Text values: text (or `string') constants are delimited by double
+        quotes. Multiple string constants may be concatenated, but a single
+        string constant may not span multiple lines. Multiple string
+        constants, only separated by white space (i.e., blanks, newlines,
+        comment) are concatenated and are considered one single string
+        constant. To indicate an end-of-line in a string constant use the
+        tt(\n) escape sequence;
+
+        If arithmetic expressions use at least one tt(int) operand then those
+        expressions may also contain single character ASCII constants using
+        double quotes. In those cases they represent the ascii-values of their
+        characters.
+
+        Conversely, ASCII character constants using single quotes may be
+        used in situations where  string operands are expected;
+        
+    itt(list)nl()
+       A tt(list) is a data structure containing a series of individually
+        accessible tt(string) values. When a list contains elements, its first
+        element has index 0;
+
+        Lists may be written to the standard output stream or to file (using
+        tt(printf) or tt(fprintf)). Lists can also be inserted into tt(string)
+        variables using tt(strformat). In these cases all (space delimited) 
+        elements of the lists are inserted into their destinations;
+
+        Lists can also be defined as constants. They consist of an optional
+        series of comma separated string constants surrounded by a pair of
+        square brackets. E.g.,
+    verb(
+    list words = ["a", "list", "constant"];
+    )
+
+    itt(void)nl()
+       The type tt(void) is used when defining functions to indicate that
+        such functions do not return values. Alternatively, functions may
+        return tt(int, string) or tt(list) values (cf. section bf(USER DEFINED
+        FUNCTIONS)).
+    )
+    
+    Variables can be defined at the global level inside functions (not only at
+the top of compound statements but also between statements and in the
+initialization section of for- and if-statements). When defined inside
+functions, the standard bf(C) scoping and visibility rules apply. Variables
+are strongly typed, and cannot have type tt(void).
+
+    Variables may be initialized when they are defined. Initializations are
+expressions which may use predefined or user-defined functions, constant
+values, and values of variables. Functions or variables that are used for
+initialization must be visible at the initialization point.
+
+
+manpagesection(OUTLINE)
+
+    Icm() scripts require a user-defined function tt(main). The function
+tt(main) has three optional parameters, which may be omitted from the last one
+(tt(envp)) to the first one (tt(argc)), like in bf(C). Its full prototype is:
+        verb(
+    void main(int argc, list argv, list envp)
+        )
+    or 
+        verb(
+    int main(int argc, list argv, list envp)
+        )
+    When a tt(void main) function ends (using a tt(return;) statement or when
+its execution reaches its body's closing curly) the value 0 is returned to the
+operating system. When tt(int main) functions end using tt(return) statements
+then those statements must be provided with tt(int)-expressions. It's OK when
+the execution of an tt(int main) function reaches its body's closing curly, om
+which case 0 is automatically returned to the operating system
+
+    In tt(main) the parameter
+    itemization(
+    itt(argc) represents the number of elements in tt(argv);
+
+    itt(argv) contains the arguments, with element 0 being equal to the
+        name of the tt(.bim) file, that were passed to the tt(.bim)
+        file. The bf(OPTIONS) section of the bf(icmake)(1) manpage
+        covers how these arguments are forwarded to the icm() script using
+        options tt(-e, -s,) and tt(-t).
+
+    itt(envp) contains the `environment' variables. The (predefined) function
+        tt(listlen) can be used to determine the number of its
+        elements. Elements in tt(envp) use the format
+        tt(variable=value). Alternatively, the (predefined) function
+        tt(getenv) can be used to retrieve a specific environment variable
+        immediately.
+    )
+
+    Example (the implementations of the user-defined functions tt(usage,
+modified,) and tt(compile) are left as an exercise for the reader):
+        verb(
+    void main(int argc, list argv)
+    {
+        if (argc == 1)
+            usage(argv[0]));
+
+        if (list toCompile = modified("*.cc"))
+        {
+            for (int idx = listlen(toCompile); idx--; )
+                compile(toCompile[idx]);
+        }
+    }    
+        )
+    When executing an icm() script bf(icmake's) run-time support system first
+initializes all all global variables in the order of their
+definitions. Followin this the function tt(main) is called. The script ens
+once once tt(main) returns or when the (predefined) function tt(exit)
+is called by the script).
+
+manpagesection(PREPROCESSOR DIRECTIVES)
+
+Before actually compiling icm() scripts they are first pre-processed by the
+icm() pre-processor. The pre-processor removes comment, includes files
+specified by tt(include)-directives, and processes tt(#define) and comparable
+directives.
+
+The following preprocessor directives are recognized:
+    itemization(
+    it() comment:nl()
+       standard bf(C) comment (everything from tt(/*) through tt(*/)) as well
+        as comment-to-end-of-line (starting at tt(//), continuing to the end
+        of the line) is ignored;
+        
+    it() Shell startup: The first line of the icm()-script may start with
+        tt(#!path), where tt(path) defines the absolute location of the icm()
+        program. By making the script executable, it can be called without
+        explicitly calling icm().
+
+       E.g., if the first line of an (executable) icmakefile 'icm'
+                  (without extension) contains
+        verb(
+    #!/usr/bin/icmake -t.
+        )
+       then tt(icm) can be issued as a command, interpreting the remaining
+        content of the script as an icm() source which is compiled and then
+        executed by icm(). In these cases the binary files are removed when
+        the scipts end;
+
+    itt(#include "filename")nl()
+        The file tt(filename) is included at the location of the directive;
+
+    itt(#include <filename>)nl() 
+       The file tt(filename) is included at the location of the tt(#include)
+        directive; tt(filename) is searched in the colon-separated directories
+        specified by the tt(IM) environment variable. The first occurrence of
+        tt(filename) in the directories specified by the tt(IM) environment
+        variable is used;
+
+    itt(#define identifier [definition])nl() 
+       The text tt(identifier) is replaced by tt(definition). The
+        definition may contain references to already defined identifiers,
+        using the format tt(${identifier}). If the tt(${identifier}) hasn't
+        been defined (yet), the literal text tt(${identifier}) is used. To
+        prevent infinite recursion at most 100 tt(${identifier}) replacements
+        are accepted;
+
+        If the last character on a line is a backslash (tt(\)) then
+        definitions continue at the next line.  (the backslash is not included
+        in the definition). The preprocessor concatenates double-quoted
+        strings. Double quoted strings may not span multiple
+        lines. Multiple blanks (outside of double quoted strings) in
+        definitions are contracted to a single blank space;
+
+        Following the tt(#define's) identifier a definition may optional be
+        provided. If omitted, the macro is defined, so it can be used in
+        tt(#if(n)def) directives (see below), but in those cases these
+        intentifiers are simply removed from icm() code statements.
+
+    itt(#ifdef identifier)nl() 
+       If the tt(identifier) macro was defined the next block of code (until a
+        matching tt(#else) or tt(#endif) directive was read) is
+        byte-compiled. Otherwise, the block of code is ignored;
+
+    itt(#ifndef identifier)nl() 
+        If the tt(identifier) macro was em(not) defined the next block of code
+        (until a matching tt(#else) or tt(#endif) directive was detected) is
+        byte-compiled. Otherwise, the block of code is ignored;
+
+    itt(#else)nl()
+       Terminates  tt(#ifdef) and tt(#ifndef) directives, reversing the
+        acceptance decision about the following code. Only one tt(#else)
+        directive can be associated with tt(#if(n)def) directives;
+
+    itt(#endif)nl()
+       Terminates the preprocessor block starting at the matching 
+        tt(#ifdef), tt(#ifndef) or tt(#else) directive. The tt(#endif)
+        directory and its matching tt(#if(n)def) directive must be specified
+        in the same file;
+
+    itt(#undef identifier) nl()
+       Remove tt(identifier) from the set of defined symbols. This does not
+        affect the specification of any previously defined symbols in which
+        tt(identifier's) definition has been used. If tt(identifier) hasn't
+        been defined a warning is issued.
+    )
+
+manpagesection(PREDEFINED CONSTANTS)
+
+    The following predefined tt(int) constants are available (the functions
+        listed in the tt(intended for) column are described in the upcoming
+        sections covering the predefined functions):
+    table(3)(lll)(
+        rowline()
+        row(cell(symbol)cell(value)cell(intended for))
+        rowline()
+        row(cell(O_ALL)cell(8)cell(makelist))
+        row(cell(O_DIR)cell(2)cell(makelist))
+        row(cell(O_FILE)cell(1)cell(makelist))
+        row(cell(O_SUBDIR)cell(4)cell(makelist))
+        rowline()
+        row(cell(OFF)cell(0)cell(echo))
+        row(cell(ON)cell(1)cell(echo))
+        rowline()
+        row(cell(P_CHECK)cell(0)cell(system calls))
+        row(cell(P_NOCHECK)cell(1)cell(system calls))
+        rowline()
+        row(cell(S_IEXEC)cell(32)cell(stat))
+        row(cell(S_IFCHR)cell(1)cell(stat))
+        row(cell(S_IFDIR)cell(2)cell(stat))
+        row(cell(S_IFREG)cell(4)cell(stat))
+        row(cell(S_IREAD)cell(8)cell(stat))
+        row(cell(S_IWRITE)cell(16)cell(stat))
+        rowline()
+    )
+
+    The following constants are architecture dependent:
+    table(2)(ll)(
+        rowline()
+        row(cell(symbol)cell(1 when defined on the platform, otherwise 0))
+        rowline()
+        row(cell(unix)  cell(Unix, usually with GNU's gcc compiler))
+        row(cell(UNIX)  cell(may alternatively be available))
+        row(cell(linux) cell(x86 running Linux (usually with gcc)))
+        row(cell(LINUX)  cell(may alternatively be available))
+        row(cell(M_SYSV, M_UNIX) cell(x86 running SCO/Unix))
+        row(cell(_POSIX)cell(_SOURCE   Unix with Posix compliant compiler))
+        row(cell(__hpux)cell(HP-UX, with the native HP compiler))
+        rowline()
+    )
+
+manpagesection(OPERATORS)
+
+    Since icm() version 10.00.00 the tt(<<) operator can be used like the
+bf(C++) insertion operator. See the description of the functions tt(printf)
+and tt(fprintf) below.
+
+bf(int-operators:)
+
+    All bf(C) operators (including the ternary operator) are available (except
+for pointer operators, as icm() does not support pointers). They operate like
+their bf(C)-programming language's counterparts. Comparison operators return 1
+if the comparison is true, otherwise 0 is returned.
+
+bf(string-operators:)
+
+    For tt(string) variables and/or constants the following operators are
+available (tt(lhs) and tt(rhs) are tt(string) variables or constants):
+
+    itemization(
+    itt(lhs + rhs): returns a new tt(string) value containing the
+concatenation of tt(strings lhs) and tt(rhs). Note that tt(string) constants
+can also directly be concatetated (not using the tt(+) operator), e.g.,
+the following two lines both define the string tt("hello world"):
+        verb(
+    "hello "   "world"
+    "hello " + "world"
+        )
+
+    itt(lhs += rhs): tt(lhs) must be a tt(string) variable, to which the
+tt(string) variable or value tt(rhs) is appended;
+
+    it() string comparisons: operators tt(== != <= >= < > !=) and tt(==)
+return 1 if the comparison is true, otherwise 0. The ordering operators (like
+tt(<) and tt(>=)) use the (case sensitive) character ordering defined by the
+tt(ASCII) character set;
+
+    itt(!lhs): the boolean tt(!) (not) operator returns 1 if the tt(string
+lhs) is empty, otherwise 0 is returned. Strings containing white-space
+characters are not empty;
+
+    itt(lhs younger rhs, lhs newer rhs): returns 1 if file tt(lhs) is more
+recent than file tt(rhs). E.g., tt("source.cc" newer "source.o"). The files
+tt(lhs) and tt(rhs) do not have to exist:
+    quote(
+    itemization(
+    it() if both don't exist 0 is returned,
+    it() if tt(lhs) doesn't exist 0 is returned,
+    it() if tt(rhs) doesn't exist, 1 is returned,
+    it() if they are equally old 0 is returned.
+    ))
+
+    The predefined function tt(exists()) (see below, section bf(PREDEFINED
+FUNCTIONS)) can be used to test whether a file exists;
+
+    itt(lhs older rhs): returns 1 if file tt(lhs) is older than file
+tt(rhs). E.g., tt("libprog.a" older "source.o"). The files tt(lhs) and tt(rhs)
+do not have to exist:
+    quote(
+    itemization(
+    it() if both don't exist 0 is returned,
+    it() if tt(lhs) doesn't exist 1 is returned,
+    it() if tt(rhs) doesn't exist, 0 is returned,
+    it() if they are equally old 0 is returned.
+    ))
+
+    itt([]): the index operator returns a character from a string variable
+or constant. A string is returned as an em(rvalue). Thus, the following
+statement compiles OK:
+        verb(
+    lhs = rhs[3];
+        )
+    but the following statement won't compile:
+        verb(
+    lhs[3] = "a"; 
+        )
+    If an invalid (out of bounds) index value is specified an empty string
+is returned.
+
+    it() The em(backtick) operator (tt(`string cmd`))nl()
+       A string placed between two backticks is executed as a separate
+        command. Different from the tt(exec) and tt(system) calls the backtick
+        operator collects the standard output produced by `cmd' returning this
+        output as a list. The elements of the list contain the subsequent
+        lines of output (including a final newline, if present) produced by
+        `cmd'. An empty list indicates that the command could not be
+        executed.
+
+       Note that a command that could be executed but that did not produce any
+        output returns a list containing one string elemen, which is
+        empty. The command's standard error stream output is ignored by the
+        backtick operator. However, standard shell redirection may be used to
+        collect the standard error stream's output. Example:
+       verb(
+    printf << `"ls"`;   // prints the elements in 
+                        // the current directory
+            )
+
+        Also note that the backtick operator requires a string argument:
+        either a string constant or a string variable.
+
+        The predefined function tt(eval(string cmd)) behaves exactly like the
+        backtick operator: they are synonyms.
+    )
+
+bf(list-operators:)
+
+    For tt(list) variables and/or values the following operators are
+available:
+
+    itemization(
+    itt(lhs + rhs): returns a new tt(list) value containing the concatenation
+        of the values of tt(lists lhs) and tt(rhs). This is em(not) a set
+        operation: if an element appears both in tt(lhs) and in tt(rhs), then
+        both will appear in the resulting list (set-addition is provided by
+        the built-in function tt(listunion));
+
+    itt(lhs - rhs): returns a new tt(list) value containing the elements in
+        tt(lhs) that are not present in tt(rhs). This is a set-difference
+        operation. The ordering of the remaining elements in the returned list
+        is  equal to the ordering of those elements in tt(lhs);
+
+    itt(lhs += rhs): elements in tt(rhs) are added to the elements in tt(lhs),
+        which must be a tt(list) variable.  This is em(not) a set operation;
+
+    itt(lhs -= rhs): elements in tt(rhs) are removed from the elements in
+        tt(lhs).  This is a set operation: all elements of tt(lhs) that are
+        found in tt(rhs) are removed from tt(lhs). The ordering of the
+        remaining elements in tt(lhs) is not altered;
+
+    it() list equality comparisons: operators tt(!=) and tt(==) may be applied
+        to tt(list) values or variables. Operator tt(==) returns 1 if both
+        lists have element-by-element identical elements, otherwise 0 is
+        returned. Operator tt(!=) reverses the result of tt(==);
+
+    itt(!lhs): the boolean tt(!) operator returns 1 if the tt(list lhs) is
+        empty, otherwise 0 is returned;
+
+    itt([]): the index operator retrieves an element from a list variable: it
+        returns a string as an em(rvalue). Thus, the following statement
+        compiles OK:
+       verb(
+    // assume lst is a list, str is a string
+    str = lst[3];
+        )
+    but the following statement won't compile:
+        verb(
+    lst[3] = str;
+        )
+       If an invalid (out of bounds) index value is specified an empty string
+        is returned.
+    )
+
+bf(Casting:)
+
+    Type-casts using the standard bf(C)-style cast-operator can be used to
+cast:
+    itemization(
+    it() strings to ints and vice versa (tt((int)"123", (string)55))nl()
+        If the content of a string does not represent a (decimal) tt(int)
+        value 0 the cast returns  0;
+
+    it() Strings to lists (tt(list lst = (list)"hello")): this returns a list
+        having one element (tt(hello)) (note that casting a string to a list
+        as shown is overkill as tt(list lst = ["hello"]) performs the same
+        initialization). 
+    )
+
+manpagesection(FLOW CONTROL)
+
+    Icm() offers a subset of bf(C)'s flow control statements. They can be
+used as in the bf(C) programming language.
+
+    itemization(
+    itt(expression ;)nl()
+       The plain expression statement. 
+
+       Insert-expression statements are defined for the functions tt(fprintf)
+        and tt(printf). Expression statements may start with tt(printf <<) or
+        tt(fprintf << filename <<). The values of all subsequent expressions,
+        separated by tt(<<) operators (which in this context are called
+        em(insertion operators)) are written to the standard output stream
+        (when using tt(printf <<)), or to the file whose name is provided in
+        the tt(string filename) (when using tt(fprintf << filename <<)).
+        Examples:
+       verb(
+    printf << "hello" << ' ' << "world" << '\n';
+    fprintf << "out.txt" << "hello" << ' ' << "world" << '\n';
+        )
+
+    it() The compound statement nl() 
+       Variables may be defined and initialized inside compound statements at
+        locations where expression statements can also be used. The
+        em(visibility) of variables starts at their points of definition;
+
+    itt(if ([definition;] condition) statement)nl()
+       The tt([definition;]) phrase is optional. If used it defines a type
+        followed by a comma-separated list of variables which may be provided
+        with initialization expressions.
+
+       The condition phrase is required, and may define and initialize 
+        a variable. E.g,
+            verb(
+    if (string str = getText())
+        process(str);
+            )
+        In this example, tt(process) is not called if tt(getText()) returns an
+        empty string. 
+
+        Variables defined in the definition and condition phrases do not
+        exist either before or after the tt(if) statement.nl()
+
+    itt(if ([definition;] condition) statement1 else statement2)nl()
+       Acts like the previous statement. If the condition is true
+        tt(statement1) is executed; if the condition is false tt(statement2)
+        is executed;
+
+    itt(for (init; condition; increment) statement)nl() 
+       Variables (of a single type) may be initialized (and optionally
+        defined) in the tt(init) section. The condition phrase may define and
+        initialize a variable. The tt(init), tt(condition) and tt(increment)
+        sections may remain empty. An empty condition section is interpreted
+        as `always tt(true)';
+
+    itt(while (condition) statement)nl()
+        Inside the condition a variable may be defined and initialized.
+
+        A complementary tt(do ... while()) statement is not available. Note
+        that when a variable is defined and initialized in the condition
+        section the initialization expression is executed at each iteration of
+        the tt(while) statement. Thus the following statement never ends, and
+        displays a never ending stream of values 10:
+       verb(
+    while (int x = 10)
+        printf(x--, "\n");
+        )
+
+    itt(return;), and tt(return expression;)nl()
+       Plain tt(return) statements can be used in tt(void) functions,
+        and tt(return expression) statements are used in other type of 
+        functions. 
+
+    itt(break)nl()
+       tt(break;) statements can only be used in tt(for) and tt(while)
+        statements, ending those statements;
+
+    itt(continue)nl()
+       tt(continue;) statements can only be used in tt(for) and tt(while)
+        statements, continuing their next iteration.
+    )    
+
+
+manpagesection(PREDEFINED FUNCTIONS)
+
+    Icm() provides the following predefined functions, which can be used
+anywhere in icm() scripts. In the following overview the functions are ordered
+by categories, and within categories they are ordered alphabetically by
+function name. 
+
+    Five categories are distinguished:
+    itemization(
+    it() Functions operating on ints (see tt(INT FUNCTIONS) below):nl()
+       these functions receive tt(int) arguments, processing those arguments;
+
+    it() Functions operating on strings (see tt(STRING FUNCTIONS) below):nl()
+       these functions operate on the strings which are passed to these
+        functions as arguments;
+
+    it() Functions operating on lists (see tt(LIST FUNCTIONS) below):nl()
+       these functions operate on the lists which are passed to these
+        functions as arguments;
+
+    it() Functions manipulating file system entries (see tt(FILESYSTEM
+        FUNCTIONS) below):nl()
+       these functions receive the names of file-system entries (files,
+        directories, etc.) as their tt(string) arguments. 
+
+       Note that these functions are not listed in the tt(STRING FUNCTIONS)
+        section, as they do not directly operate on their tt(string)
+        arguments, but merely use those arguments to identify file system
+        entries. 
+
+       On the other hand, functions like tt(change_base) do not operate on
+        file-system entries and are therefore entries in the tt(STRING
+        FUNCTIONS) section;
+
+    it() System-related functions (see tt(SYSTEM FUNCTIONS) below):nl()
+       these functions interface to facilities provided by the operating
+        system, like executing programs or changing the script's environment
+        variables. Some of these functions use specialized support functions,
+        which are also included in this section.
+    )
+
+
+bf(INT FUNCTIONS:)
+
+    itemization(
+    itt(string ascii(int value))nl() 
+       returns tt(value) as a string: tt(ascii(65)) returns the string
+        tt("A");
+
+    itt(echo(int opt))nl() 
+       controls echoing of called programs (and their arguments), specify
+        tt(OFF) if echoing is not requested. By default tt(echo(ON)) is
+        active.
+    )
+
+includefile(string.inc)
+
+includefile(list.inc)
+
+includefile(filesystem.inc)
+
+includefile(system.inc)
+
+
+manpagesection(USER DEFINED FUNCTIONS)
+
+In addition to tt(main) additional functions are usually defined. Once
+defined, they can be called. Forward referencing of either variables or
+functions is not supported, but calling functions recursively is. As function
+declarations are not supported indirect recursion cannot be used.
+
+User-defined functions must have the following elements:
+    itemization(
+    it() The function's return type, which must be tt(void, int, string) or
+        tt(list). There is no default type;
+
+    it() The function's name, e.g., tt(compile);
+
+    it() A parameter list, defining zero or more comma-separated
+        parameters. The parameters themselves consist of a type name (tt(int,
+        string), or tt(list)) followed by the parameter's identifier. E.g.,
+        tt((string outfile, string source));
+
+    it() A em(body) surrounded by a pair of curly braces (tt({) and tt(})).
+    )
+     
+   Function bodies may contain variable definitions (optionally initialized at
+their definitions). Variable definitions start with a type name, followed by
+one or more comma separated and optionally initialized variable identifiers.
+
+If a variable is not explicitly initialized it is initialized by default:
+tt(int) variables are initialized to 0, tt(string) variables are initialized
+to empty strings (tt("")) and tt(list) variables are initialized to empty
+lists.
+
+    Function bodies may also contain zero or more statements (cf. section
+bf(FLOW CONTROL)). Note that variables may be defined (and optionally
+initialized) anywhere inside functions where expression statements can be
+used, and also in the condition sections of tt(if, for,) and tt(while)
+statements and in the initialization sections of tt(if) andd tt(for)
+statements.
+
+manpagesection(EXAMPLE)
+
+In the following example all bf(C++) source files in the current directory are
+compiled unless their object files are more recent. The main function creates
+a list of source files and then passes each of them to a function
+tt(inspect). That function inspects whether the source file is younger than
+its object file, and if so it calls tt(compile). The function tt(compile) uses
+tt(exec) to call the compiler. If a compilation fails the script 
+stops so the error can be repaired. Source files for which the compilation
+succeeded are not recompiled when the script is rerun. Assuming the script is
+named tt(compile.im) then it can be called using tt(icmake -s
+compile.im). This also creates tt(compile.bim), so after the tt(-s) call the
+command tt(icmake -e compile.bim) can be used to immediately execute the
+bim-file:
+
+    verbinsert(-as4 compile.im)
+
+
+manpageseealso()
+    bf(icmake)(1), bf(icmbuild)(1), bf(icmconf)(7), 
+    bf(icmstart)(1), bf(icmstart.rc)(7)
+
+manpagebugs()
+    Standard comment starting  on lines containing preprocessor directives
+        may not extend over multiple lines.
+
+    Path names containing blanks are not supported.
+
+includefile(trailer.inc)

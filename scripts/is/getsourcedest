@@ -1,0 +1,31 @@
+list getSourceDest(string confLine)
+{
+    list nop;                               // no action at nop
+
+    list fields = strtok(confLine, " \t\n");    // break up the line in parts
+    string source = fields[0];                  // look at the first element
+
+                                            // ignore empty lines and comment
+    if (listlen(fields) == 0 || source[0] == "#")
+        return nop;
+
+    string flags = source;                // remove P/L/D flags
+
+    if (listfind(g_actions, flags) == -1) // no flags: source OK
+        flags = "";                      
+    else
+    {
+        fields = shift(fields);             // remove fields[0]
+        source = fields[0];                 // reassign source 
+    }
+
+    g_confirmInstall = source == "?";   // check for a confirmation request
+
+    if (g_confirmInstall)
+        fields = shift(fields);         // if so, then reassign source
+
+    return skip(flags) ?                // inspect the P/L/D and b flags:
+                nop
+            :
+                fields;                 // [0]: source, [1]: dest
+}

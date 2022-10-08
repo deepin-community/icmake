@@ -1,0 +1,14 @@
+void version_field(string file, string default)
+{
+    if (g_skeletons)
+    {
+        string ret = findFile(file);
+
+        if (ret != "")
+            system("cat " + ret + " >> " + g_destPath + "VERSION");
+        else
+            fprintf(g_destPath + "VERSION", 
+                        "#define ", file, " \"", default, "\"\n");
+    }
+}    
+

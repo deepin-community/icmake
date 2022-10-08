@@ -1,0 +1,38 @@
+argsExpr:
+    expression
+    {
+        $$ = move($1);
+    }
+|
+    ORDER opValue                       // int const with older/younger
+    {                                   // as with makelist(..., older, ...)
+        $$ = SemVal{ e_order, $2 };
+    }
+;
+
+args:
+    args
+    ','
+    argsExpr                           // Expr
+    {
+        $$ = $1.add($3);
+    }
+|
+    argsExpr
+    {
+        $$ = Args{ $1 };
+    }
+;
+
+argsNull:
+    {
+        $$ = Args{};
+    }
+;
+    
+argsOpt:
+    args
+|
+    argsNull
+;
+

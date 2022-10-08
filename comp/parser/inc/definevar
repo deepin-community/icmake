@@ -1,0 +1,22 @@
+defineVar_:
+    identifier
+    {
+        // define an identifier in the symbol table 
+        // initializing it to 0, return a SemVal holding its type and index
+
+        $$ = d_symtab.defineVar(d_type, $1);            // define the var.
+    }
+;
+
+defineVar:
+    defineVar_
+|
+    defineVar_ '=' syntaxExpression expression
+    {
+        $$ = defineVar($1, $4);                     // define and keep the
+                                                    // global var. init. code
+    }
+;
+
+
+

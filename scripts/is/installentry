@@ -1,0 +1,10 @@
+void install_entry(string realSource, string dest, string realDest)
+{
+    if (!installOK(dest, realDest))
+        return;
+
+    md(get_path(realDest));
+    syscall("cp -rd " + realSource + " " + realDest);
+
+//    g_installed += (list)realDest;
+}

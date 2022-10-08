@@ -1,0 +1,53 @@
+void main(int argc, list argv, list envp)
+{
+    echo(USE_ECHO);
+
+    setGcompiler();
+
+    getCommand(argv);               // determine command and option
+
+    setClasses();                   // assign g_classes and g_nClasses
+                                    // note: also used by clean()
+    #ifdef MAIN
+        g_mainBase = get_base(MAIN);    // also used by clean()
+    #endif
+
+    // run the requested command:
+
+    if (g_command == _clean)        // completely clean tmp and 
+        clean();                    // locally defined precompiled headers
+
+    if (g_command == _cleanTmp)     // keep the .gch files if existing.
+        cleanTmp();
+
+    if (g_command == _cleanGch)
+        cleanPrecomp("removing all precompiled headers\n");
+        
+    #ifdef PRECOMP
+        md(g_gchDir);
+    #endif
+
+    if (g_command == _install)
+        install();                  // install a compiled product
+
+    #ifdef CLS
+        g_option = _c;
+    #endif
+
+    if (g_option == _c)             // clear the screen before compilation
+        system("tput clear");       // starts
+
+                                    // compile all sources except MAIN
+    build_libraries();              // if PRECOMP then precompiles headers 
+
+    if (g_command == _program)
+        program();
+
+    #ifdef USE_ALL
+        cleanUseAll();
+    #endif
+
+    #ifdef PRECOMP
+        storeGch();
+    #endif
+}

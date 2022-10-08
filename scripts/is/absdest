@@ -1,0 +1,25 @@
+    // destination entries can be copied from the
+    // source entries (files or directories) 
+    // if they start with ~/ or / then that part is removed.
+    //
+    // g_destPath is prefixed to the destination and its absolute path is
+    // determined: the resulting destination must start with destPath as
+    // it must be below destpath. 
+string absDest(string dest)
+{
+    int offset =                        // offset of the actual dest-entry:
+        strfind(dest, "~/") == 0 ?  2 :         // relative to HOME
+        strfind(dest, "/")  == 0 ?  1 :         // absolute
+                                    0;          // as-is
+    if (offset != 0)               
+        dest = substr(dest, offset, 999);       // remove the prefix
+
+    dest = readlink(g_destPath + dest);         // convert to abs. path
+
+                                                // the new 'dest' must
+                                                // now begin with g_destPath:
+    if (strfind(dest, g_destPath) != 0)
+        quit("dest: `" + dest + "' doesn't start with  `" + g_destPath + "'");
+    
+    return dest;
+}
