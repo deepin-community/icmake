@@ -1,3 +1,9 @@
+icmake (10.01.01.1-deepin1) unstable; urgency=medium
+
+  * fix build failure on deepin riscv
+
+ -- Zhengjie-Niu <niuzj0@gmail.com>  Fri, 02 Dec 2022 01:41:08 +0000
+
 icmake (10.01.01-2) unstable; urgency=medium
 
   * Upload to unstable
