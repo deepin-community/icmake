@@ -4,6 +4,7 @@
 
 #include <bobcat/exception>
 #include <bobcat/pattern>
+#include <bobcat/log>
 
 #include "../../xerr/xerr.ih"
 #include "../../support/as/as.h"
@@ -11,5 +12,9 @@
 
 #include "../log/log.h"
 
+extern FBB::Log g_log;
+
+#ifndef SPCH_
 using namespace std;
 using namespace FBB;
+#endif

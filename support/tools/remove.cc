@@ -4,7 +4,5 @@
 // static
 bool Tools::remove(string const &path)
 {
-    error_code ec;
-
-    return filesystem::remove(path, ec);
+    return fs::remove(path, s_ec);
 }

@@ -1,7 +1,8 @@
 #include "tools.h"
 
 #include <iostream>
-#include <filesystem>
+#include <fstream>
+//#include <filesystem>
 
 #include <bobcat/stat>
 #include <bobcat/exception>
@@ -9,5 +10,8 @@
 #include "../../tmp/INSTALL.im"
 #include "../../xerr/xerr.ih"
 
+#ifndef SPCH_
 using namespace std;
 using namespace FBB;
+namespace fs = filesystem;
+#endif

@@ -1,9 +1,8 @@
-#define PRECOMP             "-x c++-header"
+#define MULTICOMP           "jobs -q"
+#define SPCH                "-n -k xerr/xerr.ih"
 
 #define IH                  ".ih"
-//#define NO_PRECOMP_WARNING
 
-#define CLS
 #define LIBRARY             "support"
 #define SOURCES             "*.cc"
 #define OBJ_EXT             ".o"
@@ -11,9 +10,8 @@
 #define USE_ALL             "a"
 #define USE_ECHO            ON
 
-#define CXX                 "g++"
-#define CXXFLAGS            " --std=c++2a -Wall -O2" \
-                            " -fdiagnostics-color=never "
+#define CXX                 "ccache g++"
+#define CXXFLAGS            "-Werror -Wall -O2 -fdiagnostics-color=never"
 
 #define REFRESH
 #define LDFLAGS             "-s"

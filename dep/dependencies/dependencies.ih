@@ -4,7 +4,6 @@
 #include <sstream>
 #include <algorithm>
 #include <iomanip>
-//#include <filesystem>
 
 #include <bobcat/pattern>
 #include <bobcat/stat>
@@ -17,7 +16,7 @@
 #include "../options/options.h"
 #include "../log/log.h"
 
+#ifndef SPCH_
 using namespace std;
 using namespace FBB;
-
-
+#endif

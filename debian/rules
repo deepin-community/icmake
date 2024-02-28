@@ -1,13 +1,15 @@
 #!/usr/bin/make -f
 
-# Uncomment this to turn on verbose mode.
+# Uncommented to turn on verbose mode.
 export DH_VERBOSE=1
 
 export DEB_BUILD_HARDENING=1
 export DEB_BUILD_MAINT_OPTIONS=hardening=+all
 
+export ICMAKE_CPPSTD = --std=c++23
+
 export CXXFLAGS = $(shell dpkg-buildflags --get CXXFLAGS)
-export CXXFLAGS += --std=c++2a -Wall -D_FORTIFY_SOURCE=2
+export CXXFLAGS += ${ICMAKE_CPPSTD}  -Wall -D_FORTIFY_SOURCE=2
 
 export LDFLAGS = $(shell dpkg-buildflags --get LDFLAGS)
 # export LDFLAGS += -Wl,bindnow
@@ -20,6 +22,7 @@ export CXX = g++
 
 override_dh_auto_clean:
 	rm -rf tmp
+	find . -type f -name '*.ih.gch' -delete
 	dh_auto_clean
 
 override_dh_auto_build:
@@ -30,12 +33,5 @@ override_dh_auto_build:
 
 override_dh_auto_install:
 	# Add here commands to install the package into debian/icmake
-ifeq (,$(findstring nostrip, $(DEB_BUILD_OPTIONS)))
-	./icm_install strip progs debian/icmake
-endif
-	./icm_install scripts debian/icmake
-	./icm_install skel debian/icmake
-	./icm_install man debian/icmake
-	./icm_install doc debian/icmake
-	./icm_install etc debian/icmake
+	./icm_install all debian/icmake
 	dh_auto_install

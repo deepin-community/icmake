@@ -1,4 +1,4 @@
-.TH "icmscript" "7" "1992\-2021" "icmake\&.10\&.01\&.01" "The icmake scripting language"
+.TH "icmscript" "7" "1992\-2024" "icmake\&.11\&.01\&.02" "The icmake scripting language"
 
 .PP 
 .SH "NAME"
@@ -203,22 +203,21 @@ modified,\fP and \fIcompile\fP are left as an exercise for the reader):
     void main(int argc, list argv)
     {
         if (argc == 1)
-            usage(argv[0])
+            usage(argv[0]);
+
+        if (list toCompile = modified(\(dq\&*\&.cc\(dq\&))
+        {
+            for (int idx = listlen(toCompile); idx\-\-; )
+                compile(toCompile[idx]);
+        }
+    }
+        
 .fi 
-;
-.PP 
-if (list toCompile = modified(\(dq\&*\&.cc\(dq\&))
-{
-for (int idx = listlen(toCompile); idx\-\-; )
-compile(toCompile[idx]);
-}
-}    
-)
 When executing an \fBicmake\fP script \fBicmake\(cq\&s\fP run\-time support system first
 initializes all all global variables in the order of their
-definitions\&. Followin this the function \fImain\fP is called\&. The script ens
-once once \fImain\fP returns or when the (predefined) function \fIexit\fP
-is called by the script)\&.
+definitions\&. Followin this the function \fImain\fP is called\&. The script ends
+once \fImain\fP returns or when the (predefined) function \fIexit\fP is called by
+the script\&.
 .PP 
 .SH "PREPROCESSOR DIRECTIVES"
 
@@ -544,16 +543,20 @@ The \fIbacktick\fP operator (\fI`string cmd`\fP)
 A string placed between two backticks is executed as a separate
 command\&. Different from the \fIexec\fP and \fIsystem\fP calls the backtick
 operator collects the standard output produced by `cmd\(cq\& returning this
-output as a list\&. The elements of the list contain the subsequent
-lines of output (including a final newline, if present) produced by
-`cmd\(cq\&\&. An empty list indicates that the command could not be
-executed\&.
+output as a list\&. 
 .IP 
-Note that a command that could be executed but that did not produce any
-output returns a list containing one string elemen, which is
-empty\&. The command\(cq\&s standard error stream output is ignored by the
-backtick operator\&. However, standard shell redirection may be used to
-collect the standard error stream\(cq\&s output\&. Example:
+The elements of the list contain the subsequent lines of output
+(including a final newline, if present) produced by `cmd\(cq\&\&. A command
+that could be executed but that did not produce any output returns a
+list containing one string element, which is empty\&.  
+.IP 
+An empty list indicates that the command could not be executed\&.
+.IP 
+The command\(cq\&s standard error stream output is ignored by the backtick
+operator\&. However, standard shell redirection may be used to collect
+the standard error stream\(cq\&s output\&. 
+.IP 
+Example:
 .nf 
 
     printf << `\(dq\&ls\(dq\&`;   // prints the elements in 
@@ -1271,7 +1274,13 @@ therefore also have been written like this:
                             // directory 
         
 .fi 
-
+As mentioned at the backtick operator: the elements of the list contain
+the subsequent lines of output (including a final newline, if present)
+produced by `cmd\(cq\&\&. A command that could be executed but that did not
+produce any output returns a list containing one string element, which
+is empty\&.
+.IP 
+An empty list indicates that the command could not be executed\&.
 .IP 
 .IP o 
 \fIint exec([int check,] string cmd, argument(s))\fP

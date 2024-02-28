@@ -1,0 +1,17 @@
+#include "compilefork.h"
+#include "../../xerr/xerr.ih"
+
+#include <iostream>
+#include <filesystem>
+
+#include <bobcat/ifdstream>
+#include <bobcat/process>
+#include <bobcat/redirector>
+
+#include "../../support/tools/tools.h"
+
+#ifndef SPCH_
+using namespace std;
+using namespace FBB;
+namespace fs = filesystem;
+#endif

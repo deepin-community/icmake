@@ -9,8 +9,10 @@
 #include "../../support/bimheader/bimheader.h"
 
 #include "../int/int.h"
-#include "../string/string.h"
+#include "../estring/estring.h"
 #include "../list/list.h"
 
+#ifndef SPCH_
 using namespace std;
 using namespace FBB;
+#endif

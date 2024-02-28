@@ -1,8 +1,11 @@
 #include "stringstore.h"
 #include "../../xerr/xerr.ih"
 
+#include <algorithm>
 #include <bobcat/mstream>
 
+
+#ifndef SPCH_
 using namespace std;
 using namespace FBB;
-
+#endif

@@ -1,0 +1,13 @@
+# loaded and called from program's icm_bootstrap scripts
+
+precomp()
+{
+    echo "
+Buiding tmp/spch.gch and using .ih.gch files"
+
+    ../tmp/usr/libexec/icmake/icm-spch -k xerr/xerr.ih -l spch || exit 1
+    ../tmp/usr/libexec/icmake/icm-spch -p spch tmp/            || exit 1
+    ../tmp/usr/libexec/icmake/icm-spch -s spch tmp/            || exit 1
+
+    rm spch
+}

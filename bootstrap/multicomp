@@ -1,0 +1,45 @@
+# loaded and called from program's icm_bootstrap scripts once icm-spch
+# and icm-multicomp are available
+
+#   $1 is, e.g., /usr/libexec/icmake/icm-dep
+
+. ../bootstrap/precomp
+  
+
+build()
+{
+    precomp                     # construct the .gch file and soft-links
+
+    mkdir -p tmp/`dirname $1`
+
+    prefix=1                    # prefix before the object filenames
+
+                                # construct the jobs-file for icm-multicomp
+    if [ -e CLASSES ] 
+    then    
+
+IFS='
+'
+        for dir in `cat CLASSES` 
+        do
+            echo "$dir" | grep '^[[:blank:]]*#' > /dev/null
+            [ $? == 0 ] && continue
+    
+            cd $dir                 # go to the dir containing src files
+            echo ": $dir tmp $prefix" >> ../jobs
+            ls *.cc >> ../jobs
+            cd ..
+            let prefix=$prefix+1
+        done
+    fi         
+
+    echo ": . tmp 0" >> jobs
+    ls *.cc >> jobs
+    
+    ../tmp/usr/libexec/icmake/icm-multicomp -q jobs \
+        "/usr/bin/g++ -c -o \$2 ${ICMAKE_CPPSTD} -Wall -Werror \$1" || exit 1
+    
+    /usr/bin/g++ -o ../tmp/$1 tmp/*.o -L ../tmp -lsupport -lbobcat || exit 1
+    
+    rm -rf jobs tmp *.gch */*.gch 
+}   

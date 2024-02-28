@@ -1,39 +1,40 @@
 #!/bin/bash
 
+. bootstrap/try
+
 if [ "$#" == "0" ] ; then
 echo "
     Usage: icm_prepare rootdir
 
     In standard situations specify / as rootdir. 
 
-    The physical installation dir is specified when calling icm_install.
+    A 'physical installation dir' differing from 'rootdir' can be 
+    specified when calling icm_install.
 
-    The here specified rootdir is hard-coded in icmake's programs, so
+    The rootdir specified here is hard-coded in icmake's programs, so
     eventually the icmake files should be available under rootdir.
+
+    'rootdir' *must* be absolute, so it *must* start with /
 "                                     
     exit 0
 fi
 
-try()
-{
-    echo "  $*"
-    $* || exit 1
-}
-
-echo Creating the intermediate destination directory ./tmp
-
-try rm -rf tmp 
-                # icmake/tmp icmun/tmp/ icm-*/tmp
-                # try find -name '*.o' -exec rm -f '{}' \;
-try mkdir -p tmp
-
-echo    Writing tmp/ROOT
-ROOT=`echo $1 | sed 's_/$__'`
-echo "ROOT=${ROOT}/" > tmp/ROOT
- 
-. scripts/conversions
-
 echo "
+Creating the construction directory ./tmp"
+    try rm -rf tmp          # remove an existing ./tmp directory
+    try mkdir -p tmp        # and refresh a new one
+    
+echo "
+Writing the 'rootdir' ($1) to ./tmp/ROOT
+"
+    ROOT=`echo $1 | sed 's_/$__'`
+    echo "ROOT=${ROOT}/" > tmp/ROOT
+    
+# Prefix the subdirectories with the final installation (ROOT) directory name 
+# and write the names to tmp/INSTALL.im and tmp/INSTALL.sh
+    . scripts/prefixroot
+
+echo "\
 #define BINDIR      \"${BINDIR}\"
 #define SKELDIR     \"${SKELDIR}\"
 #define MANDIR      \"${MANDIR}\"
@@ -42,8 +43,7 @@ echo "
 #define DOCDIR      \"${DOCDIR}\"
 #define AUTHOR      \"${AUTHOR}\"
 #define VERSION     \"${VERSION}\"
-#define YEARS       \"${YEARS}\"
-" > tmp/INSTALL.im
+#define YEARS       \"${YEARS}\"" > tmp/INSTALL.im
 
 echo "
 BINDIR=\"${BINDIR}\"
@@ -52,14 +52,38 @@ MANDIR=\"${MANDIR}\"
 LIBDIR=\"${LIBDIR}\"
 CONFDIR=\"${CONFDIR}\"
 DOCDIR=\"${DOCDIR}\"
+AUTHOR=\"$AUTHOR}\"
 VERSION=\"${VERSION}\"
-YEARS=\"${YEARS}\"
-" > tmp/INSTALL.sh
+YEARS=\"${YEARS}\"" > tmp/INSTALL.sh
 
-echo Creating the intermediate destination directories
-try  mkdir -p tmp${BINDIR}  tmp${LIBDIR}      tmp${SKELDIR}  
-try  mkdir -p tmp${CONFDIR} tmp${MANDIR}/man1 tmp${MANDIR}/man7 
-try  mkdir -p tmp${DOCDIR}
+# Show the final installation paths
+    echo "Final installation #defines:"
+    cat tmp/INSTALL.im
+    echo
+
+
+echo "Creating intermediate construction directories below ./tmp"
+try  mkdir -p tmp/usr/bin  tmp/usr/libexec/icmake  tmp/usr/share/icmake
+try  mkdir -p tmp/etc/icmake tmp/usr/share/man/man1 
+try  mkdir -p tmp/usr/share/man/man7 tmp/usr/share/doc/icmake
+
+echo
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

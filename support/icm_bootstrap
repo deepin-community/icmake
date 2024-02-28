@@ -1,15 +1,18 @@
 #!/bin/bash
 
-. ../bootstrap/flags
-. ../bootstrap/functions
+echo "
+Building tmp/libsupport.a"
 
-echo Creating tmp/libsupport.a
+. ../bootstrap/flags
+. ../bootstrap/try
+. ../bootstrap/subdirs
 
 subdirs
 
 try ar rs ../tmp/libsupport.a *.o
 
-rm *.o
+find ./ -name '*.gch' -exec rm {} \;
+
 
 
 

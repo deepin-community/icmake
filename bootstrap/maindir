@@ -1,0 +1,25 @@
+# sourced by the various icm_bootstrap shell scripts
+
+maindir()   # $1: destination program path, 
+{
+
+# compile the source files except for the main.cc file
+    echo Compiling in `pwd`
+    for src in `find -mindepth 1 -maxdepth 1 -type f -name '*.cc' \
+                            -exec basename '{}' ';' | sort` ; do
+        if [ "$src" != "main.cc" ] ; then
+            obj=${src%%.*}.o
+            if [ $src -nt ${obj} ] ; then 
+                try ${CXX}  ${CXXFLAGS} -o${obj} -c $src
+            fi
+        fi
+    done
+
+    ls *.o > /dev/null 2>&1
+    if [ $? -ne 0 ] ; then
+        try ${CXX}  ${CXXFLAGS} -o ../tmp${1} main.cc ${LDFLAGS}
+    else
+        try ${CXX}  ${CXXFLAGS} -o ../tmp${1} *.o main.cc \
+                    -L../tmp -lsupport -lbobcat ${LDFLAGS}
+    fi
+}

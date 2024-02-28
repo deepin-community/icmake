@@ -8,10 +8,12 @@
 #include "../tokens/tokens.h"
 #include "../opcode/opcode.h"
 
-using namespace std;
-using namespace FBB;
 
 // end of scanner.ih
 
 
 
+#ifndef SPCH_
+using namespace std;
+using namespace FBB;
+#endif

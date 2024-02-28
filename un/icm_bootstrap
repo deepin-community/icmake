@@ -1,11 +1,8 @@
 #!/bin/bash
 
-. ../bootstrap/flags
-. ../bootstrap/functions
+. ../bootstrap/multicomp
 
-echo Creating tmp${LIBDIR}/icmun
+    echo "
+Building tmp/usr/libexec/icmake/icmun"
 
-subdirs
-maindir ${LIBDIR}/icmun -s
-
-rm -f */*.gch *.o
+build /usr/libexec/icmake/icmun

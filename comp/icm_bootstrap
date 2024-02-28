@@ -1,11 +1,10 @@
 #!/bin/bash
 
-. ../bootstrap/flags
-. ../bootstrap/functions
+# icm-spch and icm-multicomp must be available
+. ../bootstrap/multicomp
 
-echo Creating tmp${LIBDIR}/icm-comp
+    echo "
+Building tmp/usr/libexec/icmake/icm-comp"
 
-subdirs
-maindir ${LIBDIR}/icm-comp
+build /usr/libexec/icmake/icm-comp
 
-rm -f */*.gch *.o

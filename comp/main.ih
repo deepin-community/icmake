@@ -12,8 +12,10 @@
 #include "../xerr/xerr.ih"
 #include "../tmp/INSTALL.im"
 
+
+void usage(std::string const &progname);
+
+#ifndef SPCH_
 using namespace std;
 using namespace FBB;
-
-void usage(string const &progname);
-
+#endif

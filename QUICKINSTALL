@@ -1,46 +1,79 @@
+Preamble:
+=========
+
+Icmake's programs are C++ programs since version 10.00.00.  Valentin Lefebvre
+noticed that in order to build icmake the bobcat library must be available,
+but icmake is used to construct the bobcat library. If neither icmake nor
+bobcat is available a bootstrapping procedure must be used. For this the
+'bobcatbootstrap' script can be used. See README.bobcatbootstrap for details.
+
+However, if you're using a distribution (Debian, Ubuntu, ...) already offering
+the libbobcat-dev package (>= version 5.07.00) then bootstrapping the bobcat
+library is *not* required, because then you can directly install the
+libbobcat-dev package. In that case the most recent icmake version might not
+yet be available in your distribution, and you might want to follow the steps
+described below to install icmake's most recent version on your computer.
+
+Initial installation of icmake from its sources:
+================================================
+
+If the bobcat library has been installed (either from the distribution or
+using the 'bobcatbootstrap' script) then the following procedure can be used
+to build the icmake programs:
+
+
 0. After unpacking the icmake_XX.YY.ZZ.tar.gz icmake archive, make your
    current working directory equal to the directory in which you found this
    file. 
 
-1. Inspect and modify if necessary the current locations in INSTALL.im.
+1. Inspect and if necessary modify the current location specifications in
+   INSTALL.im. These locations specify where the icmake components (binaries,
+   man-pages, etc.) will eventually be installed.
 
 2. If you want the compiler to insert debugging code in the icmake programs
    then define a CXXFLAGS environment variable. E.g., 
 
-                CXXFLAGS="--std=c++2a -Wall -O2 -g"
+                CXXFLAGS="--std=c++23 -Wall -Werror -O2 -g"
 
-3. To prepare for the compilations of the programs, run 
+   By default the -g flag is not specified
+
+   Note: once icmake has been installed the CXXFLAGS environment variable is
+   not used anymore. Instead the icmake programs use the environment variable
+   ICMAKE_CPPSTD, as described in the icmconf(7) man-page.
+
+3. To prepare for the construction of the icmake software, run 
 
                 ./icm_prepare /
 
-3. Compile the various programs (x is a dummy argument required by
-   ./icm_bootstrap to run):
+   where the argument / defines the root directory below which icmake's files
+   will be installed (by icm_install, see 4.).
+
+3. Construct the icmake software (programs, skeleton files, man-pages) by
+   running:
 
                 ./icm_bootstrap x
 
-4. As root: install the programs and documentation:
+   (the argument x is a pseudo argument: if omitted icm_bootstrap displays a
+   short usage message).
+
+4. To install the icmake software you must be root: install the icmake
+   software:
 
                 ./icm_install strip all
 
-   (the elements of the installation are under tmp/etc and tmp/usr)
-
-    For debian, the following install commands are issued, installing under 
-    debian/icmake and debian/icmake-doc
-
-        ./icm_install strip progs debian/icmake
-        ./icm_install scripts debian/icmake
-        ./icm_install skel debian/icmake
-        ./icm_install man debian/icmake
-        ./icm_install doc debian/icmake
-        ./icm_install etc debian/icmake
-        ./icm_install docdoc debian/icmake-doc
+   The argument 'strip' is optional. When specified icmake's binaries will be
+   stripped before being installed. 
 
                     
-5. Remove intermediate construction area:
+5. Remove the intermediate construction directory:
                 rm -rf tmp
 
+------------------------------------------------------------------------ 
 
-Following these commands (referring to the #defines in INSTALL.im):
+The above steps install the icmake software under the directory specified as
+./icm_prepare's argument (cf. step 3; capital directory names refer to the
+#defines in INSTALL.im). When specifying / as icm_prepare's argument the
+following elements are installed by icm_install:
     
     icmake is in /BINDIR
     skeleton files, installed by icmstart, are in /SKELDIR
@@ -48,6 +81,7 @@ Following these commands (referring to the #defines in INSTALL.im):
     icmake support programs are in /LIBDIR
     confguration files, specifying which skeleton commands to install, are in
         /CONFDIR
-    icmake documentation is installed in /DOCDIR and /DOCDOCDIR
+    additional icmake documentation is installed in /DOCDIR
+
 
 

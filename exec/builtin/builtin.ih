@@ -34,11 +34,13 @@
 #include "../stack/stack.h"
 #include "../list/list.h"
 
-using namespace std;
-using namespace FBB;
 
 #include "youngerlist.f"
 #include "olderlist.f"
 
 
+#endif
+#ifndef SPCH_
+using namespace std;
+using namespace FBB;
 #endif

@@ -8,5 +8,7 @@
 #include "../semval/semval.h"
 #include "../functions/functions.h"
 
-using namespace std;
 
+#ifndef SPCH_
+using namespace std;
+#endif

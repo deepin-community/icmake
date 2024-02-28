@@ -4,7 +4,7 @@
 // static
 string BimHeader::bimName(char const *fname)
 {
-    filesystem::path fpath{ fname };
+    fs::path fpath{ fname };
 
     if (not Tools::exists(fpath) and fpath.extension().empty())
         fpath.replace_extension(".bim");

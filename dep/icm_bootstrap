@@ -1,11 +1,8 @@
 #!/bin/bash
 
-. ../bootstrap/flags
-. ../bootstrap/functions
+. ../bootstrap/multicomp
 
-echo Creating tmp${LIBDIR}/icm-dep
+    echo "
+Building tmp/usr/libexec/icmake/icm-dep"
 
-subdirs
-maindir ${LIBDIR}/icm-dep
-
-rm -f */*.gch *.o
+build /usr/libexec/icmake/icm-dep

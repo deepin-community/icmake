@@ -4,9 +4,7 @@
 // static
 bool Tools::changeDir(string const &path)
 {
-    error_code ec;
+    fs::current_path(path, s_ec);
 
-    filesystem::current_path(path, ec);
-
-    return not ec;          // ec: true, then couldn't chdir
+    return not s_ec;          // ec: true, then couldn't chdir
 }

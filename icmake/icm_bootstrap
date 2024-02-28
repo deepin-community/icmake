@@ -1,14 +1,8 @@
 #!/bin/bash
 
-. ../bootstrap/flags
-. ../bootstrap/functions
+. ../bootstrap/multicomp
 
-echo Creating tmp${BINDIR}/icmake
+    echo "
+Building tmp/usr/bin/icmake"
 
-subdirs
-
-maindir ${BINDIR}/icmake -s
-
-rm -f */*.gch *.o
-
-
+build /usr/bin/icmake

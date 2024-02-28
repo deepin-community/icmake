@@ -1,0 +1,70 @@
+
+Bootstrapping with existing icmake program (>= 10.06.00).
+
+* Preamble: to use the g++ std version of your choice, define the environment
+  variable 
+
+    ICMAKE_CPPSTD 
+
+  so that it contains, e.g.,
+
+    --std=c++23
+
+---------------------------------------------------------------------------
+
+* To compile 'multicmp' from scratch run
+
+        icmbuild
+
+    then install tmp/bin/binary in your PATH as the program 'multicomp'
+
+* To compile 'precompile' from scratch run
+
+        icmbuild
+
+    then install tmp/bin/binary in your PATH as the program 'precompile'
+
+* To prepared icmake for multicomp and precompile (assuming that icmake's
+  scripts are in /usr/libexec/icmake:
+
+    - go to the libexec/icmake directory:
+        cd /usr/libexec/icmake
+    
+    - save icmbuild for backup purposes:
+        mv icmbuild icmbuild.deb
+
+    - extract icmbuild.isn.tgz and cp icmbuild.isn to the cwd (e.g.,
+      /usr/libexec/icmake) 
+
+    - make a link to icmbuild:
+        ln -s icmbuild.isn icmbuild
+
+
+From now on calling icmbuild will recognize requests for precompilation and
+for multicompiling.
+
+
+* To compile 'multicomp' from using 'multicomp' and 'precompile' uncomment
+        //#define MULTICOMP           "jobs -q"
+        //#define SPCH                "-k xerr/xerr.ih"
+
+    in multicomp's icmconf file and run
+
+        icmbuild
+
+    then install tmp/bin/binary in your PATH as the program 'multicomp'
+
+* To compile 'precompile' from scratch run
+
+        //#define MULTICOMP           "jobs -q"
+        //#define SPCH                "-k xerr/xerr.ih"
+
+    in precompile's icmconf file and run
+
+        icmbuild
+
+    then install tmp/bin/binary in your PATH as the program 'precompile'
+
+
+    
+

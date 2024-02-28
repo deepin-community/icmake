@@ -17,7 +17,9 @@
 #include "exceptionhandler.f"
 #include "binary.f"
 
+
+
+#ifndef SPCH_
 using namespace std;
 using namespace FBB;
-
-
+#endif
