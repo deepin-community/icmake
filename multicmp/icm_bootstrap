@@ -1,0 +1,19 @@
+#!/bin/bash
+
+    # make ../bootstrap's build and precomp scripts available in the
+    # current directory  
+
+
+. ../bootstrap/precomp
+. ../bootstrap/build 
+
+    echo "
+Building tmp/usr/libexec/icmake/icm-multicomp"
+
+    # do the precompilation
+precomp
+
+    # execute build installing the program in the destination dir.
+build /usr/libexec/icmake/icm-multicomp
+
+find ./ -name '*.gch' -exec rm {} \;

@@ -1,19 +1,20 @@
-#define CLS
-#define LIBRARY             "modules"
+#define MULTICOMP           "jobs -q"
+#define SPCH                "-k xerr/xerr.ih"
+
+#define USE_ALL             "a"
+
 #define MAIN                "main.cc"
 #define SOURCES             "*.cc"
 #define OBJ_EXT             ".o"
 #define TMP_DIR             "tmp"
-//#define USE_ALL             "a"
 #define USE_ECHO              ON
 //#define USE_VERSION
 
-#define CXX                 "g++"
+#define CXX                 "ccache g++"
 
-#define CXXFLAGS            " --std=c++2a -Wall -O2" \
-                            " -fdiagnostics-color=never "
+#define CXXFLAGS            "-Werror -Wall -O2 -fdiagnostics-color=never"
 #define IH                  ".ih"
-#define PRECOMP             "-x c++-header"
+
 #define REFRESH
 #define LDFLAGS             ""
 #define ADD_LIBRARIES       "support bobcat"

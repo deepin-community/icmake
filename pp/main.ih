@@ -6,11 +6,13 @@
 
 #include "../xerr/xerr.ih"
 #include "../support/tools/tools.h"
+#include "../tmp/INSTALL.im"
 
 #include "state/state.h"
 
+void usage(std::string const &progname);
+
+#ifndef SPCH_
 using namespace std;
 using namespace FBB;
-
-void usage(string const &progname);
-
+#endif

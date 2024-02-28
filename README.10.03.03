@@ -1,0 +1,9 @@
+If you're installing the binary icmake package 10.03.03 from your Linux
+distribution then there's a flaw in its /usr/share/icmake/icmconf file. The
+flaw (not present in more recent versions) can easily be repaired:
+
+    * in /usr/share/icmake/icmconf replace line 76:
+            #define CXXFLAGS            ${CPPSTD} " -Werror -Wall -O2"
+        by
+            #define CXXFLAGS            "--std=c++23 -Werror -Wall -O2"
+        (or use c++20 if your compiler doesn't yet support c++23)

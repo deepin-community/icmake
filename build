@@ -1,11 +1,14 @@
 #!/bin/bash
 
+export ICMAKE_CPPSTD="--std=c++23"
+
     # action is clean, distclean or a base directory (e.g., /)
 action=$1
 
 if [ "$action" == "distclean" ] ; then
-    echo rm -rf tmp
-    rm -rf tmp
+    echo 'rm -rf tmp doc/*.[17] *.gch */*.o' */tmp */spch
+    rm -rf tmp doc/*.[17] */*.o */tmp */spch
+    find ./ -name '*.ih.gch' -delete
     action=clean
 fi
 
@@ -13,7 +16,7 @@ fi
         # tmp dirs
 
 if [ "$action" == "clean" ] ; then
-    for dir in support comp exec pp dep un icmake icmbuild
+    for dir in support comp exec pp dep spch multicmp un icmake icmbuild
     do
         cd $dir
     echo -n "cd $dir; "
@@ -37,7 +40,7 @@ command-line argument, e.g., '$0 /'
     ./icm_prepare $action
 fi
 
-for dir in support comp exec pp dep un icmake icmbuild
+for dir in support comp exec pp dep spch multicmp un icmake icmbuild
 do
     cd $dir
     echo $dir

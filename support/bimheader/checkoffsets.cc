@@ -5,7 +5,7 @@ void BimHeader::checkOffsets() const
 {
     for (
         auto [size, begin, end] = tuple{ 
-                                      filesystem::file_size(d_bimName), 
+                                      fs::file_size(d_bimName), 
                                       &d_hdr.strings, 
                                       &d_hdr.firstOpcode + 1 
                                   };

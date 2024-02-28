@@ -14,6 +14,8 @@
 
 #include "../../xerr/xerr.ih"
 
+
+#ifndef SPCH_
 using namespace std;
 using namespace FBB;
-
+#endif

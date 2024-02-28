@@ -4,10 +4,10 @@
 #include <vector>
 #include <string>
 
-typedef std::vector<bool>           BoolVect;
-typedef std::vector<BoolVect>       BoolMatrix;
-typedef std::vector<std::string>    StringVect;
-typedef std::vector<StringVect>     StringMatrix;
-typedef std::vector<unsigned>       UnsignedVect;
+using BoolVect = std::vector<bool>;
+using BoolMatrix = std::vector<BoolVect>;
+using StringVect = std::vector<std::string>;
+using StringMatrix = std::vector<StringVect>;
+using UnsignedVect = std::vector<unsigned>;
 
 #endif

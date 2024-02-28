@@ -10,11 +10,8 @@
 
 #include "../../tmp/INSTALL.im"
 
-#include "../splitter/splitter.h"
-
-using namespace std;
-using namespace FBB;
-using namespace filesystem;
+#include "../options/options.h"
+#include "../../support/tools/tools.h"
 
 inline void Handler::setPreOptions()
 {
@@ -27,3 +24,8 @@ inline void Handler::setExecOptions()
 }
 
 
+#ifndef SPCH_
+using namespace std;
+using namespace FBB;
+using namespace filesystem;
+#endif

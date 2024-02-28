@@ -14,11 +14,13 @@
 
 #include "../../support/tools/tools.h"
 
-using namespace std;
-using namespace FBB;
 
 #include "addbuffer.f"
 #include "precode.f"
 #include "postcode.f"
 
 
+#ifndef SPCH_
+using namespace std;
+using namespace FBB;
+#endif

@@ -1,0 +1,15 @@
+# loaded and called from the icmake programs's icm_bootstrap scripts
+
+. ../bootstrap/flags
+. ../bootstrap/try
+. ../bootstrap/subdirs
+. ../bootstrap/maindir
+
+#   $1 is, e.g., /usr/libexec/icmake/icm-dep
+build()
+{
+    subdirs
+    maindir $1
+    
+    rm -f *.o
+}

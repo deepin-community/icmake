@@ -1,0 +1,19 @@
+#include "rhbuilder.h"
+#include "../xerr/xerr.ih"
+
+#include <fstream>
+#include <algorithm>
+#include <iterator>
+
+#include <bobcat/mstream>
+#include <bobcat/pattern>
+
+#include "../options/options.h"
+
+#include "../../support/tools/tools.h"
+
+#ifndef SPCH_
+using namespace std;
+using namespace FBB;
+namespace fs = filesystem;
+#endif

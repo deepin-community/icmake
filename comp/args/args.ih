@@ -5,5 +5,7 @@
 
 #include "equaltypes1.f"
 
-using namespace std;
 
+#ifndef SPCH_
+using namespace std;
+#endif

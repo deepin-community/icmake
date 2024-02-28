@@ -1,12 +1,8 @@
 #!/bin/bash
 
-. ../bootstrap/flags
-. ../bootstrap/functions
+. ../bootstrap/multicomp 
 
-echo Creating tmp${BINDIR}/icmbuild
+    echo "
+Building tmp/usr/bin/icmbuild"
 
-maindir ${BINDIR}/icmbuild -s
-
-rm -f *.o
-
-
+build /usr/bin/icmbuild

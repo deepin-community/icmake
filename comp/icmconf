@@ -1,8 +1,11 @@
-#define PRECOMP             "-x c++-header"
+
+    // specify the file to contain the files to compile, and optionally add
+    // -q or -qq to reduce the output from multicomp:
+#define MULTICOMP           "jobs -q"
+#define SPCH                "-k xerr/xerr.ih"
+
 #define USE_ALL             "a"
 
-//#define CLS
-#define LIBRARY             "modules"
 #define MAIN                "main.cc"
 #define SOURCES             "*.cc"
 #define OBJ_EXT             ".o"
@@ -11,9 +14,8 @@
 #define USE_ECHO              ON
 #define IH                  ".ih"
 
-#define CXX                 "g++"
-#define CXXFLAGS            " --std=c++2a -Wall -O2 " \
-                                " -fdiagnostics-color=never "
+#define CXX                 "ccache g++"
+#define CXXFLAGS            "-Werror -Wall -O2 -fdiagnostics-color=never"
 
 #define REFRESH
 #define LDFLAGS             "-s"
@@ -35,4 +37,4 @@
 #define SCANOUT             "lex.cc"
 
 #define DEFCOM              "program"
-//#define DEFCOM              "library"
+

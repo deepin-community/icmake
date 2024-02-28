@@ -4,7 +4,5 @@
 // static
 bool Tools::exists(string const &path)
 {
-    error_code ec;
-
-    return filesystem::exists(path, ec);
+    return fs::exists(path, s_ec);
 }

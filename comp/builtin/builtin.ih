@@ -3,5 +3,7 @@
 
 #include "../../support/as/as.h"
 
-using namespace std;
 
+#ifndef SPCH_
+using namespace std;
+#endif
